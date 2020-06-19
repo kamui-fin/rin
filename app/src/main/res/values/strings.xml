@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">JP Dictionary</string>
+    <string name="lookup">Look Up</string>
+    <string name="words">Words</string>
+    <string name="search">Search</string>
+    <string name="settings">Settings</string>
+
+</resources>
