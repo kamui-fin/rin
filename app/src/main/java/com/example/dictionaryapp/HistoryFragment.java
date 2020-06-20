@@ -13,7 +13,8 @@ import androidx.viewpager2.widget.ViewPager2;
 public class HistoryFragment extends Fragment {
     ViewPager2 viewPager;
 
-    public HistoryFragment(){}
+    public HistoryFragment() {
+    }
 
     @Nullable
     @Override

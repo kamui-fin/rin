@@ -2,46 +2,49 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
 
+    <PreferenceCategory
+        app:title="Dictionaries"
+        app:iconSpaceReserved="false">
+        <SwitchPreference
+            app:key="jmdictEnable"
+            app:title="JMdict (English)"
+            app:iconSpaceReserved="false"
+            app:defaultValue="true" />
+        <SwitchPreference
+            app:key="kenkyuuEnable"
+            app:title="研究社　新和英大辞典　第５版"
+            app:iconSpaceReserved="false"
+            app:defaultValue="true" />
+        <SwitchPreference
+            app:key="shinmeiEnable"
+            app:title="新明解国語辞典 第五版"
+            app:iconSpaceReserved="false"
+            app:defaultValue="true" />
+        <SwitchPreference
+            app:key="daijirinEnable"
+            app:title="三省堂　スーパー大辞林"
+            app:iconSpaceReserved="false"
+            app:defaultValue="true" />
+        <SwitchPreference
+            app:key="meikyoEnable"
+            app:title="明鏡国語辞典"
+            app:iconSpaceReserved="false"
+            app:defaultValue="true" />
+    </PreferenceCategory>
 
-        <PreferenceCategory app:title="Dictionaries" app:iconSpaceReserved="false">
-                <SwitchPreference
-                    app:key="jmdictEnable"
-                    app:title="JMdict (English)"
-                    app:iconSpaceReserved="false"
-                    app:defaultValue="true"/>
-                <SwitchPreference
-                    app:key="kenkyuuEnable"
-                    app:title="研究社　新和英大辞典　第５版"
-                    app:iconSpaceReserved="false"
-                    app:defaultValue="true"/>
-                <SwitchPreference
-                    app:key="shinmeiEnable"
-                    app:title="新明解国語辞典 第五版"
-                    app:iconSpaceReserved="false"
-                    app:defaultValue="true"/>
-                <SwitchPreference
-                    app:key="daijirinEnable"
-                    app:title="三省堂　スーパー大辞林"
-                    app:iconSpaceReserved="false"
-                    app:defaultValue="true"/>
-                <SwitchPreference
-                    app:key="meikyoEnable"
-                    app:title="明鏡国語辞典"
-                    app:iconSpaceReserved="false"
-                    app:defaultValue="true"/>
-        </PreferenceCategory>
 
-
-        <PreferenceCategory app:title="Search" app:iconSpaceReserved="false">
-                <SwitchPreference
-                    app:key="showBilingualFirst"
-                    app:title="Show bilingual dictionaries first"
-                    app:iconSpaceReserved="false"
-                    app:defaultValue="true"/>
-                <SwitchPreference
-                    app:key="deconjSettei"
-                    app:title="Deconjugate Words"
-                    app:iconSpaceReserved="false"
-                    app:defaultValue="true"/>
-        </PreferenceCategory>
+    <PreferenceCategory
+        app:title="Search"
+        app:iconSpaceReserved="false">
+        <SwitchPreference
+            app:key="showBilingualFirst"
+            app:title="Show bilingual dictionaries first"
+            app:iconSpaceReserved="false"
+            app:defaultValue="true" />
+        <SwitchPreference
+            app:key="deconjSettei"
+            app:title="Deconjugate Words"
+            app:iconSpaceReserved="false"
+            app:defaultValue="true" />
+    </PreferenceCategory>
 </PreferenceScreen>

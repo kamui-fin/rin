@@ -26,18 +26,18 @@ public class Deinflector {
         results.put(temp);
 
 
-        for (int i = 0; i < results.length(); ++i){
+        for (int i = 0; i < results.length(); ++i) {
 
             int rules = results.getJSONObject(i).getInt("rules");
             String term = results.getJSONObject(i).getString("term");
             JSONArray reasons = results.getJSONObject(i).getJSONArray("reasons");
 
-            for (int j = 0; j < this.reasons.length(); j++){
+            for (int j = 0; j < this.reasons.length(); j++) {
                 JSONArray currReasonInfo = this.reasons.getJSONArray(j);
                 String reason = currReasonInfo.getString(0);
                 JSONArray variants = currReasonInfo.getJSONArray(1);
 
-                for (int h = 0; h < variants.length(); h++ ){
+                for (int h = 0; h < variants.length(); h++) {
                     JSONArray currVariant = variants.getJSONArray(h);
                     String kanaIn = currVariant.getString(0);
                     String kanaOut = currVariant.getString(1);
@@ -48,7 +48,7 @@ public class Deinflector {
                             (rules != 0 && (rules & rulesIn) == 0) ||
                                     !term.endsWith(kanaIn) ||
                                     (term.length() - kanaIn.length() + kanaOut.length()) <= 0
-                    ){
+                    ) {
                         continue;
                     }
                     JSONObject infoIGot = new JSONObject();
@@ -58,7 +58,7 @@ public class Deinflector {
                     infoIGot.put("definitions", new JSONArray());
                     JSONArray fullReasons = new JSONArray();
                     fullReasons.put(reason);
-                    for (int r = 0; r < reasons.length(); r++){
+                    for (int r = 0; r < reasons.length(); r++) {
                         fullReasons.put(reasons.getString(r));
                     }
                     infoIGot.put("reasons", fullReasons);
@@ -82,7 +82,7 @@ public class Deinflector {
             JSONArray reasonInfo = reasons.getJSONArray(mainKey);
             JSONArray variants = new JSONArray();
 
-            for (int x = 0; x < reasonInfo.length(); x ++){
+            for (int x = 0; x < reasonInfo.length(); x++) {
                 JSONObject currInfo = reasonInfo.getJSONObject(x);
                 JSONArray temp = new JSONArray();
                 temp.put(currInfo.get("kanaIn"));
@@ -114,12 +114,11 @@ public class Deinflector {
         ruleTypes.put("iru", 0b0100000);
 
         int value = 0;
-        for (int k = 0; k < rules.length(); k++){
+        for (int k = 0; k < rules.length(); k++) {
             int ruleBits;
             try {
                 ruleBits = ruleTypes.getInt(rules.getString(k));
-            }
-            catch (JSONException e){
+            } catch (JSONException e) {
                 continue;
             }
             value |= ruleBits;

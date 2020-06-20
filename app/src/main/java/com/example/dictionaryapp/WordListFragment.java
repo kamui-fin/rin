@@ -14,7 +14,8 @@ public class WordListFragment extends Fragment {
 
     ViewPager2 viewPager;
 
-    public WordListFragment(){}
+    public WordListFragment() {
+    }
 
     @Nullable
     @Override

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.dictionaryapp">
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -14,14 +15,15 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.PROCESS_TEXT" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
 
-        <activity android:name=".SettingsActivity"/>
-<!--        <activity android:name=".WordsActivity"/>-->
-        <activity android:name=".WordDetailActivity"/>
+        <activity android:name=".SettingsActivity" />
+        <!--        <activity android:name=".WordsActivity"/>-->
+        <activity android:name=".WordDetailActivity" />
     </application>
 
 </manifest>
