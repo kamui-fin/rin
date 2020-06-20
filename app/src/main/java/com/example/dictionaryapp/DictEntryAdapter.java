@@ -1,6 +1,5 @@
 package com.example.dictionaryapp;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -64,16 +63,16 @@ public class DictEntryAdapter extends RecyclerView.Adapter<DictEntryAdapter.View
 
 
     }
-    private void setAnimation(View viewToAnimate, int position)
-    {
+
+    private void setAnimation(View viewToAnimate, int position) {
         // If the bound view wasn't previously displayed on screen, it's animated
-        if (position > lastPosition)
-        {
+        if (position > lastPosition) {
             Animation animation = AnimationUtils.loadAnimation(mContext, android.R.anim.fade_in);
             viewToAnimate.startAnimation(animation);
             lastPosition = position;
         }
     }
+
     // total number of rows
     @Override
     public int getItemCount() {

@@ -32,7 +32,7 @@ public class TabPageAdapter extends FragmentPagerAdapter {
     @Override
     public CharSequence getPageTitle(int position) {
 
-        if (position == 0){
+        if (position == 0) {
             return "Word List";
         }
         return "History";

@@ -1,64 +1,50 @@
 package com.example.dictionaryapp;
 
-import androidx.annotation.NonNull;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
+import android.os.Build;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.SearchManager;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.nfc.Tag;
-import android.os.AsyncTask;
-import android.os.Build;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
-
+import com.example.dictionaryapp.database.DBHelper;
 import com.example.dictionaryapp.database.DictEntry;
-import com.example.dictionaryapp.database.DictHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.textfield.TextInputEditText;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
-    DictHelper helper ;
-    private Toolbar toolbar;
-    DictEntryAdapter adapter ;
+    DBHelper helper;
+    DictEntryAdapter adapter;
     ProgressBar pbar;
     RecyclerView recyclerView;
     List<DictEntry> results;
-    Boolean foreign;
     SharedPreferences sharedPreferences;
     ImageView img;
     TextView support;
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,55 +59,42 @@ public class MainActivity extends AppCompatActivity {
         support = findViewById(R.id.glassText);
         img = findViewById(R.id.glass);
 
-        toolbar = findViewById(R.id.searchToolbar);
+        Toolbar toolbar = findViewById(R.id.searchToolbar);
         toolbar.bringToFront();
         setSupportActionBar(toolbar);
 
 
         try {
-            helper = new DictHelper(this, getDisabledDicts(), shouldDeconj(), bilingualFirst(), readDeinflectJsonFile());
+            helper = new DBHelper(this, getDisabledDicts(), shouldDeconj(), bilingualFirst(), readDeinflectJsonFile());
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
         BottomNavigationView btmNavView = findViewById(R.id.bottom_navigation);
         btmNavView.setSelectedItemId(R.id.search_page);
 
 
-        btmNavView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                switch (menuItem.getItemId()){
+        btmNavView.setOnNavigationItemSelectedListener(menuItem -> {
+            switch (menuItem.getItemId()) {
 //                    case R.id.word_page:
 //                        Intent intent_word = new Intent(MainActivity.this, WordsActivity.class);
 //                        startActivity(intent_word);
 //                        return true;
-                    case R.id.setting_page:
-                        Intent intent_settings = new Intent(MainActivity.this, SettingsActivity.class);
-                        startActivity(intent_settings);
-                        return true;
-                }
-                return true;
+                case R.id.setting_page:
+                    Intent intent_settings = new Intent(MainActivity.this, SettingsActivity.class);
+                    startActivity(intent_settings);
+                    return true;
             }
+            return true;
         });
-
-//        sharedPreferences.registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
-//            @Override
-//            public void onSharedPreferenceChanged(SharedPreferences sharedPreferencesNew, String key) {
-//                sharedPreferences = sharedPreferencesNew;
-//                helper = new DictHelper(MainActivity.this, getDisabledDicts(), shouldDeconj(), bilingualFirst());
-//            }
-//        });
-
 
 
     }
 
     @Override
-    public boolean onCreateOptionsMenu( Menu menu) {
-        getMenuInflater().inflate( R.menu.top_app_bar, menu);
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.top_app_bar, menu);
 
-        final MenuItem myActionMenuItem = menu.findItem( R.id.action_search);
+        final MenuItem myActionMenuItem = menu.findItem(R.id.action_search);
         final SearchView searchView = (SearchView) myActionMenuItem.getActionView();
 
 
@@ -133,16 +106,17 @@ public class MainActivity extends AppCompatActivity {
                 AsyncTask<String, Void, List<DictEntry>> task = new AsyncLookup();
                 task.execute(query);
 
-                if( ! searchView.isIconified()) {
+                if (!searchView.isIconified()) {
                     searchView.setIconified(true);
                 }
                 myActionMenuItem.collapseActionView();
 
                 return false;
             }
+
             @Override
             public boolean onQueryTextChange(String s) {
-                if (adapter != null && s.length() == 1){
+                if (adapter != null && s.length() == 1) {
                     results.clear();
                     adapter.notifyDataSetChanged();
                 }
@@ -156,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         String value = handleIntent(intent);
-        if (value != null){
+        if (value != null) {
             // TODO: Add the back button
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -175,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public List<String> getDisabledDicts(){
+    public List<String> getDisabledDicts() {
         boolean jmdictEnabled = sharedPreferences.getBoolean("jmdictEnable", true);
         boolean kenkyuuEnable = sharedPreferences.getBoolean("kenkyuuEnable", true);
         boolean shinmeiEnable = sharedPreferences.getBoolean("shinmeiEnable", true);
@@ -185,25 +159,25 @@ public class MainActivity extends AppCompatActivity {
         List<String> disabledDicts = new ArrayList<>();
 
         if (!jmdictEnabled)
-            disabledDicts.add("'JMdict (English)'");
+            disabledDicts.add("JMdict (English)");
         if (!kenkyuuEnable)
-            disabledDicts.add("'研究社　新和英大辞典　第５版'");
+            disabledDicts.add("研究社　新和英大辞典　第５版");
         if (!shinmeiEnable)
-            disabledDicts.add("'新明解国語辞典 第五版'");
+            disabledDicts.add("新明解国語辞典 第五版");
         if (!daijirinEnable)
-            disabledDicts.add("'三省堂　スーパー大辞林'");
+            disabledDicts.add("三省堂　スーパー大辞林");
         if (!meikyoEnable)
-            disabledDicts.add("'明鏡国語辞典'");
+            disabledDicts.add("明鏡国語辞典");
 
-        return  disabledDicts;
+        return disabledDicts;
 
     }
 
-    public boolean bilingualFirst(){
+    public boolean bilingualFirst() {
         return sharedPreferences.getBoolean("showBilingualFirst", false);
     }
 
-    public  boolean shouldDeconj(){
+    public boolean shouldDeconj() {
         return sharedPreferences.getBoolean("deconjSettei", true);
     }
 
@@ -211,8 +185,7 @@ public class MainActivity extends AppCompatActivity {
         if (Intent.ACTION_PROCESS_TEXT.equals(intent.getAction())) {
             CharSequence keyword = intent.getCharSequenceExtra(Intent.EXTRA_PROCESS_TEXT);
             return keyword.toString();
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -235,15 +208,15 @@ public class MainActivity extends AppCompatActivity {
         return new JSONObject(tContents);
     }
 
-    private class AsyncLookup extends AsyncTask<String, Void, List<DictEntry>>{
+    private class AsyncLookup extends AsyncTask<String, Void, List<DictEntry>> {
         ProgressBar pbar;
 
 
         @Override
         protected void onPreExecute() {
-             pbar = findViewById(R.id.pBar);
-             pbar.bringToFront();
-             pbar.setVisibility(View.VISIBLE);
+            pbar = findViewById(R.id.pBar);
+            pbar.bringToFront();
+            pbar.setVisibility(View.VISIBLE);
         }
 
         @RequiresApi(api = Build.VERSION_CODES.O)
@@ -251,8 +224,7 @@ public class MainActivity extends AppCompatActivity {
         protected List<DictEntry> doInBackground(String... query) {
 
             try {
-                results = helper.searchWord(query[0]);
-                System.out.println();
+                results = helper.lookup(query[0]);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
