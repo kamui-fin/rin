@@ -11,10 +11,10 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
+        android:theme="@style/AppTheme.Toolbar"
         app:layout_scrollFlags="scroll|enterAlways"
         app:title="JP Dictionary"
-        app:titleTextColor="#f0f0f0"
-        android:theme="@style/AppTheme.Toolbar" />
+        app:titleTextColor="#f0f0f0" />
 
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
@@ -72,6 +72,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/glass" />
+
+    <TextView
+        android:id="@+id/noResultsFound"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/resultRecyclerView" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

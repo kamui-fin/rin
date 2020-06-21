@@ -39,16 +39,41 @@ public class DBHelper {
         System.out.println(this.disabledDicts);
         List<String> possible = normalizeWord(query);
         List<DictEntry> entries = new ArrayList<>();
+        System.out.println("disabled ones:");
+
+        System.out.println(this.disabledDicts);
+        if (possible.isEmpty()){
+            possible.add(query);
+        }
+        System.out.println("possible ones:");
+        System.out.println(possible);
 
         for (String p : possible) {
             List<DictEntry> res;
             if (isAllKana(p)) {
-                res = dao.searchEntryReading(p, this.disabledDicts);
+                System.out.println("Doing reading search...");
+                String convertedToHiragana;
+                if (!allHiragana(p)){
+                    convertedToHiragana = katakanaToHiragana(p);
+                }
+                else {
+                    convertedToHiragana = p;
+                }
+                res = dao.searchEntryReading(convertedToHiragana, this.disabledDicts);
+                if (res.isEmpty()){
+                    res = dao.searchEntryByKanji(p, this.disabledDicts);
+                }
             } else {
+                System.out.println("Doing kanji search...");
                 res = dao.searchEntryByKanji(p, this.disabledDicts);
             }
+            System.out.println(res);
+
             entries.addAll(res);
         }
+        System.out.println("found entries..");
+        System.out.println(entries);
+
         if (this.bilingualFirst) {
             Collections.sort(entries, Collections.reverseOrder());
         } else {
@@ -92,5 +117,42 @@ public class DBHelper {
         return results;
     }
 
+    public String katakanaToHiragana(String katakanaWord){
+        StringBuilder out = new StringBuilder();
+        for (int i = 0; i < katakanaWord.length(); i++) {
+            out.append(toHiragana(katakanaWord.charAt(i)));
+        }
+        return out.toString();
+    }
+
+    public static char toHiragana(char c) {
+        if (isFullWidthKatakana(c)) {
+            return (char) (c - 0x60);
+        } else if (isHalfWidthKatakana(c)) {
+            return (char) (c - 0xcf25);
+        }
+        return c;
+    }
+
+    public static boolean isHalfWidthKatakana(char c) {
+        return (('\uff66' <= c) && (c <= '\uff9d'));
+    }
+
+    public static boolean isFullWidthKatakana(char c) {
+        return (('\u30a1' <= c) && (c <= '\u30fe'));
+    }
+
+    public static boolean isHiragana(char c) {
+        return (('\u3041' <= c) && (c <= '\u309e'));
+    }
+
+    public static boolean allHiragana(String word){
+        for (char x : word.toCharArray()){
+            if (!isHiragana(x)){
+                return false;
+            }
+        }
+        return true;
+    }
 
 }

@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     SharedPreferences sharedPreferences;
     ImageView img;
     TextView support;
+    TextView notFoundView;
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -58,6 +60,9 @@ public class MainActivity extends AppCompatActivity {
 
         support = findViewById(R.id.glassText);
         img = findViewById(R.id.glass);
+
+        notFoundView = findViewById(R.id.noResultsFound);
+
 
         Toolbar toolbar = findViewById(R.id.searchToolbar);
         toolbar.bringToFront();
@@ -86,6 +91,8 @@ public class MainActivity extends AppCompatActivity {
             }
             return true;
         });
+
+
 
 
     }
@@ -123,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
 
                 img.setVisibility(View.INVISIBLE);
                 support.setVisibility(View.INVISIBLE);
-
+                notFoundView.setText("");
                 return false;
             }
         });
@@ -136,6 +143,7 @@ public class MainActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
             myActionMenuItem.expandActionView();
             searchView.setQuery(value, true);
+
         }
         return true;
     }
@@ -185,7 +193,9 @@ public class MainActivity extends AppCompatActivity {
         if (Intent.ACTION_PROCESS_TEXT.equals(intent.getAction())) {
             CharSequence keyword = intent.getCharSequenceExtra(Intent.EXTRA_PROCESS_TEXT);
             return keyword.toString();
-        } else {
+        }
+
+        else {
             return null;
         }
     }
@@ -211,7 +221,6 @@ public class MainActivity extends AppCompatActivity {
     private class AsyncLookup extends AsyncTask<String, Void, List<DictEntry>> {
         ProgressBar pbar;
 
-
         @Override
         protected void onPreExecute() {
             pbar = findViewById(R.id.pBar);
@@ -235,6 +244,11 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(List<DictEntry> aVoid) {
             pbar.setVisibility(View.INVISIBLE);
+
+            if (results.isEmpty()){
+                notFoundView.setText("Not found! Try refining your search.");
+            }
+
             recyclerView = findViewById(R.id.resultRecyclerView);
             recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
 
