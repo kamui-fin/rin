@@ -8,4 +8,4 @@ This is a japanese dictionary that supports multiple famous japanese dictionarie
 
 ## Installation
 
-You can download the apk from [here](https://www.mediafire.com/file/928whie5olcdwv8/app-debug.apk/file)
+You can download the apk from [here](https://mega.nz/file/ad4CwaIJ#etKlTPZqJzqMshc-F2TExjBQBsQXUz2MiacsM1WYat8)
