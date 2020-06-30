@@ -13,9 +13,12 @@ public class SettingsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        System.out.println("i went to settings");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         btmNavView = findViewById(R.id.bottom_navigation);
+
         btmNavView.setSelectedItemId(R.id.setting_page);
         btmNavView.setOnNavigationItemSelectedListener(menuItem -> {
             switch (menuItem.getItemId()) {
@@ -36,6 +39,11 @@ public class SettingsActivity extends AppCompatActivity {
                 .replace(R.id.settings_container, new SettingsFragment())
                 .commit();
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        startActivity(new Intent(this, MainActivity.class));
     }
 
 }

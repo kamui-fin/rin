@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -48,6 +50,8 @@ public class MainActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        System.out.println("i went to search page");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -74,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         BottomNavigationView btmNavView = findViewById(R.id.bottom_navigation);
-        btmNavView.setSelectedItemId(R.id.search_page);
+
 
         btmNavView.setOnNavigationItemSelectedListener(menuItem -> {
             switch (menuItem.getItemId()) {
@@ -90,8 +94,7 @@ public class MainActivity extends AppCompatActivity {
             return true;
         });
 
-
-
+        btmNavView.setSelectedItemId(R.id.search_page);
 
     }
 
@@ -258,4 +261,18 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        if (adapter != null && results != null) {
+            results.clear();
+            adapter.notifyDataSetChanged();
+            Animation animation = AnimationUtils.loadAnimation(this, android.R.anim.fade_in);
+            img.startAnimation(animation);
+            support.startAnimation(animation);
+            img.setVisibility(View.VISIBLE);
+            support.setVisibility(View.VISIBLE);
+        } else {
+            moveTaskToBack(true);
+        }
+    }
 }
