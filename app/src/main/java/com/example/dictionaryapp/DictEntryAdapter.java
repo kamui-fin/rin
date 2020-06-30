@@ -12,8 +12,14 @@ import android.widget.TextView;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.dictionaryapp.database.DBHelper;
 import com.example.dictionaryapp.database.DictEntry;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.List;
 
 public class DictEntryAdapter extends RecyclerView.Adapter<DictEntryAdapter.ViewHolder> {
@@ -58,6 +64,25 @@ public class DictEntryAdapter extends RecyclerView.Adapter<DictEntryAdapter.View
             intent.putExtra("word", entry.getKanji());
             intent.putExtra("reading", entry.getReading());
             intent.putExtra("meaning", entry.getMeaning());
+            intent.putExtra("pitch", entry.getPitchAccent());
+            Integer frequency = entry.getFreq();
+            if (frequency != null) {
+                DecimalFormat formatter = new DecimalFormat("#,###");
+                intent.putExtra("freq", "Freq: " + formatter.format(entry.getFreq()));
+            } else {
+                intent.putExtra("freq", "");
+            }
+
+            JSONArray splittedTags = new JSONArray();
+            try {
+                splittedTags = DBHelper.getSplittedTags(entry, mContext);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            intent.putExtra("tags", splittedTags.toString());
+
             mContext.startActivity(intent);
         });
 

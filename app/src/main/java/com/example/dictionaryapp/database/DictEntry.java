@@ -1,6 +1,5 @@
 package com.example.dictionaryapp.database;
 
-import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Index;
@@ -22,6 +21,29 @@ public class DictEntry implements Comparable<DictEntry> {
     private String dictionaryName;
     @ColumnInfo(name = "ORDERDICT", typeAffinity = 3)
     private Integer dictOrder;
+    @ColumnInfo(name = "FREQ")
+    private Integer freq;
+    @ColumnInfo(name = "PITCHACCENT")
+    private String pitchAccent;
+
+    public String getPitchAccent() {
+        return pitchAccent;
+    }
+
+    public void setPitchAccent(String pitchAccent) {
+        this.pitchAccent = pitchAccent;
+    }
+
+
+    public Integer getFreq() {
+        return freq;
+    }
+
+    public void setFreq(Integer freq) {
+        this.freq = freq;
+    }
+
+
 
 
     public DictEntry(String kanji, String reading, String tags, String meaning, String dictionaryName, Integer dictOrder) {
@@ -76,6 +98,7 @@ public class DictEntry implements Comparable<DictEntry> {
     public String getTags() {
         return tags;
     }
+
 
     public String getKanji() {
         return kanji;

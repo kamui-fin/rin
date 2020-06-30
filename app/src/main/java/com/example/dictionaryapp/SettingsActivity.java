@@ -2,24 +2,21 @@ package com.example.dictionaryapp;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.MenuItem;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class SettingsActivity extends AppCompatActivity {
     private static final String TAG = "SettingsActivity";
-
+    BottomNavigationView btmNavView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-        BottomNavigationView btmNavView = findViewById(R.id.bottom_navigation);
+        btmNavView = findViewById(R.id.bottom_navigation);
         btmNavView.setSelectedItemId(R.id.setting_page);
-
         btmNavView.setOnNavigationItemSelectedListener(menuItem -> {
             switch (menuItem.getItemId()) {
 //                    case R.id.word_page:

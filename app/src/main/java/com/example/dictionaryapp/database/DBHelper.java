@@ -5,12 +5,14 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
+import com.example.dictionaryapp.TagsHelper;
 import com.example.dictionaryapp.deinflector.Deinflector;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -24,9 +26,11 @@ public class DBHelper {
     private boolean bilingualFirst;
     private JSONObject inflectorJSON;
     Deinflector deinflector;
+    private Context mContext;
 
     public DBHelper(Context context, List<String> disabledDicts, boolean shouldDeconj, boolean bilingualFirst, JSONObject inflectorJson) {
         this.disabledDicts = disabledDicts;
+        mContext = context;
         this.shouldDeconj = shouldDeconj;
         this.bilingualFirst = bilingualFirst;
         this.inflectorJSON = inflectorJson;
@@ -39,19 +43,12 @@ public class DBHelper {
         System.out.println(this.disabledDicts);
         List<String> possible = normalizeWord(query);
         List<DictEntry> entries = new ArrayList<>();
-        System.out.println("disabled ones:");
-
-        System.out.println(this.disabledDicts);
         if (possible.isEmpty()){
             possible.add(query);
         }
-        System.out.println("possible ones:");
-        System.out.println(possible);
-
         for (String p : possible) {
             List<DictEntry> res;
             if (isAllKana(p)) {
-                System.out.println("Doing reading search...");
                 String convertedToHiragana;
                 if (!allHiragana(p)){
                     convertedToHiragana = katakanaToHiragana(p);
@@ -68,12 +65,8 @@ public class DBHelper {
                 res = dao.searchEntryByKanji(p, this.disabledDicts);
             }
             System.out.println(res);
-
             entries.addAll(res);
         }
-        System.out.println("found entries..");
-        System.out.println(entries);
-
         if (this.bilingualFirst) {
             Collections.sort(entries, Collections.reverseOrder());
         } else {
@@ -154,5 +147,23 @@ public class DBHelper {
         }
         return true;
     }
+
+    public static JSONArray getSplittedTags(DictEntry entry, Context mContext) throws IOException, JSONException {
+        TagsHelper helper = new TagsHelper(mContext);
+        String[] splitted = entry.getTags().split("\\s+");
+        JSONArray info = new JSONArray();
+        for (String tag : splitted) {
+            if (!tag.isEmpty()) {
+                JSONArray temp = new JSONArray();
+                String[] tagInfo = helper.getFullTag(tag);
+                temp.put(tag);
+                temp.put(tagInfo[0]);
+                temp.put(tagInfo[1]);
+                info.put(temp);
+            }
+        }
+        return info;
+    }
+
 
 }
