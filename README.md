@@ -18,7 +18,7 @@ And the settings page looks like this:
 
 ## Installation
 
-You can download the apk from [here](https://mega.nz/file/ad4CwaIJ#etKlTPZqJzqMshc-F2TExjBQBsQXUz2MiacsM1WYat8)
+You can download the apk from [here](https://mega.nz/file/KQJ1BAQB#_HRvDrKFSxGZRAXsIs97uv42cuHS6uBV9-jgek45emw)
 
 ## Feature Ideas
 
