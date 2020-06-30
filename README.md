@@ -6,11 +6,11 @@ This is a japanese dictionary that supports multiple famous japanese dictionarie
 
 Here's how JP Dictionary works like:
 
-<img src="screenshots/drmo.gif" width="300">
+<img src="screenshots/demo.gif" width="300">
 
 You can also lookup words _inside_ definitions:
 
-<img src="screenshots/drmo2.gif" width="300">
+<img src="screenshots/demo2.gif" width="300">
 
 And the settings page looks like this:
 
