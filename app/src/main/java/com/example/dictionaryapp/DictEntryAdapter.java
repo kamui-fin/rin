@@ -98,6 +98,7 @@ public class DictEntryAdapter extends RecyclerView.Adapter<DictEntryAdapter.View
         }
     }
 
+
     // total number of rows
     @Override
     public int getItemCount() {
