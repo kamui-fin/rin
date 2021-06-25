@@ -1,4 +1,4 @@
-package com.kamui.rin.database;
+package com.kamui.rin.database
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -6,23 +6,23 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(
-    tableName = "DICTIONARY",
+    tableName = "dictionary",
     indices = [Index(
-        value = ["KANJI", "READING"],
+        value = ["kanji", "reading"],
         name = "idx_word_reading",
         unique = false
     )]
 )
 data class DictEntry(
-    @PrimaryKey var iD: Int,
-    @ColumnInfo(name = "FREQ") var freq: Int,
-    @ColumnInfo(name = "PITCHACCENT") var pitchAccent: String,
-    @ColumnInfo(name = "KANJI", typeAffinity = 2) var kanji: String,
-    @ColumnInfo(name = "READING", typeAffinity = 2) var reading: String,
-    @ColumnInfo(name = "TAGS", typeAffinity = 2) var tags: String,
-    @ColumnInfo(name = "MEANING", typeAffinity = 2) private var meaning: String,
-    @ColumnInfo(name = "DICTNAME", typeAffinity = 2) var dictionaryName: String,
-    @ColumnInfo(name = "ORDERDICT", typeAffinity = 3) val dictOrder: Int
+    @PrimaryKey var id: Int,
+    @ColumnInfo(name = "kanji", typeAffinity = 2) var kanji: String,
+    @ColumnInfo(name = "reading", typeAffinity = 2) var reading: String,
+    @ColumnInfo(name = "tags", typeAffinity = 2) var tags: String,
+    @ColumnInfo(name = "meaning", typeAffinity = 2) private var meaning: String,
+    @ColumnInfo(name = "dictname", typeAffinity = 2) var dictionaryName: String,
+    @ColumnInfo(name = "orderdict", typeAffinity = 3) val dictOrder: Int,
+    @ColumnInfo(name = "freq", typeAffinity = 3) var freq: Int?,
+    @ColumnInfo(name = "pitchaccent", typeAffinity = 2) var pitchAccent: String?,
 ) : Comparable<DictEntry> {
 
     fun setMeaning(meaning: String) {
