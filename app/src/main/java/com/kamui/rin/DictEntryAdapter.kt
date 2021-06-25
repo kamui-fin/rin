@@ -41,13 +41,13 @@ class DictEntryAdapter(private val mContext: Context, data: List<DictEntry>) : R
         holder.detailView.text = meaning
         holder.dictName.text = entry.shortenedDictName
         setAnimation(holder.itemView, position)
-        holder.card.setOnClickListener { v: View? ->
+        holder.card.setOnClickListener {
             val intent = Intent(mContext, WordDetailActivity::class.java)
             intent.putExtra("word", entry.kanji)
             intent.putExtra("reading", entry.reading)
             intent.putExtra("meaning", entry.getMeaning())
             intent.putExtra("pitch", entry.pitchAccent)
-            val frequency: Int = entry.freq
+            val frequency: Int? = entry.freq
             val formatter = DecimalFormat("#,###")
             intent.putExtra("freq", "Freq: " + formatter.format(frequency))
             var splittedTags = JSONArray()

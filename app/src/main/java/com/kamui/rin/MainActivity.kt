@@ -180,14 +180,16 @@ class MainActivity : AppCompatActivity() {
             pbar.visibility = View.VISIBLE
             viewModelScope.launch(Dispatchers.IO) {
                 results = helper?.lookup(query[0]) as MutableList<DictEntry>?
-                pbar.visibility = View.INVISIBLE
-                if (results!!.isEmpty()) {
-                    notFoundView!!.text = getString(R.string.not_found)
+                runOnUiThread {
+                    pbar.visibility = View.INVISIBLE
+                    if (results!!.isEmpty()) {
+                        notFoundView!!.text = getString(R.string.not_found)
+                    }
+                    recyclerView = findViewById(R.id.resultRecyclerView)
+                    recyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
+                    adapter = DictEntryAdapter(this@MainActivity, results!!)
+                    recyclerView.adapter = adapter
                 }
-                recyclerView = findViewById(R.id.resultRecyclerView)
-                recyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
-                adapter = DictEntryAdapter(this@MainActivity, results!!)
-                recyclerView.adapter = adapter
             }
         }
     }
