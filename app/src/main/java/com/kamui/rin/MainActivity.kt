@@ -105,7 +105,6 @@ class MainActivity : AppCompatActivity() {
         val intent = intent
         val value = handleIntent(intent)
         if (value != null) {
-            // TODO: Add the back button
             supportActionBar!!.setDisplayHomeAsUpEnabled(true)
             supportActionBar!!.setDisplayShowHomeEnabled(true)
             myActionMenuItem.expandActionView()
@@ -115,7 +114,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.home) {
+        if (item.itemId == android.R.id.home) {
             finish()
             return true
         }
@@ -195,7 +194,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (adapter != null && results != null) {
+        if (adapter != null && results != null && img!!.visibility != View.VISIBLE) {
             results!!.clear()
             adapter!!.notifyDataSetChanged()
             val animation = AnimationUtils.loadAnimation(this, android.R.anim.fade_in)
