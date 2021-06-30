@@ -1,14 +1,24 @@
 package com.kamui.rin.deinflector
 
-import org.json.JSONArray
-import org.json.JSONException
-import org.json.JSONObject
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 
-class Deinflector(reasons: JSONObject?) {
-    private val reasons: JSONArray
+data class ReasonInfo<T>(
+    val kanaIn: String,
+    val kanaOut: String,
+    val rulesIn: T,
+    val rulesOut: T
+)
 
-    @Throws(JSONException::class)
-    fun deinflect(source: String?): JSONArray {
+data class ReasonEntry<T>(
+    val reason: String,
+    val information: List<ReasonInfo<T>>
+)
+
+class Deinflector(deinflectionText: String) {
+    private val reasons = normalizeReasons(deinflectionText)
+
+    fun deinflect(source: String): JSONArray {
         val temp = JSONObject()
         temp.put("source", source)
         temp.put("term", source)
@@ -54,56 +64,32 @@ class Deinflector(reasons: JSONObject?) {
         return results
     }
 
-    companion object {
-        @Throws(JSONException::class)
-        fun normalizeReasons(reasons: JSONObject): JSONArray {
-            val normalizedReasons = JSONArray()
-            val it = reasons.keys()
-            while (it.hasNext()) {
-                val mainKey = it.next()
-                val reasonInfo = reasons.getJSONArray(mainKey)
-                val variants = JSONArray()
-                for (x in 0 until reasonInfo.length()) {
-                    val currInfo = reasonInfo.getJSONObject(x)
-                    val temp = JSONArray()
-                    temp.put(currInfo["kanaIn"])
-                    temp.put(currInfo["kanaOut"])
-                    temp.put(rulesToRuleFlags(currInfo["rulesIn"] as JSONArray))
-                    temp.put(rulesToRuleFlags(currInfo["rulesOut"] as JSONArray))
-                    variants.put(temp)
-                }
-                val tempReasonVariants = JSONArray()
-                tempReasonVariants.put(mainKey)
-                tempReasonVariants.put(variants)
-                normalizedReasons.put(tempReasonVariants)
+    private fun normalizeReasons(deinflectionText: String): List<ReasonEntry<Int>> {
+        val entries = Json.decodeFromString<List<ReasonEntry<List<String>>>>(deinflectionText)
+        val normalized: MutableList<ReasonEntry<Int>> = ArrayList()
+        for (reason in entries) {
+            val variants: List<ReasonInfo<Int>> = reason.information.map { i ->
+                ReasonInfo(i.kanaIn, i.kanaOut, rulesToRuleFlags(i.rulesIn), rulesToRuleFlags(i.rulesOut))
             }
-            return normalizedReasons
+            normalized.add(ReasonEntry(reason.reason, variants))
         }
-
-        @Throws(JSONException::class)
-        fun rulesToRuleFlags(rules: JSONArray): Int {
-            val ruleTypes = JSONObject()
-            ruleTypes.put("v1", 1)
-            ruleTypes.put("v5", 2)
-            ruleTypes.put("vs", 4)
-            ruleTypes.put("vk", 8)
-            ruleTypes.put("adj-i", 16)
-            ruleTypes.put("iru", 32)
-            var value = 0
-            for (k in 0 until rules.length()) {
-                var ruleBits: Int
-                ruleBits = try {
-                    ruleTypes.getInt(rules.getString(k))
-                } catch (e: JSONException) {
-                    continue
-                }
-                value = value or ruleBits
-            }
-            return value
-        }
+        return normalized
     }
 
-    init {
-        this.reasons = reasons?.let { normalizeReasons(it) }!!
+    private fun rulesToRuleFlags(rules: List<String>): Int {
+        val ruleTypes = mapOf(
+            "v1"    to 0b00000001,
+            "v5"    to 0b00000010,
+            "vs"    to 0b00000100,
+            "vk"    to 0b00001000,
+            "adj-i" to 0b00010000,
+            "iru"   to 0b00100000
+        )
+        var value = 0
+        for (rule in rules) {
+            val bits = ruleTypes[rule] ?: continue
+            value = value or bits
+        }
+        return value
     }
 }

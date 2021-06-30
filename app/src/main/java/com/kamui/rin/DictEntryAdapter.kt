@@ -1,4 +1,4 @@
-package com.kamui.rin;
+package com.kamui.rin
 
 import android.content.Context
 import android.content.Intent
@@ -11,36 +11,40 @@ import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
-import com.kamui.rin.database.DBHelper
 import com.kamui.rin.database.DictEntry
+import com.kamui.rin.database.getSplittedTags
+import com.kamui.rin.database.getTagsFromSplitted
 import org.json.JSONArray
 import org.json.JSONException
 import java.io.IOException
 import java.text.DecimalFormat
 
-class DictEntryAdapter(private val mContext: Context, data: List<DictEntry>) : RecyclerView.Adapter<DictEntryAdapter.ViewHolder>() {
+class DictEntryAdapter(private val mContext: Context, data: List<DictEntry>) :
+    RecyclerView.Adapter<DictEntryAdapter.ViewHolder>() {
     private val mData: List<DictEntry> = data
     private var lastPosition = -1
 
     // inflates the row layout from xml when needed
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view: View = LayoutInflater.from(parent.context).inflate(R.layout.layout_listentry, parent, false)
+        val view: View =
+            LayoutInflater.from(parent.context).inflate(R.layout.layout_listentry, parent, false)
         return ViewHolder(view)
     }
 
-    // binds the data to the TextView in each row
     @RequiresApi(Build.VERSION_CODES.KITKAT)
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val entry: DictEntry = mData[position]
+        val entry = mData[position]
         holder.titleView.text = entry.kanji
         holder.secondaryView.text = entry.reading
         var meaning: String = entry.getMeaning()
         if (meaning.length >= 100) {
             meaning = meaning.substring(0, 100) + "..."
         }
+
         holder.detailView.text = meaning
         holder.dictName.text = entry.shortenedDictName
         setAnimation(holder.itemView, position)
+
         holder.card.setOnClickListener {
             val intent = Intent(mContext, WordDetailActivity::class.java)
             intent.putExtra("word", entry.kanji)
@@ -50,9 +54,10 @@ class DictEntryAdapter(private val mContext: Context, data: List<DictEntry>) : R
             val frequency: Int? = entry.freq
             val formatter = DecimalFormat("#,###")
             intent.putExtra("freq", "Freq: " + formatter.format(frequency))
+
             var splittedTags = JSONArray()
             try {
-                splittedTags = DBHelper.getSplittedTags(entry, mContext)
+                splittedTags = getTagsFromSplitted(entry, mContext)
             } catch (e: IOException) {
                 e.printStackTrace()
             } catch (e: JSONException) {
@@ -78,18 +83,13 @@ class DictEntryAdapter(private val mContext: Context, data: List<DictEntry>) : R
     }
 
     // stores and recycles views as they are scrolled off screen
-    inner class ViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
+    inner class ViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView),
+        View.OnClickListener {
         var titleView: TextView = itemView.findViewById(R.id.wordTextView)
         var secondaryView: TextView = itemView.findViewById(R.id.secondaryTextCard)
         var detailView: TextView = itemView.findViewById(R.id.meaningTextView)
         var dictName: TextView = itemView.findViewById(R.id.dictName)
         var card: CardView = itemView.findViewById(R.id.card)
         override fun onClick(v: View) {}
-
-    }
-
-    // convenience method for getting data at click position
-    fun getItem(id: Int): DictEntry {
-        return mData[id]
     }
 }

@@ -1,4 +1,4 @@
-package com.kamui.rin;
+package com.kamui.rin
 
 import android.content.DialogInterface
 import android.content.Intent
@@ -87,7 +87,6 @@ class WordDetailActivity : AppCompatActivity() {
         if (pitch == null) {
             pitchCard.visibility = View.GONE
         }
-        assert(freq != null)
         if (freq!!.isEmpty()) {
             freqChip.visibility = View.GONE
         }
@@ -97,7 +96,7 @@ class WordDetailActivity : AppCompatActivity() {
         val btmNavView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
         btmNavView.selectedItemId = R.id.search_page
         val closeBtn = findViewById<ImageButton>(R.id.closeBtn)
-        closeBtn.setOnClickListener { v: View? -> finishAffinity() }
+        closeBtn.setOnClickListener { finishAffinity() }
         btmNavView.setOnNavigationItemSelectedListener { menuItem: MenuItem ->
             when (menuItem.itemId) {
                 R.id.setting_page -> {
