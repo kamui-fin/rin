@@ -25,10 +25,6 @@ data class DictEntry(
     @ColumnInfo(name = "pitchaccent", typeAffinity = 2) var pitchAccent: String?,
 ) : Comparable<DictEntry> {
 
-    fun setMeaning(meaning: String) {
-        this.meaning = meaning
-    }
-
     fun getMeaning(): String {
         return meaning.replace("\n", "\n\n").trim { it <= ' ' }
     }

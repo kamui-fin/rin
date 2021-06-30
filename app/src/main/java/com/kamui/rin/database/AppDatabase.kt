@@ -14,15 +14,17 @@ abstract class AppDatabase : RoomDatabase() {
         private var INSTANCE: AppDatabase? = null
 
         fun buildDatabase(context: Context): AppDatabase {
-            val instance = Room.databaseBuilder(
-                    context.applicationContext,
-                    AppDatabase::class.java,
-                    "dict.db"
-            )
-                    .createFromAsset("dict.db")
-                    .build()
-            INSTANCE = instance
-            return instance
+            INSTANCE?.let {
+                val instance = Room.databaseBuilder(
+                        context.applicationContext,
+                        AppDatabase::class.java,
+                        "dict.db"
+                )
+                        .createFromAsset("dict.db")
+                        .build()
+                INSTANCE = instance
+            }
+            return INSTANCE!!
         }
     }
 }

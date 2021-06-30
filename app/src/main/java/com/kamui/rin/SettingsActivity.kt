@@ -1,4 +1,4 @@
-package com.kamui.rin;
+package com.kamui.rin
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,7 +9,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 class SettingsActivity : AppCompatActivity() {
     private lateinit var btmNavView: BottomNavigationView
     override fun onCreate(savedInstanceState: Bundle?) {
-        println("i went to settings")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
         btmNavView = findViewById(R.id.bottom_navigation)
@@ -25,9 +24,9 @@ class SettingsActivity : AppCompatActivity() {
             true
         }
         supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.settings_container, SettingsFragment())
-                .commit()
+            .beginTransaction()
+            .replace(R.id.settings_container, SettingsFragment())
+            .commit()
     }
 
     override fun onBackPressed() {

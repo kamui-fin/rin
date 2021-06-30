@@ -2,9 +2,6 @@ package com.kamui.rin.database
 
 import androidx.room.Dao
 import androidx.room.Query
-import com.kamui.rin.database.AppDatabase
-import com.kamui.rin.database.DBHelper
-import com.kamui.rin.database.DictEntry
 
 @Dao
 interface DictDao {

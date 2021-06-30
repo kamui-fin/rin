@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".WordsActivity">
-
+    android:layout_height="match_parent">
 
     <ScrollView
         android:layout_width="0dp"
@@ -15,7 +12,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar">
-
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -27,7 +23,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:transitionName="s"
                 app:cardElevation="5dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -58,7 +53,7 @@
                                 android:text="Title"
                                 android:textAppearance="?attr/textAppearanceHeadline6"
                                 android:textIsSelectable="true"
-                                android:textSize="22dp" />
+                                android:textSize="22sp" />
 
                             <TextView
                                 android:id="@+id/freqChip"
@@ -68,7 +63,8 @@
                                 android:text="Title"
                                 android:textAlignment="textEnd"
                                 android:textAppearance="?attr/textAppearanceHeadline2"
-                                android:textSize="18dp" />
+                                android:textSize="18sp"
+                                android:gravity="end" />
 
 
                         </LinearLayout>
@@ -108,7 +104,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:transitionName="s"
                 app:cardElevation="5dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -126,7 +121,6 @@
                         android:padding="16dp">
 
                         <!-- Title, secondary and supporting text -->
-
                         <TextView
                             android:id="@+id/pitchText"
                             android:layout_width="wrap_content"
@@ -135,37 +129,21 @@
                             android:textAppearance="?attr/textAppearanceBody2"
                             android:textColor="?android:attr/textColorSecondary" />
 
-
                     </LinearLayout>
 
                 </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>
 
-            <!--            <com.google.android.material.card.MaterialCardView-->
-            <!--                android:id="@+id/tagsCard"-->
-            <!--                android:layout_width="match_parent"-->
-            <!--                android:layout_height="wrap_content"-->
-            <!--                android:layout_margin="10dp"-->
-            <!--                android:transitionName="s"-->
-            <!--                app:cardElevation="5dp"-->
-            <!--                app:layout_constraintEnd_toEndOf="parent"-->
-            <!--                app:layout_constraintStart_toStartOf="parent"-->
-            <!--                app:layout_constraintTop_toBottomOf="@+id/toolbar">-->
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
-
-
             </LinearLayout>
-
 
         </LinearLayout>
 
     </ScrollView>
-
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -189,11 +167,12 @@
         android:layout_marginBottom="16dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:foreground="?attr/selectableItemBackgroundBorderless"
-        android:src="@drawable/ic_close_white_24dp"
+        app:srcCompat="@drawable/ic_close_white_24dp"
         app:layout_constraintBottom_toBottomOf="@+id/toolbar"
         app:layout_constraintEnd_toEndOf="@+id/toolbar"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="1.0"
+        android:layout_marginRight="16dp" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
@@ -204,6 +183,5 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/bottom_navigation_menu" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

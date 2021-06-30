@@ -12,6 +12,7 @@
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
         app:layout_scrollFlags="scroll|enterAlways"
+        app:layout_constraintTop_toTopOf="parent"
         app:title="Settings"
         app:titleTextColor="#f0f0f0"
         tools:layout_editor_absoluteY="2dp" />

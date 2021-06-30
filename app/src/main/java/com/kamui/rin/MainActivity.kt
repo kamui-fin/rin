@@ -1,4 +1,4 @@
-package com.kamui.rin;
+package com.kamui.rin
 
 import android.content.Intent
 import android.content.SharedPreferences
@@ -28,8 +28,6 @@ import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
-import java.util.*
-
 
 class MainActivity : AppCompatActivity() {
     var helper: DBHelper? = null
@@ -37,7 +35,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var pbar: ProgressBar
     lateinit var recyclerView: RecyclerView
     var results: MutableList<DictEntry>? = null
-    var sharedPreferences: SharedPreferences? = null
+    private var sharedPreferences: SharedPreferences? = null
     var img: ImageView? = null
     var support: TextView? = null
     var notFoundView: TextView? = null
@@ -171,7 +169,7 @@ class MainActivity : AppCompatActivity() {
         return JSONObject(tContents)
     }
 
-    inner class LookupViewModel(): ViewModel() {
+    inner class LookupViewModel : ViewModel() {
         @RequiresApi(Build.VERSION_CODES.O)
         fun lookup(vararg query: String) {
             pbar = findViewById(R.id.pBar)
