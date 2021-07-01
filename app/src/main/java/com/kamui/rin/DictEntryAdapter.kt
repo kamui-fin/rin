@@ -3,6 +3,7 @@ package com.kamui.rin
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,11 +13,7 @@ import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.kamui.rin.database.DictEntry
-import com.kamui.rin.database.getSplittedTags
 import com.kamui.rin.database.getTagsFromSplitted
-import org.json.JSONArray
-import org.json.JSONException
-import java.io.IOException
 import java.text.DecimalFormat
 
 class DictEntryAdapter(private val mContext: Context, data: List<DictEntry>) :
@@ -51,19 +48,13 @@ class DictEntryAdapter(private val mContext: Context, data: List<DictEntry>) :
             intent.putExtra("reading", entry.reading)
             intent.putExtra("meaning", entry.getMeaning())
             intent.putExtra("pitch", entry.pitchAccent)
+
             val frequency: Int? = entry.freq
             val formatter = DecimalFormat("#,###")
             intent.putExtra("freq", "Freq: " + formatter.format(frequency))
 
-            var splittedTags = JSONArray()
-            try {
-                splittedTags = getTagsFromSplitted(entry, mContext)
-            } catch (e: IOException) {
-                e.printStackTrace()
-            } catch (e: JSONException) {
-                e.printStackTrace()
-            }
-            intent.putExtra("tags", splittedTags.toString())
+            val splittedTags = getTagsFromSplitted(entry, mContext)
+            intent.putExtra("tags", splittedTags.toTypedArray())
             mContext.startActivity(intent)
         }
     }

@@ -15,49 +15,36 @@ data class ReasonEntry<T>(
     val information: List<ReasonInfo<T>>
 )
 
+data class Deinflection(
+    val term: String,
+    val rules: Int,
+    val reasons: List<ReasonEntry<Int>>
+)
+
 class Deinflector(deinflectionText: String) {
     private val reasons = normalizeReasons(deinflectionText)
 
-    fun deinflect(source: String): JSONArray {
-        val temp = JSONObject()
-        temp.put("source", source)
-        temp.put("term", source)
-        temp.put("rules", 0)
-        temp.put("definitions", JSONArray())
-        temp.put("reasons", JSONArray())
-        val results = JSONArray()
-        results.put(temp)
-        for (i in 0 until results.length()) {
-            val rules = results.getJSONObject(i).getInt("rules")
-            val term = results.getJSONObject(i).getString("term")
-            val reasons = results.getJSONObject(i).getJSONArray("reasons")
-            for (j in 0 until this.reasons.length()) {
-                val currReasonInfo = this.reasons.getJSONArray(j)
-                val reason = currReasonInfo.getString(0)
-                val variants = currReasonInfo.getJSONArray(1)
-                for (h in 0 until variants.length()) {
-                    val currVariant = variants.getJSONArray(h)
-                    val kanaIn = currVariant.getString(0)
-                    val kanaOut = currVariant.getString(1)
-                    val rulesIn = currVariant.getInt(2)
-                    val rulesOut = currVariant.getInt(3)
-                    if (rules != 0 && rules and rulesIn == 0 ||
-                        !term.endsWith(kanaIn) || term.length - kanaIn.length + kanaOut.length <= 0
+    fun deinflect(source: String): MutableList<Deinflection> {
+        val results = mutableListOf(Deinflection(source, 0, listOf()))
+        for (result in results) {
+            for (reason in this.reasons) {
+                for (variant in reason.information) {
+                    if (
+                        (result.rules != 0 && (result.rules and variant.rulesIn) == 0) ||
+                        !result.term.endsWith(variant.kanaIn) ||
+                        (result.term.length - variant.kanaIn.length + variant.kanaOut.length) <= 0
                     ) {
                         continue
                     }
-                    val infoIGot = JSONObject()
-                    infoIGot.put("source", source)
-                    infoIGot.put("term", term.substring(0, term.length - kanaIn.length) + kanaOut)
-                    infoIGot.put("rules", rulesOut)
-                    infoIGot.put("definitions", JSONArray())
-                    val fullReasons = JSONArray()
-                    fullReasons.put(reason)
-                    for (r in 0 until reasons.length()) {
-                        fullReasons.put(reasons.getString(r))
-                    }
-                    infoIGot.put("reasons", fullReasons)
-                    results.put(infoIGot)
+
+                    results.add(
+                        Deinflection(
+                            result.term.substring(
+                                0,
+                                result.term.length - variant.kanaIn.length
+                            ) + variant.kanaOut, variant.rulesOut, result.reasons + reason
+                        )
+                    )
                 }
             }
         }
@@ -69,7 +56,12 @@ class Deinflector(deinflectionText: String) {
         val normalized: MutableList<ReasonEntry<Int>> = ArrayList()
         for (reason in entries) {
             val variants: List<ReasonInfo<Int>> = reason.information.map { i ->
-                ReasonInfo(i.kanaIn, i.kanaOut, rulesToRuleFlags(i.rulesIn), rulesToRuleFlags(i.rulesOut))
+                ReasonInfo(
+                    i.kanaIn,
+                    i.kanaOut,
+                    rulesToRuleFlags(i.rulesIn),
+                    rulesToRuleFlags(i.rulesOut)
+                )
             }
             normalized.add(ReasonEntry(reason.reason, variants))
         }
@@ -78,12 +70,12 @@ class Deinflector(deinflectionText: String) {
 
     private fun rulesToRuleFlags(rules: List<String>): Int {
         val ruleTypes = mapOf(
-            "v1"    to 0b00000001,
-            "v5"    to 0b00000010,
-            "vs"    to 0b00000100,
-            "vk"    to 0b00001000,
+            "v1" to 0b00000001,
+            "v5" to 0b00000010,
+            "vs" to 0b00000100,
+            "vk" to 0b00001000,
             "adj-i" to 0b00010000,
-            "iru"   to 0b00100000
+            "iru" to 0b00100000
         )
         var value = 0
         for (rule in rules) {

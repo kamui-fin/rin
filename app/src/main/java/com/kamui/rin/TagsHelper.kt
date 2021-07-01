@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets
 import kotlinx.serialization.*
 import kotlinx.serialization.json.*
 
+@Serializable
 data class Tag(
     val name: String,
     val category: String,
