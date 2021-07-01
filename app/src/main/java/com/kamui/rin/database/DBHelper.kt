@@ -6,9 +6,7 @@ import androidx.annotation.RequiresApi
 import com.kamui.rin.Tag
 import com.kamui.rin.TagsHelper
 import com.kamui.rin.deinflector.Deinflector
-import org.json.JSONArray
 import org.json.JSONException
-import org.json.JSONObject
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -17,16 +15,16 @@ class DBHelper(
         private val disabledDicts: List<String>,
         private val shouldDeconj: Boolean,
         private val bilingualFirst: Boolean,
-        inflectorJSON: JSONObject
+        deinflectionText: String,
 ) {
     private val db: AppDatabase = AppDatabase.buildDatabase(mContext)
     private val dao: DictDao = db.dictDao()
-    private var deinflector: Deinflector = Deinflector(inflectorJSON)
+    private var deinflector: Deinflector = Deinflector(deinflectionText)
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Throws(JSONException::class)
     fun lookup(query: String): List<DictEntry> {
-        val possibleVariations = normalizeWord(query)
+        val possibleVariations = normalizeWord(query).toMutableList()
         val entries: MutableList<DictEntry> = ArrayList()
         if (possibleVariations.isEmpty()) {
             possibleVariations.add(query)
@@ -58,8 +56,7 @@ class DBHelper(
         return entries
     }
 
-    @Throws(JSONException::class)
-    fun normalizeWord(word: String): MutableList<String> {
+    private fun normalizeWord(word: String): List<String> {
         return if (shouldDeconj) {
             deconjugateWord(word.trim { it <= ' ' })
         } else {
@@ -67,14 +64,8 @@ class DBHelper(
         }
     }
 
-    @Throws(JSONException::class)
-    fun deconjugateWord(word: String): MutableList<String> {
-        val deinflected: JSONArray = deinflector.deinflect(word)
-        val results: MutableList<String> = ArrayList()
-        for (x in 0 until deinflected.length()) {
-            results.add(deinflected.getJSONObject(x).getString("term"))
-        }
-        return results
+    private fun deconjugateWord(word: String): List<String> {
+        return deinflector.deinflect(word).map { d -> d.term }
     }
 }
 
@@ -127,6 +118,5 @@ fun katakanaToHiragana(katakanaWord: String): String {
 fun getTagsFromSplitted(entry: DictEntry, mContext: Context): List<Tag> {
     val helper = TagsHelper(mContext)
     val splitted: List<String> = entry.tags.split("\\s+")
-    val tags = splitted.map { w -> helper.getTagFromName(w)}
-    return tags
+    return splitted.map { w -> helper.getTagFromName(w)}
 }

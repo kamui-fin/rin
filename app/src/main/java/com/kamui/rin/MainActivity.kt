@@ -25,8 +25,6 @@ import com.kamui.rin.database.DBHelper
 import com.kamui.rin.database.DictEntry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.json.JSONException
-import org.json.JSONObject
 import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
@@ -53,11 +51,7 @@ class MainActivity : AppCompatActivity() {
         val toolbar = findViewById<Toolbar>(R.id.searchToolbar)
         toolbar.bringToFront()
         setSupportActionBar(toolbar)
-        try {
-            helper = DBHelper(this, disabledDicts, shouldDeconj(), bilingualFirst(), readDeinflectJsonFile())
-        } catch (e: JSONException) {
-            e.printStackTrace()
-        }
+        helper = DBHelper(this, disabledDicts, shouldDeconj(), bilingualFirst(), readDeinflectJsonFile())
         val btmNavView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
         btmNavView.setOnNavigationItemSelectedListener { menuItem: MenuItem ->
             when (menuItem.itemId) {
@@ -153,8 +147,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    @Throws(JSONException::class)
-    fun readDeinflectJsonFile(): JSONObject {
+    fun readDeinflectJsonFile(): String {
         var tContents = ""
         try {
             val stream = assets.open("deinflect.json")
@@ -166,7 +159,7 @@ class MainActivity : AppCompatActivity() {
         } catch (e: IOException) {
             // Handle exceptions here
         }
-        return JSONObject(tContents)
+        return tContents
     }
 
     inner class LookupViewModel : ViewModel() {
