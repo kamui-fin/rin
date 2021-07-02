@@ -3,11 +3,12 @@ package com.kamui.rin
 import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
-import kotlinx.serialization.*
-import kotlinx.serialization.json.*
 
 @Serializable
 data class Tag(
@@ -24,7 +25,12 @@ class TagsHelper(mContext: Context) {
     private var tags: List<Tag>
 
     init {
-        val reader = BufferedReader(InputStreamReader(mContext.assets.open("tag_bank.json"), StandardCharsets.UTF_8))
+        val reader = BufferedReader(
+            InputStreamReader(
+                mContext.assets.open("tag_bank.json"),
+                StandardCharsets.UTF_8
+            )
+        )
         var mLine: String
         val readText = StringBuilder()
         while (reader.readLine().also { mLine = it } != null) {

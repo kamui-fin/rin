@@ -28,17 +28,16 @@ import kotlinx.coroutines.launch
 import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
-    var helper: DBHelper? = null
-    var adapter: DictEntryAdapter? = null
+    lateinit var helper: DBHelper
+    lateinit var adapter: DictEntryAdapter
     lateinit var pbar: ProgressBar
     lateinit var recyclerView: RecyclerView
-    var results: MutableList<DictEntry>? = null
-    private var sharedPreferences: SharedPreferences? = null
-    var img: ImageView? = null
-    var support: TextView? = null
-    var notFoundView: TextView? = null
+    lateinit var results: MutableList<DictEntry>
+    private lateinit var sharedPreferences: SharedPreferences
+    lateinit var img: ImageView
+    lateinit var support: TextView
+    lateinit var notFoundView: TextView
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -51,7 +50,8 @@ class MainActivity : AppCompatActivity() {
         val toolbar = findViewById<Toolbar>(R.id.searchToolbar)
         toolbar.bringToFront()
         setSupportActionBar(toolbar)
-        helper = DBHelper(this, disabledDicts, shouldDeconj(), bilingualFirst(), readDeinflectJsonFile())
+        helper =
+            DBHelper(this, disabledDicts, shouldDeconj(), bilingualFirst(), readDeinflectJsonFile())
         val btmNavView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
         btmNavView.setOnNavigationItemSelectedListener { menuItem: MenuItem ->
             when (menuItem.itemId) {
@@ -84,13 +84,13 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onQueryTextChange(s: String): Boolean {
-                if (adapter != null && s.length == 1) {
-                    results!!.clear()
-                    adapter!!.notifyDataSetChanged()
+                if (s.length == 1) {
+                    results.clear()
+                    adapter.notifyDataSetChanged()
                 }
-                img!!.visibility = View.INVISIBLE
-                support!!.visibility = View.INVISIBLE
-                notFoundView!!.text = ""
+                img.visibility = View.INVISIBLE
+                support.visibility = View.INVISIBLE
+                notFoundView.text = ""
                 return false
             }
         })
@@ -115,26 +115,28 @@ class MainActivity : AppCompatActivity() {
 
     private val disabledDicts: List<String>
         get() {
-            val jmdictEnabled = sharedPreferences!!.getBoolean("jmdictEnable", true)
-            val kenkyuuEnable = sharedPreferences!!.getBoolean("kenkyuuEnable", true)
-            val shinmeiEnable = sharedPreferences!!.getBoolean("shinmeiEnable", true)
-            val daijirinEnable = sharedPreferences!!.getBoolean("daijirinEnable", true)
-            val meikyoEnable = sharedPreferences!!.getBoolean("meikyoEnable", true)
+            val dictMap = mapOf(
+                "jmdictEnable" to "JMdict (English)",
+                "kenkyuuEnable" to "研究社　新和英大辞典　第５版",
+                "shinmeiEnable" to "新明解国語辞典 第五版",
+                "daijirinEnable" to "三省堂　スーパー大辞林",
+                "meikyoEnable" to "明鏡国語辞典"
+            )
             val disabledDicts: MutableList<String> = ArrayList()
-            if (!jmdictEnabled) disabledDicts.add("JMdict (English)")
-            if (!kenkyuuEnable) disabledDicts.add("研究社　新和英大辞典　第５版")
-            if (!shinmeiEnable) disabledDicts.add("新明解国語辞典 第五版")
-            if (!daijirinEnable) disabledDicts.add("三省堂　スーパー大辞林")
-            if (!meikyoEnable) disabledDicts.add("明鏡国語辞典")
+            for ((k, v) in dictMap) {
+                val isEnabled = sharedPreferences.getBoolean(k, true)
+                if (!isEnabled)
+                    disabledDicts.add(v)
+            }
             return disabledDicts
         }
 
     private fun bilingualFirst(): Boolean {
-        return sharedPreferences!!.getBoolean("showBilingualFirst", false)
+        return sharedPreferences.getBoolean("showBilingualFirst", false)
     }
 
     private fun shouldDeconj(): Boolean {
-        return sharedPreferences!!.getBoolean("deconjSettei", true)
+        return sharedPreferences.getBoolean("deconjSettei", true)
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -147,7 +149,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun readDeinflectJsonFile(): String {
+    private fun readDeinflectJsonFile(): String {
         var tContents = ""
         try {
             val stream = assets.open("deinflect.json")
@@ -169,15 +171,15 @@ class MainActivity : AppCompatActivity() {
             pbar.bringToFront()
             pbar.visibility = View.VISIBLE
             viewModelScope.launch(Dispatchers.IO) {
-                results = helper?.lookup(query[0]) as MutableList<DictEntry>?
+                results = helper.lookup(query[0]) as MutableList<DictEntry>
                 runOnUiThread {
                     pbar.visibility = View.INVISIBLE
-                    if (results!!.isEmpty()) {
-                        notFoundView!!.text = getString(R.string.not_found)
+                    if (results.isEmpty()) {
+                        notFoundView.text = getString(R.string.not_found)
                     }
                     recyclerView = findViewById(R.id.resultRecyclerView)
                     recyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
-                    adapter = DictEntryAdapter(this@MainActivity, results!!)
+                    adapter = DictEntryAdapter(this@MainActivity, results)
                     recyclerView.adapter = adapter
                 }
             }
@@ -185,14 +187,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (adapter != null && results != null && img!!.visibility != View.VISIBLE) {
-            results!!.clear()
-            adapter!!.notifyDataSetChanged()
+        if (img.visibility != View.VISIBLE) {
+            results.clear()
+            adapter.notifyDataSetChanged()
             val animation = AnimationUtils.loadAnimation(this, android.R.anim.fade_in)
-            img!!.startAnimation(animation)
-            support!!.startAnimation(animation)
-            img!!.visibility = View.VISIBLE
-            support!!.visibility = View.VISIBLE
+            img.startAnimation(animation)
+            support.startAnimation(animation)
+            img.visibility = View.VISIBLE
+            support.visibility = View.VISIBLE
         } else {
             moveTaskToBack(true)
         }
