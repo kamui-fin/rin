@@ -27,13 +27,14 @@ class WordDetailActivity : AppCompatActivity() {
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setDisplayShowHomeEnabled(true)
         toolbar.setNavigationOnClickListener { onBackPressed() }
-        val intent = intent
+
         val kanji = intent.getStringExtra("word")
         val reading = intent.getStringExtra("reading")
         val meaning = intent.getStringExtra("meaning")
         val freq = intent.getStringExtra("freq")
         val pitch = intent.getStringExtra("pitch")
         val tags = intent.getSerializableExtra("tags") as Array<Tag>
+
         val wordTextView = findViewById<TextView>(R.id.wordTextView)
         val meaningTextView = findViewById<TextView>(R.id.meaningTextView)
         val readingTextView = findViewById<TextView>(R.id.secondaryTextCard)
@@ -41,6 +42,7 @@ class WordDetailActivity : AppCompatActivity() {
         val freqChip = findViewById<TextView>(R.id.freqChip)
         val pitchCard = findViewById<CardView>(R.id.pitchCard)
         val chipView = findViewById<ChipGroup>(R.id.chipLayout)
+
         for (tag in tags) {
             val chip = Chip(this@WordDetailActivity)
             chip.text = tag.name
@@ -48,12 +50,14 @@ class WordDetailActivity : AppCompatActivity() {
             chip.setOnClickListener {
                 val alertDialog = AlertDialog.Builder(this@WordDetailActivity).create()
                 alertDialog.setMessage(tag.description)
-                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK"
+                alertDialog.setButton(
+                    AlertDialog.BUTTON_NEUTRAL, "OK"
                 ) { dialog: DialogInterface, _: Int -> dialog.dismiss() }
                 alertDialog.show()
             }
             chipView.addView(chip)
         }
+
         toolbar.title = kanji
         readingTextView.text = reading
         wordTextView.text = kanji
@@ -69,6 +73,7 @@ class WordDetailActivity : AppCompatActivity() {
         if (tags.isEmpty()) {
             chipView.visibility = View.GONE
         }
+
         val btmNavView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
         btmNavView.selectedItemId = R.id.search_page
         val closeBtn = findViewById<ImageButton>(R.id.closeBtn)
@@ -76,7 +81,8 @@ class WordDetailActivity : AppCompatActivity() {
         btmNavView.setOnNavigationItemSelectedListener { menuItem: MenuItem ->
             when (menuItem.itemId) {
                 R.id.setting_page -> {
-                    val intentSettings = Intent(this@WordDetailActivity, SettingsActivity::class.java)
+                    val intentSettings =
+                        Intent(this@WordDetailActivity, SettingsActivity::class.java)
                     startActivity(intentSettings)
                     return@setOnNavigationItemSelectedListener true
                 }

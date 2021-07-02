@@ -62,7 +62,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/searchToolbar"
         app:layout_constraintVertical_bias="0.403"
-        app:srcCompat="@drawable/magnifiying_glass" />
+        app:srcCompat="@drawable/magnifiying_glass"/>
 
     <TextView
         android:id="@+id/glassText"

@@ -6,23 +6,20 @@ import androidx.annotation.RequiresApi
 import com.kamui.rin.Tag
 import com.kamui.rin.TagsHelper
 import com.kamui.rin.deinflector.Deinflector
-import org.json.JSONException
 import java.util.*
 import kotlin.collections.ArrayList
 
 class DBHelper(
-        mContext: Context,
-        private val disabledDicts: List<String>,
-        private val shouldDeconj: Boolean,
-        private val bilingualFirst: Boolean,
-        deinflectionText: String,
+    mContext: Context,
+    private val disabledDicts: List<String>,
+    private val shouldDeconj: Boolean,
+    private val bilingualFirst: Boolean,
+    deinflectionText: String,
 ) {
     private val db: AppDatabase = AppDatabase.buildDatabase(mContext)
     private val dao: DictDao = db.dictDao()
     private var deinflector: Deinflector = Deinflector(deinflectionText)
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    @Throws(JSONException::class)
     fun lookup(query: String): List<DictEntry> {
         val possibleVariations = normalizeWord(query).toMutableList()
         val entries: MutableList<DictEntry> = ArrayList()
@@ -118,5 +115,5 @@ fun katakanaToHiragana(katakanaWord: String): String {
 fun getTagsFromSplitted(entry: DictEntry, mContext: Context): List<Tag> {
     val helper = TagsHelper(mContext)
     val splitted: List<String> = entry.tags.split("\\s+")
-    return splitted.map { w -> helper.getTagFromName(w)}
+    return splitted.map { w -> helper.getTagFromName(w) }
 }
