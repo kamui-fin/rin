@@ -39,7 +39,7 @@
             app:iconSpaceReserved="false"
             app:defaultValue="true" />
         <SwitchPreference
-            app:key="deconjSettei"
+            app:key="shouldDeconjugate"
             app:title="Deconjugate Words"
             app:iconSpaceReserved="false"
             app:defaultValue="true" />

@@ -11,10 +11,10 @@ abstract class AppDatabase : RoomDatabase() {
 
     companion object {
         @Volatile
-        private var INSTANCE: AppDatabase? = null
+        private lateinit var INSTANCE: AppDatabase
 
         fun buildDatabase(context: Context): AppDatabase {
-            INSTANCE?.let {
+            INSTANCE.let {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
@@ -24,7 +24,7 @@ abstract class AppDatabase : RoomDatabase() {
                     .build()
                 INSTANCE = instance
             }
-            return INSTANCE!!
+            return INSTANCE
         }
     }
 }
