@@ -21,8 +21,8 @@ data class Deinflection(
     val reasons: List<ReasonEntry<Int>>
 )
 
-class Deinflector(deinflectionText: String) {
-    private val reasons = normalizeReasons(deinflectionText)
+class Deinflector(private val deinflectionText: String) {
+    private val reasons = normalizeReasons()
 
     fun deinflect(source: String): MutableList<Deinflection> {
         val results = mutableListOf(Deinflection(source, 0, listOf()))
@@ -51,7 +51,7 @@ class Deinflector(deinflectionText: String) {
         return results
     }
 
-    private fun normalizeReasons(deinflectionText: String): List<ReasonEntry<Int>> {
+    private fun normalizeReasons(): List<ReasonEntry<Int>> {
         val entries = Json.decodeFromString<List<ReasonEntry<List<String>>>>(deinflectionText)
         val normalized: MutableList<ReasonEntry<Int>> = ArrayList()
         for (reason in entries) {

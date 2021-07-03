@@ -3,6 +3,7 @@ package com.kamui.rin.database
 import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.kamui.rin.SettingsData
 import com.kamui.rin.Tag
 import com.kamui.rin.TagsHelper
 import com.kamui.rin.deinflector.Deinflector
@@ -11,10 +12,8 @@ import kotlin.collections.ArrayList
 
 class DBHelper(
     mContext: Context,
-    private val disabledDicts: List<String>,
-    private val shouldDeconj: Boolean,
-    private val bilingualFirst: Boolean,
     deinflectionText: String,
+    private val settings: SettingsData
 ) {
     private val db: AppDatabase = AppDatabase.buildDatabase(mContext)
     private val dao: DictDao = db.dictDao()
@@ -35,17 +34,17 @@ class DBHelper(
                 } else {
                     variation
                 }
-                results = dao.searchEntryReading(convertedToHiragana, disabledDicts)
+                results = dao.searchEntryReading(convertedToHiragana, settings.disabledDicts)
                 if (results.isEmpty()) {
-                    results = dao.searchEntryByKanji(variation, disabledDicts)
+                    results = dao.searchEntryByKanji(variation, settings.disabledDicts)
                 }
             } else {
-                results = dao.searchEntryByKanji(variation, disabledDicts)
+                results = dao.searchEntryByKanji(variation, settings.disabledDicts)
             }
             entries.addAll(results)
         }
 
-        if (bilingualFirst) {
+        if (settings.bilingualFirst) {
             Collections.sort(entries, Collections.reverseOrder<Any>())
         } else {
             entries.sort()
@@ -54,7 +53,7 @@ class DBHelper(
     }
 
     private fun normalizeWord(word: String): List<String> {
-        return if (shouldDeconj) {
+        return if (settings.shouldDeconj) {
             deconjugateWord(word.trim { it <= ' ' })
         } else {
             mutableListOf(word)

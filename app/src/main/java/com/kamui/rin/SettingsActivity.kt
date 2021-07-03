@@ -6,6 +6,12 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
+data class SettingsData(
+    val disabledDicts: List<String>,
+    val bilingualFirst: Boolean,
+    val shouldDeconj: Boolean,
+)
+
 class SettingsActivity : AppCompatActivity() {
     private lateinit var btmNavView: BottomNavigationView
     override fun onCreate(savedInstanceState: Bundle?) {

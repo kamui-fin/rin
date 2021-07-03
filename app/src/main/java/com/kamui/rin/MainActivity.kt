@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity() {
         toolbar.bringToFront()
         setSupportActionBar(toolbar)
         helper =
-            DBHelper(this, disabledDicts, shouldDeconj(), bilingualFirst(), readDeinflectJsonFile())
+            DBHelper(this, readDeinflectJsonFile(), getSettingsData())
         val btmNavView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
         btmNavView.setOnNavigationItemSelectedListener { menuItem: MenuItem ->
             when (menuItem.itemId) {
@@ -113,8 +113,7 @@ class MainActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    private val disabledDicts: List<String>
-        get() {
+    private fun getDisabledDicts(): List<String> {
             val dictMap = mapOf(
                 "jmdictEnable" to "JMdict (English)",
                 "kenkyuuEnable" to "研究社　新和英大辞典　第５版",
@@ -131,12 +130,12 @@ class MainActivity : AppCompatActivity() {
             return disabledDicts
         }
 
-    private fun bilingualFirst(): Boolean {
-        return sharedPreferences.getBoolean("showBilingualFirst", false)
-    }
-
-    private fun shouldDeconj(): Boolean {
-        return sharedPreferences.getBoolean("deconjSettei", true)
+    private fun getSettingsData(): SettingsData {
+        return SettingsData(
+            getDisabledDicts(),
+            sharedPreferences.getBoolean("showBilingualFirst", false),
+            sharedPreferences.getBoolean("shouldDeconj", true)
+        )
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
