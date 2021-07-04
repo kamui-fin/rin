@@ -50,7 +50,7 @@
                                 android:id="@+id/wordTextView"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Title"
+                                android:text=""
                                 android:textAppearance="?attr/textAppearanceHeadline6"
                                 android:textIsSelectable="true"
                                 android:textSize="22sp" />
@@ -61,7 +61,7 @@
                                 android:layout_height="match_parent"
                                 android:gravity="end"
                                 android:paddingTop="5dp"
-                                android:text="Title"
+                                android:text=""
                                 android:textAlignment="textEnd"
                                 android:textAppearance="?attr/textAppearanceHeadline2"
                                 android:textSize="18sp" />
@@ -143,7 +143,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_scrollFlags="scroll|enterAlways"
-        app:title="JP Dictionary"
+        app:title="Rin"
         app:titleTextColor="#f0f0f0" />
 
     <ImageButton
@@ -158,6 +158,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/toolbar"
         app:layout_constraintEnd_toEndOf="@+id/toolbar"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="1.0"
+        android:layout_marginRight="16dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

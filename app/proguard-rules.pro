@@ -1,11 +1,10 @@
 -keepattributes *Annotation*, InnerClasses
--dontnote kotlinx.serialization.AnnotationsKt # core serialization annotations
+-dontnote kotlinx.serialization.AnnotationsKt
 
-# Change here com.yourcompany.yourpackage
--keep,includedescriptorclasses class com.kamui.rin.**$$serializer { *; } # <-- change package name to your app's
--keepclassmembers class com.kamui.rin.** { # <-- change package name to your app's
+-keep,includedescriptorclasses class com.kamui.rin.**$$serializer { *; }
+-keepclassmembers class com.kamui.rin.* {
     *** Companion;
 }
--keepclasseswithmembers class com.kamui.rin.** { # <-- change package name to your app's
+-keepclasseswithmembers class com.kamui.rin.* {
     kotlinx.serialization.KSerializer serializer(...);
 }
