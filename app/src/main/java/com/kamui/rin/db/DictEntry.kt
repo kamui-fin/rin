@@ -21,8 +21,8 @@ data class DictEntry(
     @ColumnInfo(name = "meaning", typeAffinity = 2) private var meaning: String,
     @ColumnInfo(name = "dictname", typeAffinity = 2) var dictionaryName: String,
     @ColumnInfo(name = "orderdict", typeAffinity = 3) val dictOrder: Int,
-    @ColumnInfo(name = "freq", typeAffinity = 3) var freq: Int?,
     @ColumnInfo(name = "pitchaccent", typeAffinity = 2) var pitchAccent: String?,
+    @ColumnInfo(name = "freq", typeAffinity = 3) var freq: Int?,
 ) : Comparable<DictEntry> {
 
     fun getMeaning(): String {

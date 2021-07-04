@@ -24,7 +24,7 @@ import com.kamui.rin.DictEntryAdapter
 import com.kamui.rin.R
 import com.kamui.rin.db.DBHelper
 import com.kamui.rin.db.DictEntry
-import com.kamui.rin.util.SettingsData
+import com.kamui.rin.util.Settings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.IOException
@@ -51,7 +51,7 @@ class LookupFragment : Fragment() {
     ): View {
         adapter = DictEntryAdapter(requireContext(), results)
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        helper = DBHelper(requireContext(), readDeinflectJsonFile(), getSettingsData())
+        helper = DBHelper(requireContext(), readDeinflectJsonFile(), Settings(sharedPreferences))
         val view = inflater.inflate(R.layout.fragment_lookup, container, false)
         pbar = view.findViewById(R.id.pBar)
         pbar.visibility = View.GONE
@@ -111,31 +111,6 @@ class LookupFragment : Fragment() {
             myActionMenuItem.expandActionView()
             searchView.setQuery(value, true)
         }
-    }
-
-    private fun getDisabledDicts(): List<String> {
-        val dictMap = mapOf(
-            "jmdictEnable" to "JMdict (English)",
-            "kenkyuuEnable" to "研究社　新和英大辞典　第５版",
-            "shinmeiEnable" to "新明解国語辞典 第五版",
-            "daijirinEnable" to "三省堂　スーパー大辞林",
-            "meikyoEnable" to "明鏡国語辞典"
-        )
-        val disabledDicts: MutableList<String> = ArrayList()
-        for ((k, v) in dictMap) {
-            val isEnabled = sharedPreferences.getBoolean(k, true)
-            if (!isEnabled)
-                disabledDicts.add(v)
-        }
-        return disabledDicts
-    }
-
-    private fun getSettingsData(): SettingsData {
-        return SettingsData(
-            getDisabledDicts(),
-            sharedPreferences.getBoolean("showBilingualFirst", false),
-            sharedPreferences.getBoolean("shouldDeconj", true)
-        )
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
