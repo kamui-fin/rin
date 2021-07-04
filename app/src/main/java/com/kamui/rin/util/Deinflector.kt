@@ -1,4 +1,4 @@
-package com.kamui.rin
+package com.kamui.rin.util
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString

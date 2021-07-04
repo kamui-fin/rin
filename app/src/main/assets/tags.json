@@ -1,0 +1,1418 @@
+[
+  {
+    "name": "news",
+    "category": "frequent",
+    "order": -2,
+    "description": "appears frequently in Mainichi Shimbun",
+    "score": 0,
+    "color": "#14C389"
+  },
+  {
+    "name": "ichi",
+    "category": "frequent",
+    "order": -2,
+    "description": "listed as common in Ichimango Goi Bunruishuu",
+    "score": 0,
+    "color": "#00357B"
+  },
+  {
+    "name": "spec",
+    "category": "frequent",
+    "order": -2,
+    "description": "common words not included in frequency lists",
+    "score": 0,
+    "color": "#308BB5"
+  },
+  {
+    "name": "gai",
+    "category": "frequent",
+    "order": -2,
+    "description": "common loanword",
+    "score": 0,
+    "color": "#F131C9"
+  },
+  {
+    "name": "P",
+    "category": "popular",
+    "order": -10,
+    "description": "popular term",
+    "score": 10,
+    "color": "#478F68"
+  },
+  {
+    "name": "male",
+    "category": "",
+    "order": 0,
+    "description": "male term or language",
+    "score": 0,
+    "color": "#0D546E"
+  },
+  {
+    "name": "adj-nari",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "archaic/formal form of na-adjective",
+    "score": 0,
+    "color": "#00204B"
+  },
+  {
+    "name": "v4g",
+    "category": "",
+    "order": 0,
+    "description": "Yodan verb with `gu' ending (archaic)",
+    "score": 0,
+    "color": "#1089C2"
+  },
+  {
+    "name": "adj-f",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "noun or verb acting prenominally",
+    "score": 0,
+    "color": "#70AD31"
+  },
+  {
+    "name": "aux",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "auxiliary",
+    "score": 0,
+    "color": "#6C08CB"
+  },
+  {
+    "name": "Buddh",
+    "category": "",
+    "order": 0,
+    "description": "Buddhist term",
+    "score": 0,
+    "color": "#D0116D"
+  },
+  {
+    "name": "ctr",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "counter",
+    "score": 0,
+    "color": "#D9E56C"
+  },
+  {
+    "name": "geom",
+    "category": "",
+    "order": 0,
+    "description": "geometry term",
+    "score": 0,
+    "color": "#BFB4DF"
+  },
+  {
+    "name": "v4b",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "Yodan verb with `bu' ending (archaic)",
+    "score": 0,
+    "color": "#A05CF0"
+  },
+  {
+    "name": "v2z-s",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "Nidan verb (lower class) with `zu' ending (archaic)",
+    "score": 0,
+    "color": "#41FD96"
+  },
+  {
+    "name": "v2n-s",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "Nidan verb (lower class) with `nu' ending (archaic)",
+    "score": 0,
+    "color": "#88B0E9"
+  },
+  {
+    "name": "n-adv",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "adverbial noun (fukushitekimeishi)",
+    "score": 0,
+    "color": "#05A32A"
+  },
+  {
+    "name": "v2g-s",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "Nidan verb (lower class) with `gu' ending (archaic)",
+    "score": 0,
+    "color": "#9A4CBC"
+  },
+  {
+    "name": "sumo",
+    "category": "",
+    "order": 0,
+    "description": "sumo term",
+    "score": 0,
+    "color": "#805AED"
+  },
+  {
+    "name": "v2k-s",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "Nidan verb (lower class) with `ku' ending (archaic)",
+    "score": 0,
+    "color": "#79F009"
+  },
+  {
+    "name": "X",
+    "category": "",
+    "order": 0,
+    "description": "rude or X-rated term (not displayed in educational software)",
+    "score": 0,
+    "color": "#1B99D5"
+  },
+  {
+    "name": "ik",
+    "category": "",
+    "order": 0,
+    "description": "word containing irregular kana usage",
+    "score": -5,
+    "color": "#DB63CC"
+  },
+  {
+    "name": "ok",
+    "category": "",
+    "order": 0,
+    "description": "out-dated or obsolete kana usage",
+    "score": -5,
+    "color": "#FCD5A1"
+  },
+  {
+    "name": "yoji",
+    "category": "",
+    "order": 0,
+    "description": "yojijukugo",
+    "score": 0,
+    "color": "#25CC2F"
+  },
+  {
+    "name": "n-pr",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "proper noun",
+    "score": 0,
+    "color": "#1BD2EE"
+  },
+  {
+    "name": "ling",
+    "category": "",
+    "order": 0,
+    "description": "linguistics terminology",
+    "score": 0,
+    "color": "#7A562C"
+  },
+  {
+    "name": "uk",
+    "category": "",
+    "order": 0,
+    "description": "word usually written using kana alone",
+    "score": 0,
+    "color": "#D329E5"
+  },
+  {
+    "name": "v4h",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "Yodan verb with `hu/fu' ending (archaic)",
+    "score": 0,
+    "color": "#18001F"
+  },
+  {
+    "name": "med",
+    "category": "",
+    "order": 0,
+    "description": "medicine, etc. term",
+    "score": 0,
+    "color": "#2AD109"
+  },
+  {
+    "name": "anat",
+    "category": "",
+    "order": 0,
+    "description": "anatomical term",
+    "score": 0,
+    "color": "#38F1F6"
+  },
+  {
+    "name": "v5n",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "Godan verb with `nu' ending",
+    "score": 0,
+    "color": "#5C7A73"
+  },
+  {
+    "name": "v-unspec",
+    "category": "",
+    "order": 0,
+    "description": "verb unspecified",
+    "score": 0,
+    "color": "#9D801A"
+  },
+  {
+    "name": "v2g-k",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "Nidan verb (upper class) with `gu' ending (archaic)",
+    "score": 0,
+    "color": "#2F8D18"
+  },
+  {
+    "name": "adj-pn",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "pre-noun adjectival (rentaishi)",
+    "score": 0,
+    "color": "#4F74D4"
+  },
+  {
+    "name": "adj-t",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "`taru' adjective",
+    "score": 0,
+    "color": "#699C3B"
+  },
+  {
+    "name": "derog",
+    "category": "",
+    "order": 0,
+    "description": "derogatory",
+    "score": 0,
+    "color": "#1E684C"
+  },
+  {
+    "name": "int",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "interjection (kandoushi)",
+    "score": 0,
+    "color": "#3FA06E"
+  },
+  {
+    "name": "v4r",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "Yodan verb with `ru' ending (archaic)",
+    "score": 0,
+    "color": "#CD405E"
+  },
+  {
+    "name": "v2t-k",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "Nidan verb (upper class) with `tsu' ending (archaic)",
+    "score": 0,
+    "color": "#35C25D"
+  },
+  {
+    "name": "n-suf",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "noun, used as a suffix",
+    "score": 0,
+    "color": "#7BF554"
+  },
+  {
+    "name": "uK",
+    "category": "",
+    "order": 0,
+    "description": "word usually written using kanji alone",
+    "score": 0,
+    "color": "#FBA583"
+  },
+  {
+    "name": "v4n",
+    "category": "",
+    "order": 0,
+    "description": "Yodan verb with `nu' ending (archaic)",
+    "score": 0,
+    "color": "#360F38"
+  },
+  {
+    "name": "v2s-s",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "Nidan verb (lower class) with `su' ending (archaic)",
+    "score": 0,
+    "color": "#E28B28"
+  },
+  {
+    "name": "iK",
+    "category": "",
+    "order": 0,
+    "description": "word containing irregular kanji usage",
+    "score": -5,
+    "color": "#11C30B"
+  },
+  {
+    "name": "sl",
+    "category": "",
+    "order": 0,
+    "description": "slang",
+    "score": 0,
+    "color": "#B43911"
+  },
+  {
+    "name": "v5k",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "Godan verb with `ku' ending",
+    "score": 0,
+    "color": "#2AD9E9"
+  },
+  {
+    "name": "v5u",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "Godan verb with `u' ending",
+    "score": 0,
+    "color": "#2F44AE"
+  },
+  {
+    "name": "proverb",
+    "category": "",
+    "order": 0,
+    "description": "proverb",
+    "score": 0,
+    "color": "#D314CC"
+  },
+  {
+    "name": "prt",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "particle",
+    "score": 0,
+    "color": "#EC4B3E"
+  },
+  {
+    "name": "v5uru",
+    "category": "",
+    "order": 0,
+    "description": "Godan verb - Uru old class verb (old form of Eru)",
+    "score": 0,
+    "color": "#65EE6D"
+  },
+  {
+    "name": "shogi",
+    "category": "",
+    "order": 0,
+    "description": "shogi term",
+    "score": 0,
+    "color": "#629D04"
+  },
+  {
+    "name": "rkb",
+    "category": "",
+    "order": 0,
+    "description": "Ryuukyuu-ben",
+    "score": 0,
+    "color": "#E4D332"
+  },
+  {
+    "name": "geol",
+    "category": "",
+    "order": 0,
+    "description": "geology, etc. term",
+    "score": 0,
+    "color": "#BB03FA"
+  },
+  {
+    "name": "law",
+    "category": "",
+    "order": 0,
+    "description": "law, etc. term",
+    "score": 0,
+    "color": "#E174A4"
+  },
+  {
+    "name": "conj",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "conjunction",
+    "score": 0,
+    "color": "#3EEF70"
+  },
+  {
+    "name": "fam",
+    "category": "",
+    "order": 0,
+    "description": "familiar language",
+    "score": 0,
+    "color": "#7DFFF3"
+  },
+  {
+    "name": "poet",
+    "category": "",
+    "order": 0,
+    "description": "poetical term",
+    "score": 0,
+    "color": "#DCEE80"
+  },
+  {
+    "name": "v5aru",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "Godan verb - -aru special class",
+    "score": 0,
+    "color": "#D32CFC"
+  },
+  {
+    "name": "vs",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "noun or participle which takes the aux. verb suru",
+    "score": 0,
+    "color": "#891455"
+  },
+  {
+    "name": "bus",
+    "category": "",
+    "order": 0,
+    "description": "business term",
+    "score": 0,
+    "color": "#FBFB4C"
+  },
+  {
+    "name": "eK",
+    "category": "",
+    "order": 0,
+    "description": "exclusively kanji",
+    "score": 0,
+    "color": "#9505E1"
+  },
+  {
+    "name": "num",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "numeric",
+    "score": 0,
+    "color": "#B5E4BA"
+  },
+  {
+    "name": "pn",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "pronoun",
+    "score": 0,
+    "color": "#DF1FE5"
+  },
+  {
+    "name": "vs-s",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "suru verb - special class",
+    "score": 0,
+    "color": "#F88842"
+  },
+  {
+    "name": "v2h-k",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "Nidan verb (upper class) with `hu/fu' ending (archaic)",
+    "score": 0,
+    "color": "#85A250"
+  },
+  {
+    "name": "oik",
+    "category": "",
+    "order": 0,
+    "description": "old or irregular kana form",
+    "score": -5,
+    "color": "#F7EAB3"
+  },
+  {
+    "name": "v5s",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "Godan verb with `su' ending",
+    "score": 0,
+    "color": "#FDB8AC"
+  },
+  {
+    "name": "vk",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "Kuru verb - special class",
+    "score": 0,
+    "color": "#8B126D"
+  },
+  {
+    "name": "MA",
+    "category": "",
+    "order": 0,
+    "description": "martial arts term",
+    "score": 0,
+    "color": "#0A06E9"
+  },
+  {
+    "name": "adv",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "adverb (fukushi)",
+    "score": 0,
+    "color": "#AF17EB"
+  },
+  {
+    "name": "adv-to",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "adverb taking the `to' particle",
+    "score": 0,
+    "color": "#AAC0B7"
+  },
+  {
+    "name": "comp",
+    "category": "",
+    "order": 0,
+    "description": "computer terminology",
+    "score": 0,
+    "color": "#4AC252"
+  },
+  {
+    "name": "hon",
+    "category": "",
+    "order": 0,
+    "description": "honorific or respectful (sonkeigo) language",
+    "score": 0,
+    "color": "#772C60"
+  },
+  {
+    "name": "adj-kari",
+    "category": "",
+    "order": 0,
+    "description": "`kari' adjective (archaic)",
+    "score": 0,
+    "color": "#015B8B"
+  },
+  {
+    "name": "v2m-k",
+    "category": "",
+    "order": 0,
+    "description": "Nidan verb (upper class) with `mu' ending (archaic)",
+    "score": 0,
+    "color": "#34B2BC"
+  },
+  {
+    "name": "sports",
+    "category": "",
+    "order": 0,
+    "description": "sports term",
+    "score": 0,
+    "color": "#3FCAA2"
+  },
+  {
+    "name": "tsug",
+    "category": "",
+    "order": 0,
+    "description": "Tsugaru-ben",
+    "score": 0,
+    "color": "#B48AA7"
+  },
+  {
+    "name": "v4s",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "Yodan verb with `su' ending (archaic)",
+    "score": 0,
+    "color": "#129332"
+  },
+  {
+    "name": "bot",
+    "category": "",
+    "order": 0,
+    "description": "botany term",
+    "score": 0,
+    "color": "#EB95EA"
+  },
+  {
+    "name": "arch",
+    "category": "archaism",
+    "order": -4,
+    "description": "archaism",
+    "score": 0,
+    "color": "#53F5A2"
+  },
+  {
+    "name": "chem",
+    "category": "",
+    "order": 0,
+    "description": "chemistry term",
+    "score": 0,
+    "color": "#3A5FA3"
+  },
+  {
+    "name": "gikun",
+    "category": "",
+    "order": 0,
+    "description": "gikun (meaning as reading) or jukujikun (special kanji reading)",
+    "score": 0,
+    "color": "#52DE82"
+  },
+  {
+    "name": "v5r",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "Godan verb with `ru' ending",
+    "score": 0,
+    "color": "#3D9961"
+  },
+  {
+    "name": "vr",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "irregular ru verb, plain form ends with -ri",
+    "score": 0,
+    "color": "#975481"
+  },
+  {
+    "name": "pref",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "prefix",
+    "score": 0,
+    "color": "#0EB22C"
+  },
+  {
+    "name": "v5u-s",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "Godan verb with `u' ending (special class)",
+    "score": 0,
+    "color": "#46F840"
+  },
+  {
+    "name": "v4t",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "Yodan verb with `tsu' ending (archaic)",
+    "score": 0,
+    "color": "#A510B1"
+  },
+  {
+    "name": "v2r-k",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "Nidan verb (upper class) with `ru' ending (archaic)",
+    "score": 0,
+    "color": "#11C68B"
+  },
+  {
+    "name": "unc",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "unclassified",
+    "score": 0,
+    "color": "#3D0A7A"
+  },
+  {
+    "name": "v2b-k",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "Nidan verb (upper class) with `bu' ending (archaic)",
+    "score": 0,
+    "color": "#6CFC9F"
+  },
+  {
+    "name": "econ",
+    "category": "",
+    "order": 0,
+    "description": "economics term",
+    "score": 0,
+    "color": "#EB9BF3"
+  },
+  {
+    "name": "adj-i",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "adjective (keiyoushi)",
+    "score": 0,
+    "color": "#2F96E4"
+  },
+  {
+    "name": "id",
+    "category": "expression",
+    "order": -5,
+    "description": "idiomatic expression",
+    "score": 0,
+    "color": "#335C23"
+  },
+  {
+    "name": "m-sl",
+    "category": "",
+    "order": 0,
+    "description": "manga slang",
+    "score": 0,
+    "color": "#2C08CF"
+  },
+  {
+    "name": "obs",
+    "category": "",
+    "order": 0,
+    "description": "obsolete term",
+    "score": 0,
+    "color": "#CC2703"
+  },
+  {
+    "name": "physics",
+    "category": "",
+    "order": 0,
+    "description": "physics terminology",
+    "score": 0,
+    "color": "#C139DD"
+  },
+  {
+    "name": "music",
+    "category": "",
+    "order": 0,
+    "description": "music term",
+    "score": 0,
+    "color": "#F36707"
+  },
+  {
+    "name": "astron",
+    "category": "",
+    "order": 0,
+    "description": "astronomy, etc. term",
+    "score": 0,
+    "color": "#BA46CD"
+  },
+  {
+    "name": "adj-na",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "adjectival nouns or quasi-adjectives (keiyodoshi)",
+    "score": 0,
+    "color": "#995F4D"
+  },
+  {
+    "name": "hum",
+    "category": "",
+    "order": 0,
+    "description": "humble (kenjougo) language",
+    "score": 0,
+    "color": "#BDA8DB"
+  },
+  {
+    "name": "v1-s",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "Ichidan verb - kureru special class",
+    "score": 0,
+    "color": "#5F9955"
+  },
+  {
+    "name": "v5r-i",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "Godan verb with `ru' ending (irregular verb)",
+    "score": 0,
+    "color": "#AF3A69"
+  },
+  {
+    "name": "v5t",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "Godan verb with `tsu' ending",
+    "score": 0,
+    "color": "#DB1E76"
+  },
+  {
+    "name": "ek",
+    "category": "",
+    "order": 0,
+    "description": "exclusively kana",
+    "score": 0,
+    "color": "#E0F944"
+  },
+  {
+    "name": "v5g",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "Godan verb with `gu' ending",
+    "score": 0,
+    "color": "#CB9FC4"
+  },
+  {
+    "name": "vs-i",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "suru verb - irregular",
+    "score": 0,
+    "color": "#CE7D6F"
+  },
+  {
+    "name": "v2y-s",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "Nidan verb (lower class) with `yu' ending (archaic)",
+    "score": 0,
+    "color": "#2D7AC0"
+  },
+  {
+    "name": "v2h-s",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "Nidan verb (lower class) with `hu/fu' ending (archaic)",
+    "score": 0,
+    "color": "#6C3F0C"
+  },
+  {
+    "name": "exp",
+    "category": "expression",
+    "order": -5,
+    "description": "expressions (phrases, clauses, etc.)",
+    "score": 0,
+    "color": "#1491D7"
+  },
+  {
+    "name": "vi",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "intransitive verb",
+    "score": 0,
+    "color": "#7049EA"
+  },
+  {
+    "name": "ktb",
+    "category": "",
+    "order": 0,
+    "description": "Kantou-ben",
+    "score": 0,
+    "color": "#311F7E"
+  },
+  {
+    "name": "tsb",
+    "category": "",
+    "order": 0,
+    "description": "Tosa-ben",
+    "score": 0,
+    "color": "#DA8C5E"
+  },
+  {
+    "name": "nab",
+    "category": "",
+    "order": 0,
+    "description": "Nagano-ben",
+    "score": 0,
+    "color": "#A35CB8"
+  },
+  {
+    "name": "vn",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "irregular nu verb",
+    "score": 0,
+    "color": "#B572FE"
+  },
+  {
+    "name": "vt",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "transitive verb",
+    "score": 0,
+    "color": "#7552A0"
+  },
+  {
+    "name": "vulg",
+    "category": "",
+    "order": 0,
+    "description": "vulgar expression or word",
+    "score": 0,
+    "color": "#CB60FA"
+  },
+  {
+    "name": "baseb",
+    "category": "",
+    "order": 0,
+    "description": "baseball term",
+    "score": 0,
+    "color": "#4686A4"
+  },
+  {
+    "name": "zool",
+    "category": "",
+    "order": 0,
+    "description": "zoology term",
+    "score": 0,
+    "color": "#A97010"
+  },
+  {
+    "name": "mahj",
+    "category": "",
+    "order": 0,
+    "description": "mahjong term",
+    "score": 0,
+    "color": "#41E53C"
+  },
+  {
+    "name": "iv",
+    "category": "",
+    "order": 0,
+    "description": "irregular verb",
+    "score": 0,
+    "color": "#244C06"
+  },
+  {
+    "name": "n",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "noun (common) (futsuumeishi)",
+    "score": 0,
+    "color": "#5330E0"
+  },
+  {
+    "name": "vs-c",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "su verb - precursor to the modern suru",
+    "score": 0,
+    "color": "#0432F3"
+  },
+  {
+    "name": "v2m-s",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "Nidan verb (lower class) with `mu' ending (archaic)",
+    "score": 0,
+    "color": "#520577"
+  },
+  {
+    "name": "archit",
+    "category": "",
+    "order": 0,
+    "description": "architecture term",
+    "score": 0,
+    "color": "#D2D0E6"
+  },
+  {
+    "name": "adj-ku",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "`ku' adjective (archaic)",
+    "score": 0,
+    "color": "#AC8EB9"
+  },
+  {
+    "name": "aux-adj",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "auxiliary adjective",
+    "score": 0,
+    "color": "#B19318"
+  },
+  {
+    "name": "oK",
+    "category": "",
+    "order": 0,
+    "description": "word containing out-dated kanji",
+    "score": -5,
+    "color": "#CA1469"
+  },
+  {
+    "name": "sens",
+    "category": "",
+    "order": 0,
+    "description": "sensitive",
+    "score": 0,
+    "color": "#5F00C2"
+  },
+  {
+    "name": "suf",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "suffix",
+    "score": 0,
+    "color": "#061184"
+  },
+  {
+    "name": "v5m",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "Godan verb with `mu' ending",
+    "score": 0,
+    "color": "#054F85"
+  },
+  {
+    "name": "adj-no",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "nouns which may take the genitive case particle `no'",
+    "score": 0,
+    "color": "#F07D1F"
+  },
+  {
+    "name": "male-sl",
+    "category": "",
+    "order": 0,
+    "description": "male slang",
+    "score": 0,
+    "color": "#94C185"
+  },
+  {
+    "name": "v4k",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "Yodan verb with `ku' ending (archaic)",
+    "score": 0,
+    "color": "#53EFAB"
+  },
+  {
+    "name": "v2y-k",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "Nidan verb (upper class) with `yu' ending (archaic)",
+    "score": 0,
+    "color": "#F6C0FF"
+  },
+  {
+    "name": "finc",
+    "category": "",
+    "order": 0,
+    "description": "finance term",
+    "score": 0,
+    "color": "#40D903"
+  },
+  {
+    "name": "engr",
+    "category": "",
+    "order": 0,
+    "description": "engineering term",
+    "score": 0,
+    "color": "#F28B4B"
+  },
+  {
+    "name": "hob",
+    "category": "",
+    "order": 0,
+    "description": "Hokkaido-ben",
+    "score": 0,
+    "color": "#A738E4"
+  },
+  {
+    "name": "adj-shiku",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "`shiku' adjective (archaic)",
+    "score": 0,
+    "color": "#1733EF"
+  },
+  {
+    "name": "v2k-k",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "Nidan verb (upper class) with `ku' ending (archaic)",
+    "score": 0,
+    "color": "#E51A84"
+  },
+  {
+    "name": "v2t-s",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "Nidan verb (lower class) with `tsu' ending (archaic)",
+    "score": 0,
+    "color": "#696C3B"
+  },
+  {
+    "name": "v2r-s",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "Nidan verb (lower class) with `ru' ending (archaic)",
+    "score": 0,
+    "color": "#17C437"
+  },
+  {
+    "name": "joc",
+    "category": "",
+    "order": 0,
+    "description": "jocular, humorous term",
+    "score": 0,
+    "color": "#FBFEAA"
+  },
+  {
+    "name": "aux-v",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "auxiliary verb",
+    "score": 0,
+    "color": "#A8CF0F"
+  },
+  {
+    "name": "v4m",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "Yodan verb with `mu' ending (archaic)",
+    "score": 0,
+    "color": "#A039C1"
+  },
+  {
+    "name": "v2d-k",
+    "category": "",
+    "order": 0,
+    "description": "Nidan verb (upper class) with `dzu' ending (archaic)",
+    "score": 0,
+    "color": "#ABA8B8"
+  },
+  {
+    "name": "v2b-s",
+    "category": "",
+    "order": 0,
+    "description": "Nidan verb (lower class) with `bu' ending (archaic)",
+    "score": 0,
+    "color": "#C9B8D4"
+  },
+  {
+    "name": "biol",
+    "category": "",
+    "order": 0,
+    "description": "biology term",
+    "score": 0,
+    "color": "#3CE53C"
+  },
+  {
+    "name": "Shinto",
+    "category": "",
+    "order": 0,
+    "description": "Shinto term",
+    "score": 0,
+    "color": "#F8D535"
+  },
+  {
+    "name": "adj-ix",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "adjective (keiyoushi) - yoi/ii class",
+    "score": 0,
+    "color": "#5D9A34"
+  },
+  {
+    "name": "rare",
+    "category": "",
+    "order": 0,
+    "description": "rare",
+    "score": 0,
+    "color": "#436F75"
+  },
+  {
+    "name": "v5k-s",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "Godan verb - Iku/Yuku special class",
+    "score": 0,
+    "color": "#4DE808"
+  },
+  {
+    "name": "osb",
+    "category": "",
+    "order": 0,
+    "description": "Osaka-ben",
+    "score": 0,
+    "color": "#7E6C37"
+  },
+  {
+    "name": "kyu",
+    "category": "",
+    "order": 0,
+    "description": "Kyuushuu-ben",
+    "score": 0,
+    "color": "#94E0B4"
+  },
+  {
+    "name": "kyb",
+    "category": "",
+    "order": 0,
+    "description": "Kyoto-ben",
+    "score": 0,
+    "color": "#97A334"
+  },
+  {
+    "name": "chn",
+    "category": "",
+    "order": 0,
+    "description": "children's language",
+    "score": 0,
+    "color": "#BA1463"
+  },
+  {
+    "name": "math",
+    "category": "",
+    "order": 0,
+    "description": "mathematics",
+    "score": 0,
+    "color": "#CBFFF5"
+  },
+  {
+    "name": "n-pref",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "noun, used as a prefix",
+    "score": 0,
+    "color": "#2F07D8"
+  },
+  {
+    "name": "n-t",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "noun (temporal) (jisoumeishi)",
+    "score": 0,
+    "color": "#4E1DCD"
+  },
+  {
+    "name": "pol",
+    "category": "",
+    "order": 0,
+    "description": "polite (teineigo) language",
+    "score": 0,
+    "color": "#93DCFD"
+  },
+  {
+    "name": "ateji",
+    "category": "",
+    "order": 0,
+    "description": "ateji (phonetic) reading",
+    "score": 0,
+    "color": "#710D96"
+  },
+  {
+    "name": "food",
+    "category": "",
+    "order": 0,
+    "description": "food term",
+    "score": 0,
+    "color": "#AA4F32"
+  },
+  {
+    "name": "v5b",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "Godan verb with `bu' ending",
+    "score": 0,
+    "color": "#42834E"
+  },
+  {
+    "name": "v2d-s",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "Nidan verb (lower class) with `dzu' ending (archaic)",
+    "score": 0,
+    "color": "#D5ADEA"
+  },
+  {
+    "name": "v2w-s",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "Nidan verb (lower class) with `u' ending and `we' conjugation (archaic)",
+    "score": 0,
+    "color": "#66551C"
+  },
+  {
+    "name": "abbr",
+    "category": "",
+    "order": 0,
+    "description": "abbreviation",
+    "score": 0,
+    "color": "#AA67F4"
+  },
+  {
+    "name": "cop-da",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "copula",
+    "score": 0,
+    "color": "#7D5905"
+  },
+  {
+    "name": "v2a-s",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "Nidan verb with 'u' ending (archaic)",
+    "score": 0,
+    "color": "#A33A74"
+  },
+  {
+    "name": "thb",
+    "category": "",
+    "order": 0,
+    "description": "Touhoku-ben",
+    "score": 0,
+    "color": "#5F88E5"
+  },
+  {
+    "name": "vz",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "Ichidan verb - zuru verb (alternative form of -jiru verbs)",
+    "score": 0,
+    "color": "#ECB926"
+  },
+  {
+    "name": "io",
+    "category": "",
+    "order": 0,
+    "description": "irregular okurigana usage",
+    "score": -5,
+    "color": "#0672FE"
+  },
+  {
+    "name": "mil",
+    "category": "",
+    "order": 0,
+    "description": "military",
+    "score": 0,
+    "color": "#3FFD01"
+  },
+  {
+    "name": "obsc",
+    "category": "",
+    "order": 0,
+    "description": "obscure term",
+    "score": 0,
+    "color": "#9AD337"
+  },
+  {
+    "name": "on-mim",
+    "category": "",
+    "order": 0,
+    "description": "onomatopoeic or mimetic word",
+    "score": 0,
+    "color": "#9EF574"
+  },
+  {
+    "name": "ksb",
+    "category": "",
+    "order": 0,
+    "description": "Kansai-ben",
+    "score": 0,
+    "color": "#5DB7C0"
+  },
+  {
+    "name": "col",
+    "category": "",
+    "order": 0,
+    "description": "colloquialism",
+    "score": 0,
+    "color": "#BD99AC"
+  },
+  {
+    "name": "fem",
+    "category": "",
+    "order": 0,
+    "description": "female term or language",
+    "score": 0,
+    "color": "#99D44B"
+  },
+  {
+    "name": "v1",
+    "category": "partOfSpeech",
+    "order": -3,
+    "description": "Ichidan verb",
+    "score": 0,
+    "color": "#74437D"
+  }
+]

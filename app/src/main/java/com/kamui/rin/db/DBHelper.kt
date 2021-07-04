@@ -3,10 +3,10 @@ package com.kamui.rin.db
 import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.kamui.rin.SettingsData
-import com.kamui.rin.Tag
-import com.kamui.rin.TagsHelper
-import com.kamui.rin.Deinflector
+import com.kamui.rin.util.SettingsData
+import com.kamui.rin.util.TagsHelper
+import com.kamui.rin.util.Tag
+import com.kamui.rin.util.Deinflector
 import java.util.*
 import kotlin.collections.ArrayList
 
