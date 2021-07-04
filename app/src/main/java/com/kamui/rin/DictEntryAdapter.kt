@@ -48,12 +48,13 @@ class DictEntryAdapter(private val mContext: Context, data: List<DictEntry>) :
             intent.putExtra("meaning", entry.getMeaning())
             intent.putExtra("pitch", entry.pitchAccent)
 
-            val frequency: Int? = entry.freq
-            val formatter = DecimalFormat("#,###")
-            intent.putExtra("freq", "Freq: " + formatter.format(frequency))
+            entry.freq?.let {
+                val formatter = DecimalFormat("#,###")
+                intent.putExtra("freq", "Freq: " + formatter.format(it))
+            }
 
-            val splittedTags = getTagsFromSplitted(entry, mContext)
-            intent.putExtra("tags", splittedTags.toTypedArray())
+            val splittedTags = getTagsFromSplitted(entry, mContext).toCollection(ArrayList())
+            intent.putParcelableArrayListExtra("tags", splittedTags)
             mContext.startActivity(intent)
         }
     }

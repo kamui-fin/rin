@@ -1,10 +1,8 @@
 package com.kamui.rin
 
 import android.content.DialogInterface
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.view.MenuItem
 import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
@@ -16,6 +14,7 @@ import androidx.cardview.widget.CardView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import com.kamui.rin.util.Tag
 
 class WordDetailActivity : AppCompatActivity() {
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -33,7 +32,7 @@ class WordDetailActivity : AppCompatActivity() {
         val meaning = intent.getStringExtra("meaning")
         val freq = intent.getStringExtra("freq")
         val pitch = intent.getStringExtra("pitch")
-        val tags = intent.getSerializableExtra("tags") as Array<Tag>
+        val tags = intent.getParcelableArrayListExtra<Tag>("tags")!!
 
         val wordTextView = findViewById<TextView>(R.id.wordTextView)
         val meaningTextView = findViewById<TextView>(R.id.meaningTextView)
@@ -67,32 +66,14 @@ class WordDetailActivity : AppCompatActivity() {
         if (pitch == null) {
             pitchCard.visibility = View.GONE
         }
-        if (freq!!.isEmpty()) {
+        if (freq == null) {
             freqChip.visibility = View.GONE
         }
         if (tags.isEmpty()) {
             chipView.visibility = View.GONE
         }
 
-        val btmNavView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
-        btmNavView.selectedItemId = R.id.search_page
         val closeBtn = findViewById<ImageButton>(R.id.closeBtn)
         closeBtn.setOnClickListener { finishAffinity() }
-        btmNavView.setOnNavigationItemSelectedListener { menuItem: MenuItem ->
-            when (menuItem.itemId) {
-                R.id.setting_page -> {
-                    val intentSettings =
-                        Intent(this@WordDetailActivity, SettingsActivity::class.java)
-                    startActivity(intentSettings)
-                    return@setOnNavigationItemSelectedListener true
-                }
-                R.id.search_page -> {
-                    val intentSearch = Intent(this@WordDetailActivity, MainActivity::class.java)
-                    startActivity(intentSearch)
-                    return@setOnNavigationItemSelectedListener true
-                }
-            }
-            true
-        }
     }
 }
