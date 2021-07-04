@@ -1,8 +1,10 @@
-package com.kamui.rin.deinflector
+package com.kamui.rin
 
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
+@Serializable
 data class ReasonInfo<T>(
     val kanaIn: String,
     val kanaOut: String,
@@ -10,6 +12,7 @@ data class ReasonInfo<T>(
     val rulesOut: T
 )
 
+@Serializable
 data class ReasonEntry<T>(
     val reason: String,
     val information: List<ReasonInfo<T>>

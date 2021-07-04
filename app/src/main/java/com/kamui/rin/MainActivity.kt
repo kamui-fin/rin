@@ -21,26 +21,27 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.kamui.rin.database.DBHelper
-import com.kamui.rin.database.DictEntry
+import com.kamui.rin.db.DBHelper
+import com.kamui.rin.db.DictEntry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
     lateinit var helper: DBHelper
-    lateinit var adapter: DictEntryAdapter
     lateinit var pbar: ProgressBar
     lateinit var recyclerView: RecyclerView
-    lateinit var results: MutableList<DictEntry>
-    private lateinit var sharedPreferences: SharedPreferences
     lateinit var img: ImageView
     lateinit var support: TextView
     lateinit var notFoundView: TextView
+    lateinit var adapter: DictEntryAdapter
+    private lateinit var sharedPreferences: SharedPreferences
+    var results: MutableList<DictEntry> = mutableListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        adapter = DictEntryAdapter(this@MainActivity, results)
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         pbar = findViewById(R.id.pBar)
         pbar.visibility = View.GONE
@@ -105,6 +106,20 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
+    override fun onBackPressed() {
+        if (img.visibility != View.VISIBLE) {
+            results.clear()
+            adapter.notifyDataSetChanged()
+            val animation = AnimationUtils.loadAnimation(this, android.R.anim.fade_in)
+            img.startAnimation(animation)
+            support.startAnimation(animation)
+            img.visibility = View.VISIBLE
+            support.visibility = View.VISIBLE
+        } else {
+            moveTaskToBack(true)
+        }
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
             finish()
@@ -158,7 +173,6 @@ class MainActivity : AppCompatActivity() {
             stream.close()
             tContents = String(buffer)
         } catch (e: IOException) {
-            // Handle exceptions here
         }
         return tContents
     }
@@ -182,20 +196,6 @@ class MainActivity : AppCompatActivity() {
                     recyclerView.adapter = adapter
                 }
             }
-        }
-    }
-
-    override fun onBackPressed() {
-        if (img.visibility != View.VISIBLE) {
-            results.clear()
-            adapter.notifyDataSetChanged()
-            val animation = AnimationUtils.loadAnimation(this, android.R.anim.fade_in)
-            img.startAnimation(animation)
-            support.startAnimation(animation)
-            img.visibility = View.VISIBLE
-            support.visibility = View.VISIBLE
-        } else {
-            moveTaskToBack(true)
         }
     }
 }
