@@ -69,8 +69,7 @@ class TagsHelper(mContext: Context) {
         tags = Json.decodeFromString(text)
     }
 
-    fun getTagFromName(name: String): Tag {
-        val defaultTag = Tag("", "", 0, "", 0, "#FFFFFF")
-        return tags.find { t -> t.name == name } ?: defaultTag
+    fun getTagFromName(name: String): Tag? {
+        return tags.find { t -> t.name == name }
     }
 }

@@ -3,7 +3,7 @@ package com.kamui.rin.db
 import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.kamui.rin.util.SettingsData
+import com.kamui.rin.util.Settings
 import com.kamui.rin.util.TagsHelper
 import com.kamui.rin.util.Tag
 import com.kamui.rin.util.Deinflector
@@ -13,7 +13,7 @@ import kotlin.collections.ArrayList
 class DBHelper(
     mContext: Context,
     deinflectionText: String,
-    private val settings: SettingsData
+    private val settings: Settings
 ) {
     private val db: AppDatabase = AppDatabase.buildDatabase(mContext)
     private val dao: DictDao = db.dictDao()
@@ -53,6 +53,7 @@ class DBHelper(
     }
 
     private fun normalizeWord(word: String): List<String> {
+        println(settings.shouldDeconj)
         return if (settings.shouldDeconj) {
             deconjugateWord(word.trim { it <= ' ' })
         } else {
@@ -114,5 +115,5 @@ fun katakanaToHiragana(katakanaWord: String): String {
 fun getTagsFromSplitted(entry: DictEntry, mContext: Context): List<Tag> {
     val helper = TagsHelper(mContext)
     val splitted: List<String> = entry.tags.split("\\s+")
-    return splitted.map { w -> helper.getTagFromName(w) }
+    return splitted.mapNotNull { w -> helper.getTagFromName(w) }
 }
