@@ -1,4 +1,4 @@
-package com.kamui.rin.database
+package com.kamui.rin.db
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

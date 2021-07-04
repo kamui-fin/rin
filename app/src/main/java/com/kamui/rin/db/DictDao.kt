@@ -1,4 +1,4 @@
-package com.kamui.rin.database
+package com.kamui.rin.db
 
 import androidx.room.Dao
 import androidx.room.Query

@@ -1,4 +1,4 @@
-package com.kamui.rin.database
+package com.kamui.rin.db
 
 import android.content.Context
 import androidx.room.Database
@@ -11,10 +11,10 @@ abstract class AppDatabase : RoomDatabase() {
 
     companion object {
         @Volatile
-        private lateinit var INSTANCE: AppDatabase
+        private var INSTANCE: AppDatabase? = null
 
         fun buildDatabase(context: Context): AppDatabase {
-            INSTANCE.let {
+            if (INSTANCE == null) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
@@ -24,7 +24,7 @@ abstract class AppDatabase : RoomDatabase() {
                     .build()
                 INSTANCE = instance
             }
-            return INSTANCE
+            return INSTANCE!!
         }
     }
 }

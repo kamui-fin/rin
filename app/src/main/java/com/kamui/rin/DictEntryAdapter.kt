@@ -11,8 +11,8 @@ import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
-import com.kamui.rin.database.DictEntry
-import com.kamui.rin.database.getTagsFromSplitted
+import com.kamui.rin.db.DictEntry
+import com.kamui.rin.db.getTagsFromSplitted
 import java.text.DecimalFormat
 
 class DictEntryAdapter(private val mContext: Context, data: List<DictEntry>) :
