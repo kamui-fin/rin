@@ -1,6 +1,6 @@
 # Rin
 
-This is a japanese dictionary that supports multiple famous japanese dictionaries such as the JMDict. It's also easily accessible from almost any other app in your device.
+This is a japanese dictionary that supports multiple famous japanese dictionaries such as JMDict. It's also easily accessible from almost any other app in your device.
 
 ## Demo
 
