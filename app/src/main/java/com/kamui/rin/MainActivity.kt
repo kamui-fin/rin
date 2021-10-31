@@ -2,6 +2,9 @@ package com.kamui.rin
 
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
+import android.view.animation.AnimationUtils
+import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
@@ -32,6 +35,11 @@ class MainActivity : AppCompatActivity() {
             true
         }
         btmNavView.selectedItemId = R.id.search_page
+
+        onBackPressedDispatcher.addCallback(this) {
+            finish()
+        }
+
     }
 
     private fun loadFragment(fragment: Fragment) {

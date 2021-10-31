@@ -57,19 +57,6 @@ class LookupFragment : Fragment() {
         support = view.findViewById(R.id.glassText)
         img = view.findViewById(R.id.glass)
         notFoundView = view.findViewById(R.id.noResultsFound)
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            if (img.visibility != View.VISIBLE) {
-                results.clear()
-                adapter.notifyDataSetChanged()
-                val animation = AnimationUtils.loadAnimation(requireContext(), android.R.anim.fade_in)
-                img.startAnimation(animation)
-                support.startAnimation(animation)
-                img.visibility = View.VISIBLE
-                support.visibility = View.VISIBLE
-            } else {
-                requireActivity().moveTaskToBack(true)
-            }
-        }
 
         return view
     }
@@ -105,8 +92,12 @@ class LookupFragment : Fragment() {
         val intent = requireActivity().intent
         val value = handleIntent(intent)
         if (value != null) {
-            (requireActivity() as AppCompatActivity).supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-            (requireActivity() as AppCompatActivity).supportActionBar!!.setDisplayShowHomeEnabled(true)
+            (requireActivity() as AppCompatActivity).supportActionBar!!.setDisplayHomeAsUpEnabled(
+                true
+            )
+            (requireActivity() as AppCompatActivity).supportActionBar!!.setDisplayShowHomeEnabled(
+                true
+            )
             myActionMenuItem.expandActionView()
             searchView.setQuery(value, true)
         }
