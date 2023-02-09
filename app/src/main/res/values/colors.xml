@@ -3,5 +3,9 @@
     <color name="colorPrimary">#26a69a</color>
     <color name="colorPrimaryDark">#00766c</color>
     <color name="colorAccent">#64d8cb</color>
+    <color name="colorIcon">#64d8cb</color>
     <color name="white">#f0f0f0</color>
+    <color name="colorBottomNav">#fff</color>
+    <color name="colorFrontCard">#C8E9E6</color>
+    <color name="colorPrimaryLight">#00766c</color>
 </resources>

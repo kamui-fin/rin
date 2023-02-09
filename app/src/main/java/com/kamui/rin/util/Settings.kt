@@ -30,4 +30,9 @@ class Settings(private val sharedPreferences: SharedPreferences) {
         get() {
             return sharedPreferences.getBoolean("shouldDeconjugate", true)
         }
+
+    val darkTheme: Boolean
+        get() {
+            return sharedPreferences.getBoolean("darkTheme", false)
+        }
 }

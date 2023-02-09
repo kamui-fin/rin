@@ -16,7 +16,7 @@
         android:focusable="true"
         android:foreground="?android:attr/selectableItemBackground"
 
-        app:cardBackgroundColor="#C8E9E6"
+        app:cardBackgroundColor="@color/colorFrontCard"
         app:cardElevation="5dp">
 
         <LinearLayout

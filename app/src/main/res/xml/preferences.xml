@@ -44,4 +44,14 @@
             app:iconSpaceReserved="false"
             app:defaultValue="true" />
     </PreferenceCategory>
+
+    <PreferenceCategory
+        app:title="Theme"
+        app:iconSpaceReserved="false">
+        <SwitchPreference
+            app:key="darkTheme"
+            app:title="Dark Theme"
+            app:iconSpaceReserved="false"
+            app:defaultValue="false" />
+    </PreferenceCategory>
 </PreferenceScreen>
