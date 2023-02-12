@@ -3,15 +3,12 @@ package com.kamui.rin.fragment
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
+import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
-import androidx.navigation.NavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.NavigationUI.setupActionBarWithNavController
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.kamui.rin.DictEntryAdapter
@@ -69,6 +66,9 @@ class LookupFragment : Fragment() {
     lateinit var helper: DBHelper
     lateinit var adapter: DictEntryAdapter
 
+    // for customizing search bar
+    lateinit var actionBar: ActionBar
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -100,11 +100,13 @@ class LookupFragment : Fragment() {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
         helper = DBHelper(requireContext(), readDeinflectJsonFile(), Settings(sharedPreferences))
         _binding = FragmentLookupBinding.inflate(inflater, container, false)
+
+        actionBar = (requireActivity() as AppCompatActivity).supportActionBar!!
         return binding.root
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.top_app_bar, menu)
+        inflater.inflate(R.menu.search_action_bar, menu)
 
         val searchAction = menu.findItem(R.id.action_search)
         val searchView = searchAction.actionView as SearchView
@@ -112,6 +114,7 @@ class LookupFragment : Fragment() {
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 state.lookupWord(query, helper)
+                actionBar.title = "Results for $query"
                 return false
             }
             override fun onQueryTextChange(s: String): Boolean { return false }
@@ -119,7 +122,6 @@ class LookupFragment : Fragment() {
 
         // query intent
         handleIntent(requireActivity().intent)?.let {
-            val actionBar = (requireActivity() as AppCompatActivity).supportActionBar!!
             actionBar.setDisplayHomeAsUpEnabled(true)
             actionBar.setDisplayShowHomeEnabled(true)
             searchView.setQuery(it, true)

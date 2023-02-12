@@ -3,14 +3,14 @@ package com.kamui.rin.fragment
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.chip.Chip
+import com.kamui.rin.R
 import com.kamui.rin.databinding.FragmentWordDetailBinding
 import com.kamui.rin.db.AppDatabase
 import com.kamui.rin.db.DictEntry
@@ -51,12 +51,16 @@ class WordDetailFragment : Fragment() {
     private val binding get() = _binding!!
     private val args: WordDetailFragmentArgs by navArgs()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentWordDetailBinding.inflate(inflater, container, false)
-//        binding.closeBtn.setOnClickListener { finishAffinity() }
 
         val viewModel: WordDetailViewModel by viewModels {
             WordDetailViewModelFactory(AppDatabase.buildDatabase(binding.root.context), args.wordId)
@@ -67,7 +71,9 @@ class WordDetailFragment : Fragment() {
                 viewModel.uiState.collect {
                     val (entry) = it
                     if (entry != null) {
-//                        binding.toolbar.title = entry.kanji
+                        // set title bar to word
+                        (requireActivity() as AppCompatActivity).supportActionBar?.title = entry.kanji
+
                         binding.secondaryTextCard.text = entry.reading
                         binding.wordTextView.text = entry.kanji
                         binding.meaningTextView.text = entry.meaning
@@ -91,6 +97,17 @@ class WordDetailFragment : Fragment() {
         }
 
         return binding.root
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.detail_action_bar, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.action_close) {
+            activity?.finishAffinity()
+        }
+        return true
     }
 
     private fun configureChip(tag: Tag) {

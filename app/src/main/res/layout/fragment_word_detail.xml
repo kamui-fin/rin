@@ -120,20 +120,4 @@
             </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
     </ScrollView>
-
-    <!--    <ImageButton-->
-    <!--        android:id="@+id/closeBtn"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:layout_marginEnd="16dp"-->
-    <!--        android:layout_marginRight="16dp"-->
-    <!--        android:layout_marginBottom="16dp"-->
-    <!--        android:background="?attr/selectableItemBackgroundBorderless"-->
-    <!--        android:foreground="?attr/selectableItemBackgroundBorderless"-->
-    <!--        app:layout_constraintBottom_toBottomOf="@+id/toolbar"-->
-    <!--        app:layout_constraintEnd_toEndOf="@+id/toolbar"-->
-    <!--        app:layout_constraintTop_toTopOf="parent"-->
-    <!--        app:layout_constraintVertical_bias="1.0"-->
-    <!--        app:srcCompat="@drawable/ic_close_white_24dp" />-->
-
 </androidx.constraintlayout.widget.ConstraintLayout>
