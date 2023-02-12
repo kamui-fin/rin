@@ -5,6 +5,11 @@ import androidx.room.Query
 
 @Dao
 interface DictDao {
+    @Query("SELECT * FROM dictionary WHERE id = :id")
+    fun searchEntryById(
+        id: Int
+    ): DictEntry
+
     @Query("SELECT * FROM dictionary WHERE kanji = :query AND dictname NOT IN (:disabled)")
     fun searchEntryByKanji(
         query: String,
@@ -12,7 +17,7 @@ interface DictDao {
     ): List<DictEntry>
 
     @Query("SELECT * FROM dictionary WHERE reading = :query AND dictname NOT IN (:disabled)")
-    fun searchEntryReading(
+    fun searchEntryByReading(
         query: String,
         disabled: List<String>
     ): List<DictEntry>

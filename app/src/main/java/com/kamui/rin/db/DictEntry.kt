@@ -16,16 +16,16 @@ import androidx.room.PrimaryKey
 data class DictEntry(
     @PrimaryKey var id: Int,
     @ColumnInfo(name = "kanji", typeAffinity = 2) var kanji: String,
+    @ColumnInfo(name = "meaning", typeAffinity = 2) var meaning: String,
     @ColumnInfo(name = "reading", typeAffinity = 2) var reading: String,
     @ColumnInfo(name = "tags", typeAffinity = 2) var tags: String,
-    @ColumnInfo(name = "meaning", typeAffinity = 2) private var meaning: String,
     @ColumnInfo(name = "dictname", typeAffinity = 2) var dictionaryName: String,
     @ColumnInfo(name = "orderdict", typeAffinity = 3) val dictOrder: Int,
     @ColumnInfo(name = "pitchaccent", typeAffinity = 2) var pitchAccent: String?,
     @ColumnInfo(name = "freq", typeAffinity = 3) var freq: Int?,
 ) : Comparable<DictEntry> {
 
-    fun getMeaning(): String {
+    val formattedMeaning: String get() {
         return meaning.replace("\n", "\n\n").trim { it <= ' ' }
     }
 

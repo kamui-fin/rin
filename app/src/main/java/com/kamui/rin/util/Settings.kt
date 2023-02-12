@@ -13,10 +13,10 @@ class Settings(private val sharedPreferences: SharedPreferences) {
                 "meikyoEnable" to "明鏡国語辞典"
             )
             val disabledDicts: MutableList<String> = ArrayList()
-            for ((k, v) in dictMap) {
-                val isEnabled = sharedPreferences.getBoolean(k, true)
+            for ((key, name) in dictMap) {
+                val isEnabled = sharedPreferences.getBoolean(key, true)
                 if (!isEnabled)
-                    disabledDicts.add(v)
+                    disabledDicts.add(name)
             }
             return disabledDicts
         }
@@ -26,7 +26,7 @@ class Settings(private val sharedPreferences: SharedPreferences) {
             return sharedPreferences.getBoolean("showBilingualFirst", false)
         }
 
-    val shouldDeconj: Boolean
+    val shouldDeconjugate: Boolean
         get() {
             return sharedPreferences.getBoolean("shouldDeconjugate", true)
         }

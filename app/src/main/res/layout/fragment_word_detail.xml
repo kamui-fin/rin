@@ -11,7 +11,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar">
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -39,8 +39,6 @@
                         android:orientation="vertical"
                         android:padding="16dp">
 
-                        <!-- Title, secondary and supporting text -->
-
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
@@ -65,8 +63,6 @@
                                 android:textAlignment="textEnd"
                                 android:textAppearance="?attr/textAppearanceHeadline2"
                                 android:textSize="18sp" />
-
-
                         </LinearLayout>
 
                         <TextView
@@ -92,9 +88,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="12dp" />
-
                     </LinearLayout>
-
                 </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>
@@ -114,7 +108,6 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <!-- Title, secondary and supporting text -->
                     <TextView
                         android:id="@+id/pitchText"
                         android:layout_width="wrap_content"
@@ -123,42 +116,24 @@
                         android:padding="16dp"
                         android:textAppearance="?attr/textAppearanceBody2"
                         android:textColor="?android:attr/textColorSecondary" />
-
                 </LinearLayout>
-
             </com.google.android.material.card.MaterialCardView>
-
         </LinearLayout>
-
     </ScrollView>
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        android:theme="@style/AppTheme.Toolbar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_scrollFlags="scroll|enterAlways"
-        app:title="Rin"
-        app:titleTextColor="#f0f0f0" />
-
-    <ImageButton
-        android:id="@+id/closeBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:foreground="?attr/selectableItemBackgroundBorderless"
-        app:srcCompat="@drawable/ic_close_white_24dp"
-        app:layout_constraintBottom_toBottomOf="@+id/toolbar"
-        app:layout_constraintEnd_toEndOf="@+id/toolbar"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0"
-        android:layout_marginRight="16dp" />
+    <!--    <ImageButton-->
+    <!--        android:id="@+id/closeBtn"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginEnd="16dp"-->
+    <!--        android:layout_marginRight="16dp"-->
+    <!--        android:layout_marginBottom="16dp"-->
+    <!--        android:background="?attr/selectableItemBackgroundBorderless"-->
+    <!--        android:foreground="?attr/selectableItemBackgroundBorderless"-->
+    <!--        app:layout_constraintBottom_toBottomOf="@+id/toolbar"-->
+    <!--        app:layout_constraintEnd_toEndOf="@+id/toolbar"-->
+    <!--        app:layout_constraintTop_toTopOf="parent"-->
+    <!--        app:layout_constraintVertical_bias="1.0"-->
+    <!--        app:srcCompat="@drawable/ic_close_white_24dp" />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

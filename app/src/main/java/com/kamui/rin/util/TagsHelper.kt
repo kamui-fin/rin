@@ -2,9 +2,9 @@ package com.kamui.rin.util
 
 import android.content.Context
 import android.os.Build
-import android.os.Parcel
 import android.os.Parcelable
 import androidx.annotation.RequiresApi
+import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -13,6 +13,7 @@ import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
 
 @Serializable
+@Parcelize
 data class Tag(
     val name: String,
     val category: String,
@@ -20,56 +21,23 @@ data class Tag(
     val description: String,
     val score: Int,
     val color: String
-): Parcelable {
-    constructor(parcel: Parcel) : this(
-        parcel.readString()!!,
-        parcel.readString()!!,
-        parcel.readInt(),
-        parcel.readString()!!,
-        parcel.readInt(),
-        parcel.readString()!!
-    )
+): Parcelable
 
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeString(name)
-        parcel.writeString(category)
-        parcel.writeInt(order)
-        parcel.writeString(description)
-        parcel.writeInt(score)
-        parcel.writeString(color)
-    }
-
-    companion object CREATOR : Parcelable.Creator<Tag> {
-        override fun createFromParcel(parcel: Parcel): Tag {
-            return Tag(parcel)
-        }
-
-        override fun newArray(size: Int): Array<Tag?> {
-            return arrayOfNulls(size)
-        }
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.KITKAT)
-class TagsHelper(mContext: Context) {
-    private var tags: List<Tag>
+class TagsHelper(context: Context) {
+    private var tags: Map<String, Tag>
 
     init {
         val reader = BufferedReader(
             InputStreamReader(
-                mContext.assets.open("tags.json"),
+                context.assets.open("tags.json"),
                 StandardCharsets.UTF_8
             )
         )
         val text = reader.readText()
-        tags = Json.decodeFromString(text)
+        tags = Json.decodeFromString<List<Tag>>(text).associateBy { it.name }
     }
 
     fun getTagFromName(name: String): Tag? {
-        return tags.find { t -> t.name == name }
+        return tags[name]
     }
 }

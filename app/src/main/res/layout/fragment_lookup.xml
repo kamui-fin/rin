@@ -19,7 +19,7 @@
     </androidx.recyclerview.widget.RecyclerView>
 
     <ProgressBar
-        android:id="@+id/pBar"
+        android:id="@+id/progressBar"
         style="?android:attr/progressBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -28,34 +28,43 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/resultRecyclerView" />
 
+
     <ImageView
-        android:id="@+id/glass"
+        android:id="@+id/homeImage"
         android:layout_width="72dp"
         android:layout_height="68dp"
         android:layout_marginBottom="30dp"
-        app:layout_constraintBottom_toTopOf="@+id/glassText"
+        app:layout_constraintBottom_toTopOf="@+id/homePrompt"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/magnifiying_glass" />
 
     <TextView
-        android:id="@+id/glassText"
+        android:id="@+id/homePrompt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/start_by_looking_up_a_word"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pBar" />
+        app:layout_constraintTop_toBottomOf="@+id/progressBar" />
 
     <TextView
         android:id="@+id/noResultsFound"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="Failed to find relevant results"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/homeGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        app:constraint_referenced_ids="homeImage,homePrompt" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

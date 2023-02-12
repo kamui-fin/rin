@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/lookup_fragment">
+
+    <fragment
+        android:id="@+id/settings_fragment"
+        android:name="com.kamui.rin.fragment.SettingsFragment"
+        android:label="SettingsFragment" />
+    <fragment
+        android:id="@+id/lookup_fragment"
+        android:name="com.kamui.rin.fragment.LookupFragment"
+        android:label="fragment_lookup"
+        tools:layout="@layout/fragment_lookup" >
+        <action
+            android:id="@+id/getDetails"
+            app:destination="@id/word_detail_fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/word_detail_fragment"
+        android:name="com.kamui.rin.fragment.WordDetailFragment"
+        android:label="WordDetailFragment" >
+        <argument
+            android:name="wordId"
+            app:argType="integer" />
+    </fragment>
+</navigation>

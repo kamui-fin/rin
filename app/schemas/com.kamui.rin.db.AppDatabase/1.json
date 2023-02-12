@@ -6,7 +6,7 @@
     "entities": [
       {
         "tableName": "dictionary",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `kanji` TEXT NOT NULL, `reading` TEXT NOT NULL, `tags` TEXT NOT NULL, `meaning` TEXT NOT NULL, `dictname` TEXT NOT NULL, `orderdict` INTEGER NOT NULL, `pitchaccent` TEXT, `freq` INTEGER, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `kanji` TEXT NOT NULL, `meaning` TEXT NOT NULL, `reading` TEXT NOT NULL, `tags` TEXT NOT NULL, `dictname` TEXT NOT NULL, `orderdict` INTEGER NOT NULL, `pitchaccent` TEXT, `freq` INTEGER, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -21,6 +21,12 @@
             "notNull": true
           },
           {
+            "fieldPath": "meaning",
+            "columnName": "meaning",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
             "fieldPath": "reading",
             "columnName": "reading",
             "affinity": "TEXT",
@@ -29,12 +35,6 @@
           {
             "fieldPath": "tags",
             "columnName": "tags",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "meaning",
-            "columnName": "meaning",
             "affinity": "TEXT",
             "notNull": true
           },

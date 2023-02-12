@@ -1,8 +1,6 @@
 package com.kamui.rin.db
 
 import android.content.Context
-import android.os.Build
-import androidx.annotation.RequiresApi
 import com.kamui.rin.util.Settings
 import com.kamui.rin.util.TagsHelper
 import com.kamui.rin.util.Tag
@@ -11,17 +9,18 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class DBHelper(
-    mContext: Context,
+    context: Context,
     deinflectionText: String,
     private val settings: Settings
 ) {
-    private val db: AppDatabase = AppDatabase.buildDatabase(mContext)
+    private val db: AppDatabase = AppDatabase.buildDatabase(context)
     private val dao: DictDao = db.dictDao()
     private var deinflector: Deinflector = Deinflector(deinflectionText)
 
     fun lookup(query: String): List<DictEntry> {
         val possibleVariations = normalizeWord(query).toMutableList()
         val entries: MutableList<DictEntry> = ArrayList()
+
         if (possibleVariations.isEmpty()) {
             possibleVariations.add(query)
         }
@@ -34,7 +33,7 @@ class DBHelper(
                 } else {
                     variation
                 }
-                results = dao.searchEntryReading(convertedToHiragana, settings.disabledDicts)
+                results = dao.searchEntryByReading(convertedToHiragana, settings.disabledDicts)
                 if (results.isEmpty()) {
                     results = dao.searchEntryByKanji(variation, settings.disabledDicts)
                 }
@@ -49,12 +48,13 @@ class DBHelper(
         } else {
             entries.sort()
         }
+
         return entries
     }
 
     private fun normalizeWord(word: String): List<String> {
-        println(settings.shouldDeconj)
-        return if (settings.shouldDeconj) {
+        println(settings.shouldDeconjugate)
+        return if (settings.shouldDeconjugate) {
             deconjugateWord(word.trim { it <= ' ' })
         } else {
             mutableListOf(word)
@@ -111,9 +111,8 @@ fun katakanaToHiragana(katakanaWord: String): String {
     return katakanaWord.map { c -> toHiragana(c) }.toString()
 }
 
-@RequiresApi(Build.VERSION_CODES.KITKAT)
-fun getTagsFromSplitted(entry: DictEntry, mContext: Context): List<Tag> {
-    val helper = TagsHelper(mContext)
-    val splitted: List<String> = entry.tags.split("\\s+")
-    return splitted.mapNotNull { w -> helper.getTagFromName(w) }
+fun getTagsFromSplit(entry: DictEntry, context: Context): List<Tag> {
+    val helper = TagsHelper(context)
+    val split: List<String> = entry.tags.split("\\s+")
+    return split.mapNotNull { w -> helper.getTagFromName(w) }
 }

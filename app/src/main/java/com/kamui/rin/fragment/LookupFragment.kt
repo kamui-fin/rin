@@ -1,43 +1,73 @@
 package com.kamui.rin.fragment
 
 import android.content.Intent
-import android.content.SharedPreferences
-import android.os.Build
 import android.os.Bundle
 import android.view.*
-import android.view.animation.AnimationUtils
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.TextView
-import androidx.activity.addCallback
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.*
+import androidx.navigation.NavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.NavigationUI.setupActionBarWithNavController
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.kamui.rin.DictEntryAdapter
 import com.kamui.rin.R
+import com.kamui.rin.databinding.FragmentLookupBinding
 import com.kamui.rin.db.DBHelper
 import com.kamui.rin.db.DictEntry
 import com.kamui.rin.util.Settings
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.IOException
 
+data class LookupState(
+    val results: List<DictEntry> = listOf(),
+    val currentlySearching: Boolean = false,
+    val showStartPrompt: Boolean = true,
+    val noResultsFound: Boolean = false
+)
+
+class LookupViewModel : ViewModel() {
+    private val _uiState = MutableStateFlow(LookupState())
+    val uiState: StateFlow<LookupState> = _uiState.asStateFlow()
+
+    fun lookupWord(query: String, helper: DBHelper) {
+        _uiState.update { state ->
+            state.copy(
+                currentlySearching = true,
+                noResultsFound = false,
+                showStartPrompt = false
+            )
+        }
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.update { state ->
+                val dictEntries = helper.lookup(query)
+                state.copy(
+                    currentlySearching = false,
+                    noResultsFound = dictEntries.isEmpty(),
+                    results = dictEntries
+                )
+            }
+        }
+    }
+}
+
+
 class LookupFragment : Fragment() {
+    val state: LookupViewModel by viewModels()
+    private var _binding: FragmentLookupBinding? = null
+    private val binding get() = _binding!!
+
     lateinit var helper: DBHelper
-    lateinit var pbar: ProgressBar
-    lateinit var recyclerView: RecyclerView
-    lateinit var img: ImageView
-    lateinit var support: TextView
-    lateinit var notFoundView: TextView
     lateinit var adapter: DictEntryAdapter
-    private lateinit var sharedPreferences: SharedPreferences
-    var results: MutableList<DictEntry> = mutableListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,62 +78,54 @@ class LookupFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        adapter = DictEntryAdapter(requireContext(), results)
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        helper = DBHelper(requireContext(), readDeinflectJsonFile(), Settings(sharedPreferences))
-        val view = inflater.inflate(R.layout.fragment_lookup, container, false)
-        pbar = view.findViewById(R.id.pBar)
-        pbar.visibility = View.GONE
-        support = view.findViewById(R.id.glassText)
-        img = view.findViewById(R.id.glass)
-        notFoundView = view.findViewById(R.id.noResultsFound)
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                state.uiState.collect {
+                    // new/changed entries
+                    adapter = DictEntryAdapter(requireContext(), it.results)
+                    binding.resultRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+                    binding.resultRecyclerView.adapter = adapter
+                    adapter.notifyDataSetChanged()
 
-        return view
+                    binding.homeGroup.visibility =
+                        if (it.showStartPrompt) View.VISIBLE else View.GONE
+                    binding.progressBar.visibility =
+                        if (it.currentlySearching) View.VISIBLE else View.GONE
+                    binding.noResultsFound.visibility =
+                        if (it.noResultsFound) View.VISIBLE else View.GONE
+                }
+            }
+        }
+
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        helper = DBHelper(requireContext(), readDeinflectJsonFile(), Settings(sharedPreferences))
+        _binding = FragmentLookupBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.top_app_bar, menu)
-        val myActionMenuItem = menu.findItem(R.id.action_search)
-        val searchView = myActionMenuItem.actionView as SearchView
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            @RequiresApi(api = Build.VERSION_CODES.O)
-            override fun onQueryTextSubmit(query: String): Boolean {
-                val vm = LookupViewModel()
-                vm.lookup(query)
-                if (!searchView.isIconified) {
-                    searchView.isIconified = true
-                }
-                myActionMenuItem.collapseActionView()
-                return false
-            }
 
-            override fun onQueryTextChange(s: String): Boolean {
-                if (s.length == 1) {
-                    results.clear()
-                    adapter.notifyDataSetChanged()
-                }
-                img.visibility = View.INVISIBLE
-                support.visibility = View.INVISIBLE
-                notFoundView.text = ""
+        val searchAction = menu.findItem(R.id.action_search)
+        val searchView = searchAction.actionView as SearchView
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                state.lookupWord(query, helper)
                 return false
             }
+            override fun onQueryTextChange(s: String): Boolean { return false }
         })
-        val intent = requireActivity().intent
-        val value = handleIntent(intent)
-        if (value != null) {
-            (requireActivity() as AppCompatActivity).supportActionBar!!.setDisplayHomeAsUpEnabled(
-                true
-            )
-            (requireActivity() as AppCompatActivity).supportActionBar!!.setDisplayShowHomeEnabled(
-                true
-            )
-            myActionMenuItem.expandActionView()
-            searchView.setQuery(value, true)
+
+        // query intent
+        handleIntent(requireActivity().intent)?.let {
+            val actionBar = (requireActivity() as AppCompatActivity).supportActionBar!!
+            actionBar.setDisplayHomeAsUpEnabled(true)
+            actionBar.setDisplayShowHomeEnabled(true)
+            searchView.setQuery(it, true)
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private fun handleIntent(intent: Intent): String? {
         return if (Intent.ACTION_PROCESS_TEXT == intent.action) {
             val keyword = intent.getCharSequenceExtra(Intent.EXTRA_PROCESS_TEXT)
@@ -114,39 +136,15 @@ class LookupFragment : Fragment() {
     }
 
     private fun readDeinflectJsonFile(): String {
-        var tContents = ""
-        try {
+        return try {
             val stream = requireContext().assets.open("deinflect.json")
             val size = stream.available()
             val buffer = ByteArray(size)
             stream.read(buffer)
             stream.close()
-            tContents = String(buffer)
+            String(buffer)
         } catch (e: IOException) {
-        }
-        return tContents
-    }
-
-    inner class LookupViewModel : ViewModel() {
-        @RequiresApi(Build.VERSION_CODES.O)
-        fun lookup(vararg query: String) {
-            pbar = requireActivity().findViewById(R.id.pBar)
-            pbar.bringToFront()
-            pbar.visibility = View.VISIBLE
-            viewModelScope.launch(Dispatchers.IO) {
-                results = helper.lookup(query[0]) as MutableList<DictEntry>
-                requireActivity().runOnUiThread {
-                    pbar.visibility = View.INVISIBLE
-                    if (results.isEmpty()) {
-                        notFoundView.text = getString(R.string.not_found)
-                    }
-                    recyclerView = requireActivity().findViewById(R.id.resultRecyclerView)
-                    recyclerView.layoutManager = LinearLayoutManager(requireContext())
-                    adapter = DictEntryAdapter(requireContext(), results)
-                    recyclerView.adapter = adapter
-                    adapter.notifyDataSetChanged()
-                }
-            }
+            ""
         }
     }
 }
