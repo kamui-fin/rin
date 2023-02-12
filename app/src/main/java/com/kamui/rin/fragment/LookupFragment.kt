@@ -29,7 +29,8 @@ data class LookupState(
     val results: List<DictEntry> = listOf(),
     val currentlySearching: Boolean = false,
     val showStartPrompt: Boolean = true,
-    val noResultsFound: Boolean = false
+    val noResultsFound: Boolean = false,
+    val lastQuery: String? = null
 )
 
 class LookupViewModel : ViewModel() {
@@ -41,7 +42,8 @@ class LookupViewModel : ViewModel() {
             state.copy(
                 currentlySearching = true,
                 noResultsFound = false,
-                showStartPrompt = false
+                showStartPrompt = false,
+                lastQuery = query
             )
         }
         viewModelScope.launch(Dispatchers.IO) {
@@ -87,6 +89,8 @@ class LookupFragment : Fragment() {
                     binding.resultRecyclerView.adapter = adapter
                     adapter.notifyDataSetChanged()
 
+                    if (it.lastQuery != null) actionBar.title = "Results for ${it.lastQuery}"
+
                     binding.homeGroup.visibility =
                         if (it.showStartPrompt) View.VISIBLE else View.GONE
                     binding.progressBar.visibility =
@@ -114,7 +118,6 @@ class LookupFragment : Fragment() {
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 state.lookupWord(query, helper)
-                actionBar.title = "Results for $query"
                 return false
             }
             override fun onQueryTextChange(s: String): Boolean { return false }

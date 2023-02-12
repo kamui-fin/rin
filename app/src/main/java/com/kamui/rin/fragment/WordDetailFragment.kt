@@ -74,23 +74,17 @@ class WordDetailFragment : Fragment() {
                         // set title bar to word
                         (requireActivity() as AppCompatActivity).supportActionBar?.title = entry.kanji
 
+                        // fill in UI elements
                         binding.secondaryTextCard.text = entry.reading
                         binding.wordTextView.text = entry.kanji
                         binding.meaningTextView.text = entry.meaning
                         binding.pitchText.text = entry.pitchAccent
                         binding.freqChip.text = formatFrequency(entry.freq)
+                        getTagsFromSplit(entry.tags, binding.root.context).forEach { tag -> configureChip(tag) }
 
-                        getTagsFromSplit(entry, binding.root.context).forEach { tag -> configureChip(tag) }
-
-                        if (entry.pitchAccent == null) {
-                            binding.pitchCard.visibility = View.GONE
-                        }
-                        if (entry.freq == null) {
-                            binding.freqChip.visibility = View.GONE
-                        }
-                        if (entry.tags.isEmpty()) {
-                            binding.chipLayout.visibility = View.GONE
-                        }
+                        if (entry.pitchAccent == null) { binding.pitchCard.visibility = View.GONE }
+                        if (entry.freq == null) { binding.freqChip.visibility = View.GONE }
+                        if (entry.tags.isEmpty()) { binding.chipLayout.visibility = View.GONE }
                     }
                 }
             }
@@ -106,6 +100,8 @@ class WordDetailFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.action_close) {
             activity?.finishAffinity()
+        } else {
+            return super.onOptionsItemSelected(item)
         }
         return true
     }
@@ -113,17 +109,15 @@ class WordDetailFragment : Fragment() {
     private fun configureChip(tag: Tag) {
         val chip = Chip(context)
         chip.text = tag.name
-        chip.chipStartPadding = 30f
         chip.setOnClickListener { showTagAlert(tag) }
         binding.chipLayout.addView(chip)
     }
 
     private fun showTagAlert(tag: Tag) {
-        val alertDialog = AlertDialog.Builder(activity).create()
-        alertDialog.setMessage(tag.description)
-        alertDialog.setButton(
-            AlertDialog.BUTTON_NEUTRAL, "OK"
-        ) { dialog: DialogInterface, _: Int -> dialog.dismiss() }
+        val alertDialog = AlertDialog.Builder(activity)
+            .setMessage(tag.description)
+            .setPositiveButton("OK") { dialog: DialogInterface, _: Int -> dialog.dismiss() }
+            .create()
         alertDialog.show()
     }
 

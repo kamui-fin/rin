@@ -47,7 +47,7 @@ class DictEntryAdapter(private val context: Context, private val entries: List<D
         holder.binding.meaningTextView.text = trimDefinition(entry.formattedMeaning)
         holder.binding.dictName.text = entry.shortenedDictName
         holder.binding.card.setOnClickListener {
-            val action = LookupFragmentDirections.getDetails(entry.id)
+            val action = LookupFragmentDirections.getDetails(entry.id, entry.kanji)
             it.findNavController().navigate(action)
         }
         setAnimation(holder.itemView, position)

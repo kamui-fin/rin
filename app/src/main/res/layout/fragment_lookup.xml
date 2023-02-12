@@ -28,7 +28,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/resultRecyclerView" />
 
-
     <ImageView
         android:id="@+id/homeImage"
         android:layout_width="72dp"
@@ -48,7 +47,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/progressBar" />
+        app:layout_constraintTop_toTopOf="@+id/resultRecyclerView" />
 
     <TextView
         android:id="@+id/noResultsFound"

@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#1e1e1e</color>
-    <color name="colorBottomNav">#1e1e1e</color>
-    <color name="colorFrontCard">#1e1e1e</color>
-    <color name="colorIcon">#ababab</color>
-    <color name="colorPrimaryDark">#000000</color>
-    <color name="colorPrimaryLight">#424242</color>
+    <color name="colorBackground">#121212</color>
+    <color name="colorSurface">#050505</color>
+
+    <color name="colorPrimary">@color/colorAccent</color>
     <color name="colorAccent">#74CBF2</color>
+
+    <color name="colorFrontCard">@color/colorSurface</color>
+
+    <color name="colorIcon">#ababab</color>
     <color name="white">#fff</color>
 </resources>

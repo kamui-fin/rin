@@ -53,7 +53,6 @@ class DBHelper(
     }
 
     private fun normalizeWord(word: String): List<String> {
-        println(settings.shouldDeconjugate)
         return if (settings.shouldDeconjugate) {
             deconjugateWord(word.trim { it <= ' ' })
         } else {
@@ -98,10 +97,8 @@ fun allHiragana(word: String): Boolean {
 
 fun isAllKana(word: String): Boolean {
     for (element in word) {
-        return if (element in 'ぁ'..'ゞ' || element in 'ァ'..'ヾ') {
-            continue
-        } else {
-            false
+        if (!(element in 'ぁ'..'ゞ' || element in 'ァ'..'ヾ')) {
+            return false
         }
     }
     return true
@@ -111,8 +108,8 @@ fun katakanaToHiragana(katakanaWord: String): String {
     return katakanaWord.map { c -> toHiragana(c) }.toString()
 }
 
-fun getTagsFromSplit(entry: DictEntry, context: Context): List<Tag> {
+fun getTagsFromSplit(tags: String, context: Context): List<Tag> {
     val helper = TagsHelper(context)
-    val split: List<String> = entry.tags.split("\\s+")
+    val split: List<String> = tags.split("\\s+")
     return split.mapNotNull { w -> helper.getTagFromName(w) }
 }

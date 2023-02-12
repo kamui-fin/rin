@@ -15,7 +15,6 @@
         android:clickable="true"
         android:focusable="true"
         android:foreground="?android:attr/selectableItemBackground"
-
         app:cardBackgroundColor="@color/colorFrontCard"
         app:cardElevation="5dp">
 
@@ -78,11 +77,8 @@
                     android:textAppearance="?attr/textAppearanceBody2"
                     android:textColor="?android:attr/textColorSecondary" />
 
-
             </LinearLayout>
-
         </LinearLayout>
-
     </com.google.android.material.card.MaterialCardView>
 
 </LinearLayout>
