@@ -1,9 +1,7 @@
 package com.kamui.rin.util
 
 import android.content.Context
-import android.os.Build
 import android.os.Parcelable
-import androidx.annotation.RequiresApi
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
@@ -23,7 +21,7 @@ data class Tag(
     val color: String
 ): Parcelable
 
-class TagsHelper(context: Context) {
+class Tags(context: Context) {
     private var tags: Map<String, Tag>
 
     init {

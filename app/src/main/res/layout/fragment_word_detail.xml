@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -63,6 +64,7 @@
                                 android:textAlignment="textEnd"
                                 android:textAppearance="?attr/textAppearanceHeadline2"
                                 android:textSize="18sp" />
+
                         </LinearLayout>
 
                         <TextView
@@ -83,11 +85,30 @@
                             android:textIsSelectable="true"
                             android:textSize="16sp" />
 
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp">
+
+                            <ImageButton
+                                android:id="@+id/copyButton"
+                                android:layout_width="38dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:background="@null"
+                                android:textAlignment="textEnd"
+                                android:tint="@color/colorIcon"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:srcCompat="?attr/actionModeCopyDrawable" />
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
                         <com.google.android.material.chip.ChipGroup
                             android:id="@+id/chipLayout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="12dp" />
+
                     </LinearLayout>
                 </LinearLayout>
 

@@ -1,10 +1,15 @@
 package com.kamui.rin.fragment
 
 import android.app.AlertDialog
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import android.view.*
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
@@ -85,6 +90,13 @@ class WordDetailFragment : Fragment() {
                         if (entry.pitchAccent == null) { binding.pitchCard.visibility = View.GONE }
                         if (entry.freq == null) { binding.freqChip.visibility = View.GONE }
                         if (entry.tags.isEmpty()) { binding.chipLayout.visibility = View.GONE }
+
+                        binding.copyButton.setOnClickListener {
+                            val clipboard = activity?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                            val clip: ClipData = ClipData.newPlainText("${entry.kanji} definition", entry.meaning)
+                            clipboard.setPrimaryClip(clip)
+                            Toast.makeText(context, "Copied definition to clipboard", Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
             }

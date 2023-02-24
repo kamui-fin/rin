@@ -54,4 +54,5 @@
             app:iconSpaceReserved="false"
             app:defaultValue="false" />
     </PreferenceCategory>
+
 </PreferenceScreen>

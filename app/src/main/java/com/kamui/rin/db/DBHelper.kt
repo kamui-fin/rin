@@ -2,7 +2,7 @@ package com.kamui.rin.db
 
 import android.content.Context
 import com.kamui.rin.util.Settings
-import com.kamui.rin.util.TagsHelper
+import com.kamui.rin.util.Tags
 import com.kamui.rin.util.Tag
 import com.kamui.rin.util.Deinflector
 import java.util.*
@@ -109,7 +109,7 @@ fun katakanaToHiragana(katakanaWord: String): String {
 }
 
 fun getTagsFromSplit(tags: String, context: Context): List<Tag> {
-    val helper = TagsHelper(context)
+    val helper = Tags(context)
     val split: List<String> = tags.split("\\s+")
     return split.mapNotNull { w -> helper.getTagFromName(w) }
 }
