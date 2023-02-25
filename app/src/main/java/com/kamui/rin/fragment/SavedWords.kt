@@ -1,8 +1,7 @@
 package com.kamui.rin.fragment
 
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
+import android.app.AlertDialog
+import android.content.*
 import android.os.Bundle
 import android.os.Handler.Callback
 import android.view.LayoutInflater
@@ -11,6 +10,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.preference.Preference
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,13 +21,22 @@ import com.kamui.rin.R
 import com.kamui.rin.databinding.FragmentSavedWordsBinding
 import com.kamui.rin.databinding.LayoutListentryBinding
 import com.kamui.rin.databinding.SavedWordsItemBinding
+import com.kamui.rin.util.Settings
 import kotlinx.coroutines.NonDisposableHandle.parent
+import java.nio.charset.Charset
 
-val items = mutableListOf<String>("その", "後", "いつ", "定期", "購入", "商品", "未開封", "連絡", "電話", "メール")
+val items = mutableListOf("その", "後", "いつ", "定期", "購入", "商品", "未開封", "連絡", "電話", "メール")
 
 class SavedWords : Fragment() {
     private var _binding: FragmentSavedWordsBinding? = null
     private val binding get() = _binding!!
+
+    private lateinit var settings: Settings
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        settings = Settings(PreferenceManager.getDefaultSharedPreferences(context))
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -82,5 +92,22 @@ class SavedWords : Fragment() {
             }
         })
         itemTouchHelper.attachToRecyclerView(binding.wordListRecycler)
+
+        binding.saveButton.setOnClickListener {
+            val fileUri = settings.savedWordsPath
+            if (fileUri != null) {
+                val wordListString = items.joinToString("\n")
+                activity?.contentResolver?.takePersistableUriPermission(fileUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                val outputStream = activity?.contentResolver?.openOutputStream(fileUri, "wt")
+                outputStream?.write(wordListString.toByteArray())
+                outputStream?.close()
+            } else {
+                val alertDialog = AlertDialog.Builder(activity)
+                    .setMessage("Specify a file in settings")
+                    .setPositiveButton("OK") { dialog: DialogInterface, _: Int -> dialog.dismiss() }
+                    .create()
+                alertDialog.show()
+            }
+        }
     }
 }

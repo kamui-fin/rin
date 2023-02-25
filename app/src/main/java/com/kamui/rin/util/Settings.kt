@@ -48,8 +48,8 @@ class Settings(private val sharedPreferences: SharedPreferences) {
             }
         }
 
-    fun setSavedWordsPath(path: Uri) {
-        sharedPreferences.edit().putString("savedWordsPath", path.toString()).apply()
+    fun setSavedWordsPath(path: String) {
+        sharedPreferences.edit().putString("savedWordsPath", path).apply()
     }
 
 }

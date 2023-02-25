@@ -14,20 +14,25 @@ import com.kamui.rin.util.Settings
 import com.kamui.rin.util.setupTheme
 
 class SettingsFragment : PreferenceFragmentCompat() {
-    private val settings: Settings = Settings(PreferenceManager.getDefaultSharedPreferences(context))
+    private lateinit var settings: Settings
 
     private val activityResultLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) {
             if (it.resultCode == AppCompatActivity.RESULT_OK) {
-                val uri = it.data?.data
+                val uri = it.data?.dataString
                 if (uri != null) {
                     settings.setSavedWordsPath(uri)
                     updateSavedWordsPathLabel()
                 }
             }
         }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        settings = Settings(PreferenceManager.getDefaultSharedPreferences(context))
+    }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferences, rootKey)
@@ -56,6 +61,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             .addCategory(Intent.CATEGORY_OPENABLE)
             .setType("text/plain")
             .putExtra(Intent.EXTRA_TITLE, "words.txt")
+            .setFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
         activityResultLauncher.launch(intent)
     }
 }
