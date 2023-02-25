@@ -55,4 +55,16 @@
             app:defaultValue="false" />
     </PreferenceCategory>
 
+
+    <PreferenceCategory
+        app:title="Saved Words"
+        app:iconSpaceReserved="false">
+        <Preference
+            app:defaultValue="false"
+            app:iconSpaceReserved="false"
+            app:key="savedWordsPath"
+            app:summary="Not set"
+            app:title="Words File" />
+    </PreferenceCategory>
+
 </PreferenceScreen>

@@ -36,5 +36,10 @@
                 app:argType="string" />
         </fragment>
     </navigation>
+    <fragment
+        android:id="@+id/saved_words"
+        android:name="com.kamui.rin.fragment.SavedWords"
+        android:label="Saved Words"
+        tools:layout="@layout/fragment_saved_words" />
 
 </navigation>

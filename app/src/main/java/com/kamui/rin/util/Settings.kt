@@ -1,6 +1,8 @@
 package com.kamui.rin.util
 
 import android.content.SharedPreferences
+import android.net.Uri
+import androidx.preference.PreferenceManager
 
 class Settings(private val sharedPreferences: SharedPreferences) {
     val disabledDicts: List<String>
@@ -35,4 +37,19 @@ class Settings(private val sharedPreferences: SharedPreferences) {
         get() {
             return sharedPreferences.getBoolean("darkTheme", false)
         }
+
+    val savedWordsPath: Uri?
+        get() {
+            val uri = sharedPreferences.getString("savedWordsPath", null)
+            return if (uri != null) {
+                Uri.parse(uri)
+            } else {
+                null
+            }
+        }
+
+    fun setSavedWordsPath(path: Uri) {
+        sharedPreferences.edit().putString("savedWordsPath", path.toString()).apply()
+    }
+
 }

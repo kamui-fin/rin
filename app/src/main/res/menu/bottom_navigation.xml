@@ -1,5 +1,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:id="@+id/saved_words"
+        android:enabled="true"
+        android:icon="@drawable/ic_baseline_list_24"
+        android:title="Saved" />
+    <item
         android:id="@+id/lookup"
         android:enabled="true"
         android:icon="@drawable/ic_search_black_24dp"
