@@ -1,7 +1,9 @@
 package com.kamui.rin.fragment
 
 import android.app.AlertDialog
-import android.content.*
+import android.content.ContentResolver
+import android.content.DialogInterface
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -38,11 +40,12 @@ class SavedWordsViewModel(private val database: AppDatabase) : ViewModel() {
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            val savedWords = database.savedDao().getAllSaved()
-            _uiState.update { currentState ->
-                currentState.copy(
-                    words = savedWords
-                )
+            database.savedDao().getAllSaved().collect {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        words = it
+                    )
+                }
             }
         }
     }
@@ -52,7 +55,12 @@ class SavedWordsViewModel(private val database: AppDatabase) : ViewModel() {
             viewModelScope.launch(Dispatchers.IO) {
                 database.savedDao().deleteWord(state.words[index])
             }
-            state.copy(words = state.words.subList(0,index) + state.words.subList(index + 1, state.words.size))
+            state.copy(
+                words = state.words.subList(0, index) + state.words.subList(
+                    index + 1,
+                    state.words.size
+                )
+            )
         }
     }
 
@@ -67,7 +75,7 @@ class SavedWordsViewModel(private val database: AppDatabase) : ViewModel() {
     }
 }
 
-class SavedWordsViewModelFactory(private val database: AppDatabase): ViewModelProvider.Factory {
+class SavedWordsViewModelFactory(private val database: AppDatabase) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return SavedWordsViewModel(database) as T
     }
@@ -78,9 +86,9 @@ class SavedWords : Fragment() {
     private var _binding: FragmentSavedWordsBinding? = null
     private val binding get() = _binding!!
 
-     val wordsViewModel: SavedWordsViewModel by viewModels {
-         SavedWordsViewModelFactory(AppDatabase.buildDatabase(binding.root.context))
-     }
+    val wordsViewModel: SavedWordsViewModel by viewModels {
+        SavedWordsViewModelFactory(AppDatabase.buildDatabase(binding.root.context))
+    }
 
     private lateinit var settings: Settings
 
@@ -95,7 +103,12 @@ class SavedWords : Fragment() {
     ): View {
         _binding = FragmentSavedWordsBinding.inflate(inflater, container, false)
 
-        binding.wordListRecycler.addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
+        binding.wordListRecycler.addItemDecoration(
+            DividerItemDecoration(
+                context,
+                DividerItemDecoration.VERTICAL
+            )
+        )
         binding.wordListRecycler.layoutManager = LinearLayoutManager(context)
         val itemTouchHelper = ItemTouchHelper(ItemTouchCallback())
         itemTouchHelper.attachToRecyclerView(binding.wordListRecycler)
@@ -126,7 +139,7 @@ class SavedWords : Fragment() {
         }
     }
 
-    inner class ItemTouchCallback: ItemTouchHelper.Callback() {
+    inner class ItemTouchCallback : ItemTouchHelper.Callback() {
         override fun getMovementFlags(
             recyclerView: RecyclerView,
             viewHolder: RecyclerView.ViewHolder
@@ -148,11 +161,13 @@ class SavedWords : Fragment() {
         }
     }
 
-    inner class ViewHolder(val binding: SavedWordsItemBinding) : RecyclerView.ViewHolder(binding.root)
+    inner class ViewHolder(val binding: SavedWordsItemBinding) :
+        RecyclerView.ViewHolder(binding.root)
 
     inner class Adapter : RecyclerView.Adapter<SavedWords.ViewHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SavedWords.ViewHolder {
-            val binding = SavedWordsItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            val binding =
+                SavedWordsItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
             return ViewHolder(binding)
         }
 
