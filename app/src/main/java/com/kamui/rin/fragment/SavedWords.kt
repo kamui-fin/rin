@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
+import androidx.navigation.findNavController
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -17,8 +18,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.kamui.rin.databinding.FragmentSavedWordsBinding
 import com.kamui.rin.databinding.SavedWordsItemBinding
-import com.kamui.rin.db.DBHelper
-import com.kamui.rin.db.DictEntry
+import com.kamui.rin.db.AppDatabase
+import com.kamui.rin.db.SavedWord
 import com.kamui.rin.util.Settings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,15 +29,29 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class SavedWordsState(
-    val words: List<String> = listOf("その", "後", "いつ", "定期", "購入", "商品", "未開封", "連絡", "電話", "メール")
+    val words: List<SavedWord> = listOf()
 )
 
-class SavedWordsViewModel : ViewModel() {
+class SavedWordsViewModel(private val database: AppDatabase) : ViewModel() {
     private val _uiState = MutableStateFlow(SavedWordsState())
     val uiState: StateFlow<SavedWordsState> = _uiState.asStateFlow()
 
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            val savedWords = database.savedDao().getAllSaved()
+            _uiState.update { currentState ->
+                currentState.copy(
+                    words = savedWords
+                )
+            }
+        }
+    }
+
     fun deleteItem(index: Int) {
         _uiState.update { state ->
+            viewModelScope.launch(Dispatchers.IO) {
+                database.savedDao().deleteWord(state.words[index])
+            }
             state.copy(words = state.words.subList(0,index) + state.words.subList(index + 1, state.words.size))
         }
     }
@@ -52,24 +67,32 @@ class SavedWordsViewModel : ViewModel() {
     }
 }
 
+class SavedWordsViewModelFactory(private val database: AppDatabase): ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        return SavedWordsViewModel(database) as T
+    }
+}
+
 
 class SavedWords : Fragment() {
     private var _binding: FragmentSavedWordsBinding? = null
     private val binding get() = _binding!!
 
-     val wordsViewModel: SavedWordsViewModel by viewModels()
+     val wordsViewModel: SavedWordsViewModel by viewModels {
+         SavedWordsViewModelFactory(AppDatabase.buildDatabase(binding.root.context))
+     }
 
     private lateinit var settings: Settings
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        settings = Settings(PreferenceManager.getDefaultSharedPreferences(context))
+        settings = Settings(PreferenceManager.getDefaultSharedPreferences(requireContext()))
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentSavedWordsBinding.inflate(inflater, container, false)
 
         binding.wordListRecycler.addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
@@ -86,7 +109,6 @@ class SavedWords : Fragment() {
                 }
             }
         }
-
 
         return binding.root
     }
@@ -139,7 +161,12 @@ class SavedWords : Fragment() {
         }
 
         override fun onBindViewHolder(holder: SavedWords.ViewHolder, position: Int) {
-            holder.binding.word.text = wordsViewModel.uiState.value.words[position]
+            val kanji = wordsViewModel.uiState.value.words[position].kanji
+            holder.binding.word.text = kanji
+            holder.binding.root.setOnClickListener {
+                val searchLink = Uri.parse("rin://search/${kanji}")
+                it.findNavController().navigate(searchLink)
+            }
         }
     }
 }

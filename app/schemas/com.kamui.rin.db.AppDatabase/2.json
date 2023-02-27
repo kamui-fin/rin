@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 1,
-    "identityHash": "be8e8bffdfa1dca0bfee8f7a715f44f9",
+    "version": 2,
+    "identityHash": "001f4370f4e6a4b0cc6e2be49dae3566",
     "entities": [
       {
         "tableName": "dictionary",
@@ -64,10 +64,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "id"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [
           {
@@ -77,9 +77,36 @@
               "kanji",
               "reading"
             ],
+            "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `idx_word_reading` ON `${TABLE_NAME}` (`kanji`, `reading`)"
           }
         ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "saved_words",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `kanji` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "kanji",
+            "columnName": "kanji",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
         "foreignKeys": []
       }
     ],

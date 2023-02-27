@@ -9,6 +9,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
+import androidx.navigation.fragment.navArgs
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.kamui.rin.DictEntryAdapter
@@ -64,6 +65,8 @@ class LookupFragment : Fragment() {
     val state: LookupViewModel by viewModels()
     private var _binding: FragmentLookupBinding? = null
     private val binding get() = _binding!!
+
+    private val args: LookupFragmentArgs by navArgs()
 
     lateinit var helper: DBHelper
     lateinit var adapter: DictEntryAdapter
@@ -128,6 +131,10 @@ class LookupFragment : Fragment() {
             actionBar.setDisplayHomeAsUpEnabled(true)
             actionBar.setDisplayShowHomeEnabled(true)
             searchView.setQuery(it, true)
+        }
+
+        if (args.query != null) {
+            searchView.setQuery(args.query, true)
         }
     }
 

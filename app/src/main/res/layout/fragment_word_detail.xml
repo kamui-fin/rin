@@ -96,11 +96,27 @@
                                 android:layout_weight="1"
                                 android:background="@null"
                                 android:textAlignment="textEnd"
-                                android:tint="@color/colorIcon"
+                                app:tint="@color/colorIcon"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintTop_toTopOf="parent"
                                 app:srcCompat="?attr/actionModeCopyDrawable" />
+
+                            <ImageButton
+                                android:id="@+id/saveWordButton"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@null"
+                                android:scaleX="1"
+                                android:scaleY="1.1"
+                                android:translationX="-15dp"
+                                android:translationY="1dp"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toStartOf="@+id/copyButton"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:srcCompat="@drawable/ic_baseline_bookmark_border_24"
+                                app:tint="@color/colorIcon" />
+
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
                         <com.google.android.material.chip.ChipGroup

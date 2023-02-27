@@ -18,4 +18,13 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="1" />
 
+        <ImageView
+            android:id="@+id/searchWordIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_keyboard_arrow_right_24px" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

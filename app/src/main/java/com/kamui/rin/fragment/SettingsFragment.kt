@@ -31,7 +31,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        settings = Settings(PreferenceManager.getDefaultSharedPreferences(context))
+        settings = Settings(PreferenceManager.getDefaultSharedPreferences(requireContext()))
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -51,7 +51,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun updateSavedWordsPathLabel() {
-        if (PreferenceManager.getDefaultSharedPreferences(context).getString("savedWordsPath", null) != null) {
+        if (PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("savedWordsPath", null) != null) {
             findPreference<Preference>("savedWordsPath")?.summary = "Change path"
         }
     }

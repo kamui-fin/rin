@@ -19,6 +19,7 @@ import com.kamui.rin.R
 import com.kamui.rin.databinding.FragmentWordDetailBinding
 import com.kamui.rin.db.AppDatabase
 import com.kamui.rin.db.DictEntry
+import com.kamui.rin.db.SavedWord
 import com.kamui.rin.db.getTagsFromSplit
 import com.kamui.rin.util.Tag
 import kotlinx.coroutines.Dispatchers
@@ -27,19 +28,41 @@ import kotlinx.coroutines.launch
 import java.text.DecimalFormat
 
 data class WordDetailState(
-    val entry: DictEntry? = null
+    val entry: DictEntry? = null,
+    val saved: Boolean = false
 )
 
-class WordDetailViewModel(database: AppDatabase, wordId: Int) : ViewModel() {
+class WordDetailViewModel(private val database: AppDatabase, wordId: Int) : ViewModel() {
     private val _uiState = MutableStateFlow(WordDetailState())
     val uiState: StateFlow<WordDetailState> = _uiState.asStateFlow()
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.update { currentState ->
+                val entry = database.dictDao().searchEntryById(wordId)
                 currentState.copy(
-                    entry = database.dictDao().searchEntryById(wordId)
+                    entry = entry,
+                    saved = database.savedDao().existsWord(entry.kanji)
+
                 )
+            }
+        }
+    }
+
+    fun removeWord(kanji: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.update { currentState ->
+                database.savedDao().deleteWordByKanji(kanji)
+                currentState.copy(saved = false)
+            }
+        }
+    }
+
+    fun saveWord(kanji: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.update { currentState ->
+                database.savedDao().insertWord(SavedWord(kanji = kanji))
+                currentState.copy(saved = true)
             }
         }
     }
@@ -96,6 +119,20 @@ class WordDetailFragment : Fragment() {
                             val clip: ClipData = ClipData.newPlainText("${entry.kanji} definition", entry.meaning)
                             clipboard.setPrimaryClip(clip)
                             Toast.makeText(context, "Copied definition to clipboard", Toast.LENGTH_SHORT).show()
+                        }
+
+                        binding.saveWordButton.setOnClickListener { _ ->
+                            if (it.saved) {
+                                viewModel.removeWord(entry.kanji)
+                            } else {
+                                viewModel.saveWord(entry.kanji)
+                            }
+                        }
+
+                        if (it.saved) {
+                            binding.saveWordButton.setImageResource(R.drawable.ic_baseline_bookmark_added_24)
+                        } else {
+                            binding.saveWordButton.setImageResource(R.drawable.ic_baseline_bookmark_border_24)
                         }
                     }
                 }
