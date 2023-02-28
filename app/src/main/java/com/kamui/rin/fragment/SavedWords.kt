@@ -6,9 +6,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
@@ -18,6 +16,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.kamui.rin.R
 import com.kamui.rin.databinding.FragmentSavedWordsBinding
 import com.kamui.rin.databinding.SavedWordsItemBinding
 import com.kamui.rin.db.AppDatabase
@@ -64,6 +63,15 @@ class SavedWordsViewModel(private val database: AppDatabase) : ViewModel() {
         }
     }
 
+    fun deleteAll() {
+        _uiState.update { state ->
+            viewModelScope.launch(Dispatchers.IO) {
+                database.savedDao().deleteAllWords()
+            }
+            state.copy(words = listOf())
+        }
+    }
+
     fun saveWordsToFile(fileUri: Uri, resolver: ContentResolver?) {
         viewModelScope.launch(Dispatchers.IO) {
             val wordListString = uiState.value.words.joinToString("\n")
@@ -95,6 +103,7 @@ class SavedWords : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         settings = Settings(PreferenceManager.getDefaultSharedPreferences(requireContext()))
+        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(
@@ -125,6 +134,21 @@ class SavedWords : Fragment() {
 
         return binding.root
     }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.saved_words_action_bar, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.clearListButton -> {
+                wordsViewModel.deleteAll()
+                return true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
 
     private fun saveToFile() {
         val fileUri = settings.savedWordsPath

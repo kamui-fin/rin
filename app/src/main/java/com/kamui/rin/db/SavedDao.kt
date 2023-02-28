@@ -16,6 +16,9 @@ interface SavedDao {
     @Query("SELECT EXISTS(SELECT * FROM saved_words WHERE kanji = :kanji)")
     fun existsWord(kanji: String): Boolean
 
+    @Query("DELETE FROM saved_words")
+    fun deleteAllWords()
+
     @Delete
     fun deleteWord(word: SavedWord)
 
