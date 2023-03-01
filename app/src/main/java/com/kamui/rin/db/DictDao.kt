@@ -1,6 +1,8 @@
 package com.kamui.rin.db
 
 import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 
 @Dao
@@ -21,4 +23,7 @@ interface DictDao {
         query: String,
         disabled: List<String>
     ): List<DictEntry>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertEntries(entries: List<DictEntry>)
 }

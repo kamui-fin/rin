@@ -17,8 +17,6 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.kamui.rin.R
-import com.kamui.rin.databinding.FragmentSavedWordsBinding
-import com.kamui.rin.databinding.SavedWordsItemBinding
 import com.kamui.rin.db.AppDatabase
 import com.kamui.rin.db.SavedWord
 import com.kamui.rin.util.Settings
@@ -91,7 +89,7 @@ class SavedWordsViewModelFactory(private val database: AppDatabase) : ViewModelP
 
 
 class SavedWords : Fragment() {
-    private var _binding: FragmentSavedWordsBinding? = null
+    private var _binding: com.kamui.rin.databinding.FragmentSavedWordsBinding? = null
     private val binding get() = _binding!!
 
     val wordsViewModel: SavedWordsViewModel by viewModels {
@@ -185,7 +183,7 @@ class SavedWords : Fragment() {
         }
     }
 
-    inner class ViewHolder(val binding: SavedWordsItemBinding) :
+    inner class ViewHolder(val binding: com.kamui.rin.databinding.SavedWordsItemBinding) :
         RecyclerView.ViewHolder(binding.root)
 
     inner class Adapter : RecyclerView.Adapter<SavedWords.ViewHolder>() {

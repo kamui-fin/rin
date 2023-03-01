@@ -1,64 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
     <PreferenceCategory
-        app:title="Dictionaries"
-        app:iconSpaceReserved="false">
+        app:iconSpaceReserved="false"
+        app:title="Dictionaries">
         <SwitchPreference
+            app:defaultValue="true"
+            app:iconSpaceReserved="false"
             app:key="jmdictEnable"
-            app:title="JMdict (English)"
-            app:iconSpaceReserved="false"
-            app:defaultValue="true" />
+            app:title="JMdict (English)" />
         <SwitchPreference
+            app:defaultValue="true"
+            app:iconSpaceReserved="false"
             app:key="kenkyuuEnable"
-            app:title="研究社　新和英大辞典　第５版"
-            app:iconSpaceReserved="false"
-            app:defaultValue="true" />
+            app:title="研究社　新和英大辞典　第５版" />
         <SwitchPreference
+            app:defaultValue="true"
+            app:iconSpaceReserved="false"
             app:key="shinmeiEnable"
-            app:title="新明解国語辞典 第五版"
-            app:iconSpaceReserved="false"
-            app:defaultValue="true" />
+            app:title="新明解国語辞典 第五版" />
         <SwitchPreference
+            app:defaultValue="true"
+            app:iconSpaceReserved="false"
             app:key="daijirinEnable"
-            app:title="三省堂　スーパー大辞林"
-            app:iconSpaceReserved="false"
-            app:defaultValue="true" />
+            app:title="三省堂　スーパー大辞林" />
         <SwitchPreference
+            app:defaultValue="true"
+            app:iconSpaceReserved="false"
             app:key="meikyoEnable"
-            app:title="明鏡国語辞典"
-            app:iconSpaceReserved="false"
-            app:defaultValue="true" />
+            app:title="明鏡国語辞典" />
+        <Preference
+            app:icon="@drawable/ic_baseline_add_24"
+            app:key="addDictionary"
+            app:title="Add Dictionary" />
     </PreferenceCategory>
 
     <PreferenceCategory
-        app:title="Search"
-        app:iconSpaceReserved="false">
+        app:iconSpaceReserved="false"
+        app:title="Search">
         <SwitchPreference
+            app:defaultValue="true"
+            app:iconSpaceReserved="false"
             app:key="showBilingualFirst"
-            app:title="Show bilingual dictionaries first"
-            app:iconSpaceReserved="false"
-            app:defaultValue="true" />
+            app:title="Show bilingual dictionaries first" />
         <SwitchPreference
+            app:defaultValue="true"
+            app:iconSpaceReserved="false"
             app:key="shouldDeconjugate"
-            app:title="Deconjugate Words"
-            app:iconSpaceReserved="false"
-            app:defaultValue="true" />
+            app:title="Deconjugate Words" />
     </PreferenceCategory>
 
     <PreferenceCategory
-        app:title="Theme"
-        app:iconSpaceReserved="false">
+        app:iconSpaceReserved="false"
+        app:title="Theme">
         <SwitchPreference
-            app:key="darkTheme"
-            app:title="Dark Theme"
+            app:defaultValue="false"
             app:iconSpaceReserved="false"
-            app:defaultValue="false" />
+            app:key="darkTheme"
+            app:title="Dark Theme" />
     </PreferenceCategory>
 
 
     <PreferenceCategory
-        app:title="Saved Words"
-        app:iconSpaceReserved="false">
+        app:iconSpaceReserved="false"
+        app:title="Saved Words">
         <Preference
             app:defaultValue="false"
             app:iconSpaceReserved="false"
