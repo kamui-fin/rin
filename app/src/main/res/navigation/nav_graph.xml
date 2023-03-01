@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/settings_fragment"
-        android:name="com.kamui.rin.fragment.SettingsFragment"
+        android:name="com.kamui.rin.ui.fragment.SettingsFragment"
         android:label="Settings" />
 
     <navigation
@@ -17,7 +17,7 @@
             />
         <fragment
             android:id="@+id/lookup_fragment"
-            android:name="com.kamui.rin.fragment.LookupFragment"
+            android:name="com.kamui.rin.ui.fragment.LookupFragment"
             android:label="Dictionary"
             tools:layout="@layout/fragment_lookup">
             <action
@@ -33,7 +33,7 @@
 
         <fragment
             android:id="@+id/word_detail_fragment"
-            android:name="com.kamui.rin.fragment.WordDetailFragment"
+            android:name="com.kamui.rin.ui.fragment.WordDetailFragment"
             android:label="{title}">
             <argument
                 android:name="wordId"
@@ -45,7 +45,7 @@
     </navigation>
     <fragment
         android:id="@+id/saved_words"
-        android:name="com.kamui.rin.fragment.SavedWords"
+        android:name="com.kamui.rin.ui.fragment.SavedWords"
         android:label="Saved Words"
         tools:layout="@layout/fragment_saved_words" >
     </fragment>

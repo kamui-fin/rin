@@ -5,6 +5,10 @@ import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.kamui.rin.db.dao.DictDao
+import com.kamui.rin.db.dao.SavedDao
+import com.kamui.rin.db.model.DictEntry
+import com.kamui.rin.db.model.SavedWord
 
 @Database(
     entities = [DictEntry::class, SavedWord::class], version = 2, exportSchema = true,

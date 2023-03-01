@@ -9,7 +9,6 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.*
 import androidx.preference.PreferenceManager
 import com.kamui.rin.databinding.ActivityMainBinding
-import com.kamui.rin.util.Settings
 import com.kamui.rin.util.setupTheme
 
 class MainActivity : AppCompatActivity() {
