@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId "com.kamui.rin"
-        minSdkVersion 33
+        minSdkVersion 30
         targetSdkVersion 33
         versionCode 1
         versionName "1.0"

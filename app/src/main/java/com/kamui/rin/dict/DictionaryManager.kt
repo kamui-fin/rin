@@ -1,85 +1,132 @@
-package com.kamui.rin.util
+package com.kamui.rin.dict
 
 import android.content.Context
 import android.net.Uri
 import com.kamui.rin.db.AppDatabase
 import com.kamui.rin.db.model.DictEntry
+import com.kamui.rin.db.model.Dictionary
+import com.kamui.rin.db.model.Tag
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.jsonArray
 import java.io.FileNotFoundException
 import java.util.zip.ZipInputStream
 
-data class Index(
+val format = Json { ignoreUnknownKeys = true }
+
+// TODO: support v3 schema
+// TODO: custom pitch accent and frequency dictionaries
+
+@kotlinx.serialization.Serializable
+data class YomichanMeta(
     val title: String
 )
 
-data class Entry(
+@kotlinx.serialization.Serializable
+data class YomichanDictionaryEntry(
     val expression: String,
     val reading: String,
-    val definition_tags: String,
-    val rule_identifiers: String,
+    val definitionTags: String,
+    val ruleIdentifiers: String,
     val popularity: Int,
     val meanings: List<String>,
     val sequence: Int,
-    val term_tags: String,
+    val termTags: List<String>,
 )
 
+fun decodeDictionaryEntries(stringData: String): List<YomichanDictionaryEntry> {
+    val root: JsonArray = format.parseToJsonElement(stringData).jsonArray
+    return root.map {
+        YomichanDictionaryEntry(
+            it.jsonArray[0].toString(),
+            it.jsonArray[1].toString(),
+            it.jsonArray[2].toString(),
+            it.jsonArray[3].toString(),
+            it.jsonArray[4].toString().toInt(),
+            it.jsonArray[5].jsonArray.toList().map { meaning -> meaning.toString() },
+            it.jsonArray[6].toString().toInt(),
+            it.jsonArray[7].toString().split(" "),
+        )
+    }
+}
+
+fun decodeTags(stringData: String, dictId: Long): List<Tag> {
+    val root: JsonArray = format.parseToJsonElement(stringData).jsonArray
+    return root.map {
+        Tag(
+            dictionaryId = dictId,
+            name = it.jsonArray[0].toString(),
+            notes = it.jsonArray[3].toString(),
+        )
+    }
+}
+
+
 class DictionaryManager {
-    suspend fun importYomichan(uri: Uri, context: Context) {
+    suspend fun importYomichan(uri: Uri, context: Context, onProgress: (status: String) -> Unit) {
         withContext(Dispatchers.IO) {
             kotlin.runCatching {
                 context.contentResolver.openInputStream(uri).use { input ->
+                    onProgress("Scanning dictionary files")
                     if (input == null) throw FileNotFoundException("could not open dictionary")
+
                     val zipMap = ZipInputStream(input).use { stream ->
                         generateSequence { stream.nextEntry }
                             .filterNot { it.isDirectory }
                             .map { entry ->
-                                Pair<String, ByteArray>(entry.name, stream.readAllBytes())
+                                val pair = Pair<String, ByteArray>(entry.name, stream.readBytes())
+                                pair
                             }.toMap()
                     }
-
                     if (!zipMap.containsKey("index.json")) throw FileNotFoundException("index.json could not be found")
-                    // process index, title is enough
                     val index =
-                        Json.decodeFromString<Index>(zipMap["index.json"]!!.decodeToString())
-                    // TODO: process tags
-                    // process term banks
-                    val termEntries =
-                        zipMap.keys.filter { it.startsWith("term_bank_") && it.endsWith(".json") }
-                            .map { termBank ->
-                                Json.decodeFromString<Array<Array<JsonElement>>>(zipMap[termBank]!!.decodeToString())
-                                    .map { it ->
-                                        Entry(
-                                            it[0].toString(),
-                                            it[1].toString(),
-                                            it[2].toString(),
-                                            it[3].toString(),
-                                            it[4].toString().toInt(),
-                                            it[5].jsonArray.toList().map { elm -> elm.toString() },
-                                            it[6].toString().toInt(),
-                                            it[7].toString()
-                                        )
-                                    }
+                        format.decodeFromString<YomichanMeta>(zipMap["index.json"]!!.decodeToString())
+                    onProgress("Creating dictionary ${index.title}")
+                    val dictId = AppDatabase.buildDatabase(context).dictionaryDao()
+                        .insertDictionary(Dictionary(name = index.title))
+
+                    onProgress("Importing tags from ${index.title}")
+                    val tags =
+                        zipMap.filter { (key, _) -> key.startsWith("tag_bank") && key.endsWith(".json") }
+                            .map { (_, value) ->
+                                decodeTags(value.decodeToString(), dictId)
                             }.flatten()
+                    val tagMap = AppDatabase.buildDatabase(context).tagDao().insertTagsAndRetrieve(tags)
+                        .associateBy { it.name }
+
+                    onProgress("Importing entries from ${index.title}")
+                    val termEntries =
+                        zipMap.filter { (key, _) -> key.startsWith("term_bank_") && key.endsWith(".json") }
+                            .map { (_, termBank) ->
+                                val entries = decodeDictionaryEntries(termBank.decodeToString())
+                                entries
+                            }
+                            .flatten()
+
                     val dbEntries = termEntries.map { entry ->
                         entry.meanings.map { meaning ->
-                            DictEntry(
+                            meaning.replace("\n", "\n\n").trim { it <= ' ' }
+                        }.map { meaning ->
+                            Pair(DictEntry(
                                 kanji = entry.expression,
                                 meaning = meaning,
                                 reading = entry.reading,
-                                tags = entry.term_tags,
-                                dictionaryName = index.title,
+                                dictionaryId = dictId,
                                 freq = null,
                                 pitchAccent = null
-                            )
+                            ), entry.termTags.mapNotNull { tagMap[it] })
                         }
                     }.flatten()
-                    AppDatabase.buildDatabase(context).dictDao().insertEntries(dbEntries)
+
+                    onProgress("Inserting into database")
+                    AppDatabase.buildDatabase(context).dictEntryDao()
+                        .insertEntriesWithTags(dbEntries)
                 }
+            }.onFailure { exception ->
+                throw exception
             }
         }
     }

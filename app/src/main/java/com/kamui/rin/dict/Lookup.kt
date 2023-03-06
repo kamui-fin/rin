@@ -2,10 +2,10 @@ package com.kamui.rin.dict
 
 import android.content.Context
 import com.kamui.rin.db.AppDatabase
-import com.kamui.rin.db.dao.DictDao
+import com.kamui.rin.db.dao.DictEntryDao
 import com.kamui.rin.db.model.DictEntry
 import com.kamui.rin.Settings
-import com.kamui.rin.util.Deinflector
+import com.kamui.rin.db.model.Dictionary
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -15,19 +15,19 @@ class Lookup(
     private val settings: Settings
 ) {
     private val db: AppDatabase = AppDatabase.buildDatabase(context)
-    private val dao: DictDao = db.dictDao()
+    private val dao: DictEntryDao = db.dictEntryDao()
     private var deinflector: Deinflector = Deinflector(deinflectionText)
 
-    fun lookup(query: String): List<DictEntry> {
+    fun lookup(query: String): List<Pair<DictEntry, Dictionary>> {
         val possibleVariations = normalizeWord(query).toMutableList()
-        val entries: MutableList<DictEntry> = ArrayList()
+        val entries: MutableList<Pair<DictEntry, Dictionary>> = ArrayList()
 
         if (possibleVariations.isEmpty()) {
             possibleVariations.add(query)
         }
 
         for (variation in possibleVariations) {
-            var results: List<DictEntry>
+            var results: Map<DictEntry, Dictionary>
             if (isAllKana(variation)) {
                 val convertedToHiragana: String = if (!allHiragana(variation)) {
                     katakanaToHiragana(variation)
@@ -41,15 +41,13 @@ class Lookup(
             } else {
                 results = dao.searchEntryByKanji(variation, settings.disabledDicts)
             }
-            entries.addAll(results)
+            entries.addAll(results.toList())
         }
 
+        entries.sortWith(compareBy { it.second })
         if (settings.bilingualFirst) {
-            Collections.sort(entries, Collections.reverseOrder<Any>())
-        } else {
-            entries.sort()
+            return entries.asReversed()
         }
-
         return entries
     }
 

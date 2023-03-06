@@ -21,7 +21,7 @@ import com.kamui.rin.db.AppDatabase
 import com.kamui.rin.db.model.SavedWord
 import com.kamui.rin.Settings
 import com.kamui.rin.databinding.FragmentSavedWordsBinding
-import com.kamui.rin.databinding.SavedWordsItemBinding
+import com.kamui.rin.databinding.SavedWordBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -185,13 +185,13 @@ class SavedWordsFragment : Fragment() {
         }
     }
 
-    inner class ViewHolder(val binding: SavedWordsItemBinding) :
+    inner class ViewHolder(val binding: SavedWordBinding) :
         RecyclerView.ViewHolder(binding.root)
 
     inner class Adapter : RecyclerView.Adapter<SavedWordsFragment.ViewHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SavedWordsFragment.ViewHolder {
             val binding =
-                SavedWordsItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                SavedWordBinding.inflate(LayoutInflater.from(parent.context), parent, false)
             return ViewHolder(binding)
         }
 

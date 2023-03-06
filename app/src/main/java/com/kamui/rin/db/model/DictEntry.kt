@@ -1,51 +1,40 @@
 package com.kamui.rin.db.model
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.Index
-import androidx.room.PrimaryKey
+import androidx.room.*
 
 @Entity(
-    tableName = "dictionary",
+    foreignKeys = [
+        ForeignKey(
+            entity = Dictionary::class,
+            parentColumns = ["dictId"],
+            childColumns = ["dictionaryId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
     indices = [Index(
         value = ["kanji", "reading"],
         name = "idx_word_reading",
         unique = false
+    ), Index(
+        value = ["dictionaryId"],
+        name = "idx_dictionary_entry_ref",
+        unique = false
     )]
 )
 data class DictEntry(
-    @PrimaryKey(autoGenerate = true) var id: Int = 0,
-    @ColumnInfo(name = "kanji", typeAffinity = 2) var kanji: String,
-    @ColumnInfo(name = "meaning", typeAffinity = 2) var meaning: String,
-    @ColumnInfo(name = "reading", typeAffinity = 2) var reading: String,
-    @ColumnInfo(name = "tags", typeAffinity = 2) var tags: String,
-    @ColumnInfo(name = "dictname", typeAffinity = 2) var dictionaryName: String,
-    @ColumnInfo(name = "orderdict", typeAffinity = 3) val dictOrder: Int = 0,
-    @ColumnInfo(name = "pitchaccent", typeAffinity = 2) var pitchAccent: String?,
-    @ColumnInfo(name = "freq", typeAffinity = 3) var freq: Int?,
-) : Comparable<DictEntry> {
+    @PrimaryKey(autoGenerate = true) var entryId: Long = 0,
+    var kanji: String,
+    var meaning: String,
+    var reading: String,
+    var dictionaryId: Long,
+    // FIXME:
+    var pitchAccent: String?,
+    var freq: Int?,
+)
 
-    val formattedMeaning: String get() {
-        return meaning.replace("\n", "\n\n").trim { it <= ' ' }
-    }
-
-    val shortenedDictName: String
-        get() {
-            when (dictionaryName) {
-                "JMdict (English)" -> return "JMdict"
-                "研究社　新和英大辞典　第５版" -> return "研究社"
-                "新明解国語辞典 第五版" -> return "新明解"
-                "三省堂　スーパー大辞林" -> return "大辞林"
-                "明鏡国語辞典" -> return "明鏡"
-            }
-            return dictionaryName
-        }
-
-    override fun toString(): String {
-        return kanji + "\t" + reading + "\t" + dictionaryName
-    }
-
-    override operator fun compareTo(other: DictEntry): Int {
-        return dictOrder.compareTo(other.dictOrder)
-    }
-}
+@Entity(primaryKeys = ["entryId", "tagId"])
+data class DictEntryTagCrossRef(
+    val entryId: Long,
+    @ColumnInfo(index = true)
+    val tagId: Long,
+)

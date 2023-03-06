@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.fragment.SavedWords">
+    tools:context=".ui.fragment.SavedWordsFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -25,7 +25,7 @@
             android:layout_marginBottom="36dp"
             android:backgroundTint="@color/colorAccent"
             android:clickable="true"
-            android:contentDescription="@string/save_button"
+            android:contentDescription="Save words"
             android:focusable="true"
             android:src="@drawable/ic_baseline_save_24"
             android:tint="@color/white"

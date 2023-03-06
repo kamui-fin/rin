@@ -2,15 +2,15 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
-    "identityHash": "001f4370f4e6a4b0cc6e2be49dae3566",
+    "identityHash": "447616638c64885e33433861a5594291",
     "entities": [
       {
-        "tableName": "dictionary",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `kanji` TEXT NOT NULL, `meaning` TEXT NOT NULL, `reading` TEXT NOT NULL, `tags` TEXT NOT NULL, `dictname` TEXT NOT NULL, `orderdict` INTEGER NOT NULL, `pitchaccent` TEXT, `freq` INTEGER, PRIMARY KEY(`id`))",
+        "tableName": "DictEntry",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`entryId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `kanji` TEXT NOT NULL, `meaning` TEXT NOT NULL, `reading` TEXT NOT NULL, `dictionaryId` INTEGER NOT NULL, `pitchAccent` TEXT, `freq` INTEGER, FOREIGN KEY(`dictionaryId`) REFERENCES `Dictionary`(`dictId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
-            "fieldPath": "id",
-            "columnName": "id",
+            "fieldPath": "entryId",
+            "columnName": "entryId",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -33,26 +33,14 @@
             "notNull": true
           },
           {
-            "fieldPath": "tags",
-            "columnName": "tags",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "dictionaryName",
-            "columnName": "dictname",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "dictOrder",
-            "columnName": "orderdict",
+            "fieldPath": "dictionaryId",
+            "columnName": "dictionaryId",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
             "fieldPath": "pitchAccent",
-            "columnName": "pitchaccent",
+            "columnName": "pitchAccent",
             "affinity": "TEXT",
             "notNull": false
           },
@@ -64,9 +52,9 @@
           }
         ],
         "primaryKey": {
-          "autoGenerate": false,
+          "autoGenerate": true,
           "columnNames": [
-            "id"
+            "entryId"
           ]
         },
         "indices": [
@@ -79,17 +67,75 @@
             ],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `idx_word_reading` ON `${TABLE_NAME}` (`kanji`, `reading`)"
+          },
+          {
+            "name": "idx_dictionary_entry_ref",
+            "unique": false,
+            "columnNames": [
+              "dictionaryId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `idx_dictionary_entry_ref` ON `${TABLE_NAME}` (`dictionaryId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "Dictionary",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "dictionaryId"
+            ],
+            "referencedColumns": [
+              "dictId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "DictEntryTagCrossRef",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`entryId` INTEGER NOT NULL, `tagId` INTEGER NOT NULL, PRIMARY KEY(`entryId`, `tagId`))",
+        "fields": [
+          {
+            "fieldPath": "entryId",
+            "columnName": "entryId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tagId",
+            "columnName": "tagId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "entryId",
+            "tagId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_DictEntryTagCrossRef_tagId",
+            "unique": false,
+            "columnNames": [
+              "tagId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_DictEntryTagCrossRef_tagId` ON `${TABLE_NAME}` (`tagId`)"
           }
         ],
         "foreignKeys": []
       },
       {
-        "tableName": "saved_words",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `kanji` TEXT NOT NULL)",
+        "tableName": "SavedWord",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`savedWordId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `kanji` TEXT NOT NULL)",
         "fields": [
           {
-            "fieldPath": "id",
-            "columnName": "id",
+            "fieldPath": "savedWordId",
+            "columnName": "savedWordId",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -103,7 +149,99 @@
         "primaryKey": {
           "autoGenerate": true,
           "columnNames": [
-            "id"
+            "savedWordId"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "Tag",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`tagId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `dictionaryId` INTEGER NOT NULL, `name` TEXT NOT NULL, `notes` TEXT NOT NULL, FOREIGN KEY(`dictionaryId`) REFERENCES `Dictionary`(`dictId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "tagId",
+            "columnName": "tagId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dictionaryId",
+            "columnName": "dictionaryId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "notes",
+            "columnName": "notes",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "tagId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "idx_dictionary_tag_ref",
+            "unique": false,
+            "columnNames": [
+              "dictionaryId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `idx_dictionary_tag_ref` ON `${TABLE_NAME}` (`dictionaryId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "Dictionary",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "dictionaryId"
+            ],
+            "referencedColumns": [
+              "dictId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "Dictionary",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`dictId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `order` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "dictId",
+            "columnName": "dictId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "order",
+            "columnName": "order",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "dictId"
           ]
         },
         "indices": [],
@@ -113,7 +251,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '001f4370f4e6a4b0cc6e2be49dae3566')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '447616638c64885e33433861a5594291')"
     ]
   }
 }

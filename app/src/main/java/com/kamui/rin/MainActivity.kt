@@ -9,7 +9,7 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.*
 import androidx.preference.PreferenceManager
 import com.kamui.rin.databinding.ActivityMainBinding
-import com.kamui.rin.util.setupTheme
+import com.kamui.rin.ui.setupTheme
 
 class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration

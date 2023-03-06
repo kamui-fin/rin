@@ -4,29 +4,33 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.View
+import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager
 import androidx.preference.SwitchPreference
 import com.kamui.rin.R
-import com.kamui.rin.util.DictionaryManager
+import com.kamui.rin.dict.DictionaryManager
 import com.kamui.rin.Settings
-import com.kamui.rin.util.setupTheme
+import com.kamui.rin.ui.setupTheme
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.w3c.dom.Text
 
 data class SettingsState(
-    val todo: String = "todo"
+    val importStatus: String? = null
 )
 
 class SettingsViewModel(private val context: Context) : ViewModel() {
@@ -36,7 +40,13 @@ class SettingsViewModel(private val context: Context) : ViewModel() {
     fun import(uri: Uri) {
         viewModelScope.launch(Dispatchers.IO) {
             val manager = DictionaryManager()
-            manager.importYomichan(uri, context)
+            manager.importYomichan(uri, context) {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        importStatus = it
+                    )
+                }
+            }
         }
     }
 
@@ -50,6 +60,7 @@ class SettingsViewModelFactory(private val context: Context) : ViewModelProvider
 
 class SettingsFragment : PreferenceFragmentCompat() {
     private lateinit var settings: Settings
+    private var dialog: AlertDialog? = null
 
     val viewModel: SettingsViewModel by viewModels {
         SettingsViewModelFactory(requireContext())
@@ -102,8 +113,24 @@ class SettingsFragment : PreferenceFragmentCompat() {
             addDictionary()
             true
         }
-
         updateSavedWordsPathLabel()
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collect {
+                    if (it.importStatus != null) {
+                        if (dialog == null) {
+                            dialog = AlertDialog.Builder(requireContext()).setCancelable(false).setView(R.layout.layout_loading_dialog).create()
+                            dialog!!.show()
+                        }
+                        dialog!!.findViewById<TextView>(R.id.statusText)?.text = it.importStatus
+                    }
+                }
+            }
+        }
     }
 
     private fun updateSavedWordsPathLabel() {

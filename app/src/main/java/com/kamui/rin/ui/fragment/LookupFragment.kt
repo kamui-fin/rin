@@ -17,6 +17,8 @@ import com.kamui.rin.R
 import com.kamui.rin.databinding.FragmentLookupBinding
 import com.kamui.rin.db.model.DictEntry
 import com.kamui.rin.Settings
+import com.kamui.rin.db.dao.DictionaryDao
+import com.kamui.rin.db.model.Dictionary
 import com.kamui.rin.dict.Lookup
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,7 +29,7 @@ import kotlinx.coroutines.launch
 import java.io.IOException
 
 data class LookupState(
-    val results: List<DictEntry> = listOf(),
+    val results: List<Pair<DictEntry, Dictionary>> = listOf(),
     val currentlySearching: Boolean = false,
     val showStartPrompt: Boolean = true,
     val noResultsFound: Boolean = false,

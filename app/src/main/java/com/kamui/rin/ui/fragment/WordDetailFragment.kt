@@ -19,8 +19,7 @@ import com.kamui.rin.databinding.FragmentWordDetailBinding
 import com.kamui.rin.db.AppDatabase
 import com.kamui.rin.db.model.DictEntry
 import com.kamui.rin.db.model.SavedWord
-import com.kamui.rin.util.Tag
-import com.kamui.rin.util.Tags
+import com.kamui.rin.db.model.Tag
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -28,21 +27,23 @@ import java.text.DecimalFormat
 
 data class WordDetailState(
     val entry: DictEntry? = null,
+    val tags: List<Tag> = listOf(),
     val saved: Boolean = false
 )
 
-class WordDetailViewModel(private val database: AppDatabase, wordId: Int) : ViewModel() {
+class WordDetailViewModel(private val database: AppDatabase, entryId: Long) : ViewModel() {
     private val _uiState = MutableStateFlow(WordDetailState())
     val uiState: StateFlow<WordDetailState> = _uiState.asStateFlow()
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.update { currentState ->
-                val entry = database.dictDao().searchEntryById(wordId)
+                val entry = database.dictEntryDao().searchEntryById(entryId)
+                val tags = database.dictEntryDao().getTagsForEntry(entryId)
                 currentState.copy(
                     entry = entry,
+                    tags = tags,
                     saved = database.savedDao().existsWord(entry.kanji)
-
                 )
             }
         }
@@ -67,7 +68,7 @@ class WordDetailViewModel(private val database: AppDatabase, wordId: Int) : View
     }
 }
 
-class WordDetailViewModelFactory(private val database: AppDatabase, private val wordId: Int): ViewModelProvider.Factory {
+class WordDetailViewModelFactory(private val database: AppDatabase, private val wordId: Long): ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return WordDetailViewModel(database, wordId) as T
     }
@@ -96,9 +97,10 @@ class WordDetailFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect {
-                    val (entry) = it
-                    if (entry != null) {
+                    if (it.entry != null) {
                         // set title bar to word
+                        val entry = it.entry
+                        val tags = it.tags
                         (requireActivity() as AppCompatActivity).supportActionBar?.title = entry.kanji
 
                         // fill in UI elements
@@ -107,11 +109,11 @@ class WordDetailFragment : Fragment() {
                         binding.meaningTextView.text = entry.meaning
                         binding.pitchText.text = entry.pitchAccent
                         binding.freqChip.text = formatFrequency(entry.freq)
-                        Tags(binding.root.context).getTagsFromSplit(entry.tags).forEach { tag -> configureChip(tag) }
+                        tags.forEach { tag -> configureChip(tag) }
 
                         if (entry.pitchAccent == null) { binding.pitchCard.visibility = View.GONE }
                         if (entry.freq == null) { binding.freqChip.visibility = View.GONE }
-                        if (entry.tags.isEmpty()) { binding.chipLayout.visibility = View.GONE }
+                        if (tags.isEmpty()) { binding.chipLayout.visibility = View.GONE }
 
                         binding.copyButton.setOnClickListener {
                             val clipboard = activity?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
@@ -157,13 +159,13 @@ class WordDetailFragment : Fragment() {
     private fun configureChip(tag: Tag) {
         val chip = Chip(context)
         chip.text = tag.name
-        chip.setOnClickListener { showTagAlert(tag) }
+        chip.setOnClickListener { showTagAlert(tag.notes) }
         binding.chipLayout.addView(chip)
     }
 
-    private fun showTagAlert(tag: Tag) {
+    private fun showTagAlert(tagNotes: String) {
         val alertDialog = AlertDialog.Builder(activity)
-            .setMessage(tag.description)
+            .setMessage(tagNotes)
             .setPositiveButton("OK") { dialog: DialogInterface, _: Int -> dialog.dismiss() }
             .create()
         alertDialog.show()

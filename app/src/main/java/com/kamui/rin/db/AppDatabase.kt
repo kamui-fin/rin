@@ -5,20 +5,21 @@ import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.kamui.rin.db.dao.DictDao
-import com.kamui.rin.db.dao.SavedDao
-import com.kamui.rin.db.model.DictEntry
-import com.kamui.rin.db.model.SavedWord
+import com.kamui.rin.db.dao.DictEntryDao
+import com.kamui.rin.db.dao.DictionaryDao
+import com.kamui.rin.db.dao.SavedWordDao
+import com.kamui.rin.db.dao.TagDao
+import com.kamui.rin.db.model.*
 
 @Database(
-    entities = [DictEntry::class, SavedWord::class], version = 2, exportSchema = true,
-    autoMigrations = [
-        AutoMigration(from = 1, to = 2)
-    ]
+    entities = [DictEntry::class, DictEntryTagCrossRef::class, SavedWord::class, Tag::class, Dictionary::class], version = 2, exportSchema = true,
 )
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun dictDao(): DictDao
-    abstract fun savedDao(): SavedDao
+    abstract fun dictEntryDao(): DictEntryDao
+    abstract fun savedDao(): SavedWordDao
+    abstract fun tagDao(): TagDao
+    abstract fun dictionaryDao(): DictionaryDao
+
 
     companion object {
         @Volatile
@@ -31,7 +32,6 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "dict.db"
                 )
-                    .createFromAsset("dict.db")
                     .build()
             }
             return INSTANCE

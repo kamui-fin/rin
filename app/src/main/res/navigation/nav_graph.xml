@@ -37,7 +37,7 @@
             android:label="{title}">
             <argument
                 android:name="wordId"
-                app:argType="integer" />
+                app:argType="long" />
             <argument
                 android:name="title"
                 app:argType="string" />
@@ -45,8 +45,7 @@
     </navigation>
     <fragment
         android:id="@+id/saved_words"
-        android:name="com.kamui.rin.ui.fragment.SavedWords"
+        android:name="com.kamui.rin.ui.fragment.SavedWordsFragment"
         android:label="Saved Words"
-        tools:layout="@layout/fragment_saved_words" >
-    </fragment>
+        tools:layout="@layout/fragment_saved_words"></fragment>
 </navigation>
