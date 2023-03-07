@@ -124,9 +124,18 @@ class DictionaryManager {
                     onProgress("Inserting into database")
                     AppDatabase.buildDatabase(context).dictEntryDao()
                         .insertEntriesWithTags(dbEntries)
+
+                    onProgress("Done")
                 }
             }.onFailure { exception ->
                 throw exception
+            }
+        }
+    }
+    suspend fun deleteDictionary(context: Context, dictionary: Dictionary, onDone: () -> Unit) {
+        withContext(Dispatchers.IO) {
+            kotlin.runCatching {
+                AppDatabase.buildDatabase(context).dictionaryDao().deleteDictionary(dictionary)
             }
         }
     }

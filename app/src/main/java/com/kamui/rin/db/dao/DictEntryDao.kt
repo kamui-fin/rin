@@ -17,19 +17,19 @@ interface DictEntryDao {
     @Transaction
     @Query("SELECT * FROM DictEntry " +
            "JOIN Dictionary ON Dictionary.dictId = DictEntry.dictionaryId " +
-           "WHERE kanji = :query AND Dictionary.name NOT IN (:disabled)")
+           "WHERE kanji = :query AND Dictionary.dictId NOT IN (:disabled)")
     fun searchEntryByKanji(
         query: String,
-        disabled: List<String?>
+        disabled: List<Long?>
     ): Map<DictEntry, Dictionary>
 
     @Transaction
     @Query("SELECT * FROM DictEntry " +
            "JOIN Dictionary ON Dictionary.dictId = DictEntry.dictionaryId " +
-           "WHERE reading = :query AND Dictionary.name NOT IN (:disabled)")
+           "WHERE reading = :query AND Dictionary.dictId NOT IN (:disabled)")
     fun searchEntryByReading(
         query: String,
-        disabled: List<String>
+        disabled: List<Long>
     ): Map<DictEntry, Dictionary>
 
     @Query("SELECT Tag.* from DictEntryTagCrossRef " +

@@ -1,47 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <PreferenceCategory
         app:iconSpaceReserved="false"
+        app:key="dicts"
         app:title="Dictionaries">
-        <SwitchPreference
-            app:defaultValue="true"
-            app:iconSpaceReserved="false"
-            app:key="jmdictEnable"
-            app:title="JMdict (English)" />
-        <SwitchPreference
-            app:defaultValue="true"
-            app:iconSpaceReserved="false"
-            app:key="kenkyuuEnable"
-            app:title="研究社　新和英大辞典　第５版" />
-        <SwitchPreference
-            app:defaultValue="true"
-            app:iconSpaceReserved="false"
-            app:key="shinmeiEnable"
-            app:title="新明解国語辞典 第五版" />
-        <SwitchPreference
-            app:defaultValue="true"
-            app:iconSpaceReserved="false"
-            app:key="daijirinEnable"
-            app:title="三省堂　スーパー大辞林" />
-        <SwitchPreference
-            app:defaultValue="true"
-            app:iconSpaceReserved="false"
-            app:key="meikyoEnable"
-            app:title="明鏡国語辞典" />
         <Preference
-            app:icon="@drawable/ic_baseline_add_24"
-            app:key="addDictionary"
-            app:title="Add Dictionary" />
+            app:fragment="com.kamui.rin.ui.fragment.ManageDictSettingsFragment"
+            app:iconSpaceReserved="false"
+            android:key="manageDicts"
+            android:title="Manage Dictionaries" />
     </PreferenceCategory>
 
     <PreferenceCategory
         app:iconSpaceReserved="false"
         app:title="Search">
-        <SwitchPreference
-            app:defaultValue="true"
-            app:iconSpaceReserved="false"
-            app:key="showBilingualFirst"
-            app:title="Show bilingual dictionaries first" />
         <SwitchPreference
             app:defaultValue="true"
             app:iconSpaceReserved="false"

@@ -7,7 +7,11 @@
     <fragment
         android:id="@+id/settings_fragment"
         android:name="com.kamui.rin.ui.fragment.SettingsFragment"
-        android:label="Settings" />
+        android:label="Settings" >
+        <action
+            android:id="@+id/action_settings_fragment_to_manageDictSettingsFragment"
+            app:destination="@id/manage_dict_settings_fragment" />
+    </fragment>
 
     <navigation
         android:id="@+id/lookup"
@@ -48,4 +52,8 @@
         android:name="com.kamui.rin.ui.fragment.SavedWordsFragment"
         android:label="Saved Words"
         tools:layout="@layout/fragment_saved_words"></fragment>
+    <fragment
+        android:id="@+id/manage_dict_settings_fragment"
+        android:name="com.kamui.rin.ui.fragment.ManageDictSettingsFragment"
+        android:label="Manage Dictionaries" />
 </navigation>

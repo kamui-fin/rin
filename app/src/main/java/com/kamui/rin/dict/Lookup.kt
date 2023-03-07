@@ -34,25 +34,22 @@ class Lookup(
                 } else {
                     variation
                 }
-                results = dao.searchEntryByReading(convertedToHiragana, settings.disabledDicts)
+                results = dao.searchEntryByReading(convertedToHiragana, settings.disabledDicts())
                 if (results.isEmpty()) {
-                    results = dao.searchEntryByKanji(variation, settings.disabledDicts)
+                    results = dao.searchEntryByKanji(variation, settings.disabledDicts())
                 }
             } else {
-                results = dao.searchEntryByKanji(variation, settings.disabledDicts)
+                results = dao.searchEntryByKanji(variation, settings.disabledDicts())
             }
             entries.addAll(results.toList())
         }
 
         entries.sortWith(compareBy { it.second })
-        if (settings.bilingualFirst) {
-            return entries.asReversed()
-        }
         return entries
     }
 
     private fun normalizeWord(word: String): List<String> {
-        return if (settings.shouldDeconjugate) {
+        return if (settings.shouldDeconjugate()) {
             deconjugateWord(word.trim { it <= ' ' })
         } else {
             mutableListOf(word)

@@ -151,7 +151,7 @@ class SavedWordsFragment : Fragment() {
 
 
     private fun saveToFile() {
-        val fileUri = settings.savedWordsPath
+        val fileUri = settings.savedWordsPath()
         if (fileUri != null) {
             wordsViewModel.saveWordsToFile(fileUri, activity?.contentResolver)
         } else {

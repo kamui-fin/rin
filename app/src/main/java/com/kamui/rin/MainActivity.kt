@@ -7,6 +7,8 @@ import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.*
+import androidx.preference.Preference
+import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager
 import com.kamui.rin.databinding.ActivityMainBinding
 import com.kamui.rin.ui.setupTheme
@@ -25,7 +27,7 @@ class MainActivity : AppCompatActivity() {
         val navController = navHostFragment.navController
         binding.bottomNavigation.setupWithNavController(navController)
 
-        setupTheme(Settings(PreferenceManager.getDefaultSharedPreferences(applicationContext)).darkTheme)
+        setupTheme(Settings(PreferenceManager.getDefaultSharedPreferences(applicationContext)).darkTheme())
 
         appBarConfiguration = AppBarConfiguration(navController.graph)
         configureActionBar(navController)
