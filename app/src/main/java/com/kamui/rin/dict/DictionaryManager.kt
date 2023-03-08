@@ -9,9 +9,7 @@ import com.kamui.rin.db.model.Tag
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.*
 import java.io.FileNotFoundException
 import java.util.zip.ZipInputStream
 
@@ -41,14 +39,14 @@ fun decodeDictionaryEntries(stringData: String): List<YomichanDictionaryEntry> {
     val root: JsonArray = format.parseToJsonElement(stringData).jsonArray
     return root.map {
         YomichanDictionaryEntry(
-            it.jsonArray[0].toString(),
-            it.jsonArray[1].toString(),
-            it.jsonArray[2].toString(),
-            it.jsonArray[3].toString(),
-            it.jsonArray[4].toString().toInt(),
-            it.jsonArray[5].jsonArray.toList().map { meaning -> meaning.toString() },
-            it.jsonArray[6].toString().toInt(),
-            it.jsonArray[7].toString().split(" "),
+            it.jsonArray[0].jsonPrimitive.content,
+            it.jsonArray[1].jsonPrimitive.content,
+            it.jsonArray[2].jsonPrimitive.content,
+            it.jsonArray[3].jsonPrimitive.content,
+            it.jsonArray[4].jsonPrimitive.intOrNull!!,
+            it.jsonArray[5].jsonArray.toList().map { meaning -> meaning.jsonPrimitive.content },
+            it.jsonArray[6].jsonPrimitive.intOrNull!!,
+            it.jsonArray[7].jsonPrimitive.content.split(" "),
         )
     }
 }
@@ -58,8 +56,8 @@ fun decodeTags(stringData: String, dictId: Long): List<Tag> {
     return root.map {
         Tag(
             dictionaryId = dictId,
-            name = it.jsonArray[0].toString(),
-            notes = it.jsonArray[3].toString(),
+            name = it.jsonArray[0].jsonPrimitive.content,
+            notes = it.jsonArray[3].jsonPrimitive.content,
         )
     }
 }
