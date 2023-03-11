@@ -40,32 +40,36 @@
                         android:orientation="vertical"
                         android:padding="16dp">
 
-                        <LinearLayout
+                        <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:orientation="horizontal">
+                            android:layout_height="match_parent">
 
                             <TextView
                                 android:id="@+id/wordTextView"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text=""
+                                android:layout_width="0dp"
+                                android:layout_height="31dp"
                                 android:textAppearance="?attr/textAppearanceHeadline6"
                                 android:textIsSelectable="true"
-                                android:textSize="22sp" />
+                                android:textSize="22sp"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
 
                             <TextView
                                 android:id="@+id/freqChip"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
+                                android:layout_width="0dp"
+                                android:layout_height="0dp"
                                 android:gravity="end"
                                 android:paddingTop="5dp"
-                                android:text=""
                                 android:textAlignment="textEnd"
                                 android:textAppearance="?attr/textAppearanceHeadline2"
-                                android:textSize="18sp" />
+                                android:textSize="18sp"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toEndOf="@+id/wordTextView"
+                                app:layout_constraintTop_toTopOf="parent" />
 
-                        </LinearLayout>
+                        </androidx.constraintlayout.widget.ConstraintLayout>
 
                         <TextView
                             android:id="@+id/secondaryTextCard"

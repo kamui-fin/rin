@@ -27,6 +27,8 @@ import java.text.DecimalFormat
 
 data class WordDetailState(
     val entry: DictEntry? = null,
+    val frequency: Long? = null,
+    val pitch: String? = null,
     val tags: List<Tag> = listOf(),
     val saved: Boolean = false
 )
@@ -40,10 +42,14 @@ class WordDetailViewModel(private val database: AppDatabase, entryId: Long) : Vi
             _uiState.update { currentState ->
                 val entry = database.dictEntryDao().searchEntryById(entryId)
                 val tags = database.dictEntryDao().getTagsForEntry(entryId)
+                val freq = database.frequencyDao().getFrequencyForWord(entry.kanji)
+                val pitch = database.pitchAccentDao().getPitchForWord(entry.kanji)
                 currentState.copy(
                     entry = entry,
                     tags = tags,
-                    saved = database.savedDao().existsWord(entry.kanji)
+                    saved = database.savedDao().existsWord(entry.kanji),
+                    frequency = freq,
+                    pitch = pitch
                 )
             }
         }
@@ -107,13 +113,14 @@ class WordDetailFragment : Fragment() {
                         binding.secondaryTextCard.text = entry.reading
                         binding.wordTextView.text = entry.kanji
                         binding.meaningTextView.text = entry.meaning
-                        binding.pitchText.text = entry.pitchAccent
-                        binding.freqChip.text = formatFrequency(entry.freq)
+                        binding.pitchText.text = it.pitch
+                        binding.freqChip.text = formatFrequency(it.frequency)
+
                         tags.forEach { tag -> configureChip(tag) }
 
-                        if (entry.pitchAccent == null) { binding.pitchCard.visibility = View.GONE }
-                        if (entry.freq == null) { binding.freqChip.visibility = View.GONE }
                         if (tags.isEmpty()) { binding.chipLayout.visibility = View.GONE }
+                        if (it.pitch == null) { binding.pitchCard.visibility = View.GONE }
+                        if (it.frequency == null) { binding.freqChip.visibility = View.GONE }
 
                         binding.copyButton.setOnClickListener {
                             val clipboard = activity?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
@@ -171,7 +178,8 @@ class WordDetailFragment : Fragment() {
         alertDialog.show()
     }
 
-    private fun formatFrequency(frequency: Int?): String? {
+    private fun formatFrequency(frequency: Long?): String? {
+        println("FREQUENCY: $frequency")
         return frequency?.let {
             val formatter = DecimalFormat("#,###")
             return "Freq: ${formatter.format(frequency)}"

@@ -2,7 +2,6 @@ package com.kamui.rin.ui.fragment
 
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
@@ -49,7 +48,7 @@ class ManageDictSettingsViewModel(private val context: Context) : ViewModel() {
     fun import(uri: Uri) {
         viewModelScope.launch(Dispatchers.IO) {
             val manager = DictionaryManager()
-            manager.importYomichan(uri, context) {
+            manager.importYomichanDictionary(uri, context) {
                 _uiState.update { currentState ->
                     currentState.copy(
                         importStatus = it

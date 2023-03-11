@@ -27,9 +27,6 @@ data class DictEntry(
     var meaning: String,
     var reading: String,
     var dictionaryId: Long,
-    // FIXME:
-    var pitchAccent: String?,
-    var freq: Int?,
 )
 
 @Entity(primaryKeys = ["entryId", "tagId"])

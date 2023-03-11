@@ -10,6 +10,14 @@
             app:iconSpaceReserved="false"
             android:key="manageDicts"
             android:title="Manage Dictionaries" />
+        <Preference
+            app:iconSpaceReserved="false"
+            android:key="importFreq"
+            android:title="Import Frequency List" />
+        <Preference
+            app:iconSpaceReserved="false"
+            android:key="importPitch"
+            android:title="Import Pitch Accent Dictionary" />
     </PreferenceCategory>
 
     <PreferenceCategory

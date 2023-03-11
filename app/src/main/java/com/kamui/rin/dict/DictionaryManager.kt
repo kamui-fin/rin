@@ -3,9 +3,7 @@ package com.kamui.rin.dict
 import android.content.Context
 import android.net.Uri
 import com.kamui.rin.db.AppDatabase
-import com.kamui.rin.db.model.DictEntry
-import com.kamui.rin.db.model.Dictionary
-import com.kamui.rin.db.model.Tag
+import com.kamui.rin.db.model.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
@@ -51,6 +49,17 @@ fun decodeDictionaryEntries(stringData: String): List<YomichanDictionaryEntry> {
     }
 }
 
+fun decodeFrequencyEntries(stringData: String): List<Frequency> {
+    val root: JsonArray = format.parseToJsonElement(stringData).jsonArray
+    return root.map {
+        Frequency(
+            kanji = it.jsonArray[0].jsonPrimitive.content,
+            frequency = it.jsonArray[2].jsonPrimitive.long,
+        )
+    }
+}
+
+
 fun decodeTags(stringData: String, dictId: Long): List<Tag> {
     val root: JsonArray = format.parseToJsonElement(stringData).jsonArray
     return root.map {
@@ -64,7 +73,66 @@ fun decodeTags(stringData: String, dictId: Long): List<Tag> {
 
 
 class DictionaryManager {
-    suspend fun importYomichan(uri: Uri, context: Context, onProgress: (status: String) -> Unit) {
+    suspend fun importPitchAccent(
+        uri: Uri,
+        context: Context,
+        onProgress: (status: String) -> Unit
+    ) {
+        withContext(Dispatchers.IO) {
+            kotlin.runCatching {
+                context.contentResolver.openInputStream(uri).use { input ->
+                    onProgress("Scanning pitch accent files")
+                    if (input == null) throw FileNotFoundException("could not open pitch accent dictionary")
+
+                    val zipMap = ZipInputStream(input).use { stream ->
+                        generateSequence { stream.nextEntry }
+                            .filterNot { it.isDirectory }
+                            .map { entry ->
+                                val pair = Pair<String, ByteArray>(entry.name, stream.readBytes())
+                                pair
+                            }.toMap()
+                    }
+                    println(zipMap)
+                    onProgress("Importing pitch accent data")
+                    val termEntries =
+                        zipMap.filter { (key, _) -> key.startsWith("term_bank_") && key.endsWith(".json") }
+                            .map { (_, termBank) ->
+                                val entries = decodeDictionaryEntries(termBank.decodeToString())
+                                entries
+                            }
+                            .flatten()
+
+                    val pitchEntries = termEntries.map { entry ->
+                        PitchAccent(
+                            kanji = entry.expression,
+                            pitch = entry.meanings.joinToString("\n") {
+                                it.trim { it <= ' ' }
+                            }
+                        )
+                    }
+
+                    if (pitchEntries.isEmpty()) {
+                        onProgress("Error: Invalid dictionary format. Rin currently only supports the old pitch accent dictionary format.")
+                    } else {
+                        onProgress("Inserting into database")
+                        AppDatabase.buildDatabase(context).pitchAccentDao().clear()
+                        AppDatabase.buildDatabase(context).pitchAccentDao()
+                            .insertPitchAccents(pitchEntries)
+
+                        onProgress("Done")
+                    }
+                }
+            }.onFailure { exception ->
+                throw exception
+            }
+        }
+    }
+
+    suspend fun importYomichanDictionary(
+        uri: Uri,
+        context: Context,
+        onProgress: (status: String) -> Unit
+    ) {
         withContext(Dispatchers.IO) {
             kotlin.runCatching {
                 context.contentResolver.openInputStream(uri).use { input ->
@@ -92,8 +160,9 @@ class DictionaryManager {
                             .map { (_, value) ->
                                 decodeTags(value.decodeToString(), dictId)
                             }.flatten()
-                    val tagMap = AppDatabase.buildDatabase(context).tagDao().insertTagsAndRetrieve(tags)
-                        .associateBy { it.name }
+                    val tagMap =
+                        AppDatabase.buildDatabase(context).tagDao().insertTagsAndRetrieve(tags)
+                            .associateBy { it.name }
 
                     onProgress("Importing entries from ${index.title}")
                     val termEntries =
@@ -113,8 +182,6 @@ class DictionaryManager {
                                 meaning = meaning,
                                 reading = entry.reading,
                                 dictionaryId = dictId,
-                                freq = null,
-                                pitchAccent = null
                             ), entry.termTags.mapNotNull { tagMap[it] })
                         }
                     }.flatten()
@@ -130,6 +197,48 @@ class DictionaryManager {
             }
         }
     }
+
+    suspend fun importFrequencyList(
+        uri: Uri,
+        context: Context,
+        onProgress: (status: String) -> Unit
+    ) {
+        withContext(Dispatchers.IO) {
+            kotlin.runCatching {
+                context.contentResolver.openInputStream(uri).use { input ->
+                    onProgress("Importing frequency data")
+                    val zipMap = ZipInputStream(input).use { stream ->
+                        generateSequence { stream.nextEntry }
+                            .filterNot { it.isDirectory }
+                            .map { entry ->
+                                val pair = Pair<String, ByteArray>(entry.name, stream.readBytes())
+                                pair
+                            }.toMap()
+                    }
+                    println(zipMap)
+                    val termEntries =
+                        zipMap.filter { (key, _) ->
+                            key.startsWith("term_meta_bank_") && key.endsWith(
+                                ".json"
+                            )
+                        }
+                            .map { (_, termBank) ->
+                                val entries = decodeFrequencyEntries(termBank.decodeToString())
+                                entries
+                            }
+                            .flatten()
+                    println(termEntries)
+                    onProgress("Inserting into database")
+                    AppDatabase.buildDatabase(context).frequencyDao().clear()
+                    AppDatabase.buildDatabase(context).frequencyDao().insertFrequencies(termEntries)
+                    onProgress("Done")
+                }
+            }.onFailure { exception ->
+                throw exception
+            }
+        }
+    }
+
     suspend fun deleteDictionary(context: Context, dictionary: Dictionary, onDone: () -> Unit) {
         withContext(Dispatchers.IO) {
             kotlin.runCatching {
