@@ -58,8 +58,8 @@ class ManageDictSettingsViewModel(private val context: Context) : ViewModel() {
 
     fun delete(dict: Dictionary) {
         viewModelScope.launch(Dispatchers.IO) {
-            val manager = DictionaryManager()
-            manager.deleteDictionary(context, dict) { status, data ->
+            val manager = DictionaryManager(context)
+            manager.deleteDictionary(dict) { status, data ->
                 _uiState.update { currentState ->
                     val newDictionaries =
                         if (data != null) currentState.dictionaries.filter { it.dictId != data }
@@ -67,7 +67,6 @@ class ManageDictSettingsViewModel(private val context: Context) : ViewModel() {
                     currentState.copy(
                         importStatus = status,
                         dictionaries = newDictionaries
-
                     )
                 }
             }
@@ -91,8 +90,8 @@ class ManageDictSettingsViewModel(private val context: Context) : ViewModel() {
 
     fun import(uri: Uri) {
         viewModelScope.launch(Dispatchers.IO) {
-            val manager = DictionaryManager()
-            manager.importYomichanDictionary(uri, context) { status, data ->
+            val manager = DictionaryManager(context)
+            manager.importYomichanDictionary(uri) { status, data ->
                 _uiState.update { currentState ->
                     currentState.copy(
                         importStatus = status,

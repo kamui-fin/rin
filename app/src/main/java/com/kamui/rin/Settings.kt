@@ -4,9 +4,9 @@ import android.content.SharedPreferences
 import android.net.Uri
 
 class Settings(private val sharedPreferences: SharedPreferences) {
-    // returns dictIds
     fun disabledDicts(): List<Long> {
-        return sharedPreferences.getStringSet("disabledDicts", setOf())!!.toList().map { it.toLong() }
+        return sharedPreferences.getStringSet("disabledDicts", setOf())!!.toList()
+            .map { it.toLong() }
     }
 
     fun shouldDeconjugate(): Boolean {
