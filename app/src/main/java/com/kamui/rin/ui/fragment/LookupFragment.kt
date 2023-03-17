@@ -109,7 +109,6 @@ class LookupFragment : Fragment() {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
         helper = Lookup(requireContext(), readDeinflectJsonFile(), Settings(sharedPreferences))
         _binding = FragmentLookupBinding.inflate(inflater, container, false)
-
         actionBar = (requireActivity() as AppCompatActivity).supportActionBar!!
         return binding.root
     }

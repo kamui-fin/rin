@@ -131,12 +131,12 @@ class DictionaryManager {
     suspend fun importYomichanDictionary(
         uri: Uri,
         context: Context,
-        onProgress: (status: String) -> Unit
+        onProgress: (status: String, finalData: Dictionary?) -> Unit
     ) {
         withContext(Dispatchers.IO) {
             kotlin.runCatching {
                 context.contentResolver.openInputStream(uri).use { input ->
-                    onProgress("Scanning dictionary files")
+                    onProgress("Scanning dictionary files", null)
                     if (input == null) throw FileNotFoundException("could not open dictionary")
 
                     val zipMap = ZipInputStream(input).use { stream ->
@@ -150,11 +150,11 @@ class DictionaryManager {
                     if (!zipMap.containsKey("index.json")) throw FileNotFoundException("index.json could not be found")
                     val index =
                         format.decodeFromString<YomichanMeta>(zipMap["index.json"]!!.decodeToString())
-                    onProgress("Creating dictionary ${index.title}")
+                    onProgress("Creating dictionary ${index.title}", null)
                     val dictId = AppDatabase.buildDatabase(context).dictionaryDao()
                         .insertDictionary(Dictionary(name = index.title))
 
-                    onProgress("Importing tags from ${index.title}")
+                    onProgress("Importing tags from ${index.title}", null)
                     val tags =
                         zipMap.filter { (key, _) -> key.startsWith("tag_bank") && key.endsWith(".json") }
                             .map { (_, value) ->
@@ -164,7 +164,7 @@ class DictionaryManager {
                         AppDatabase.buildDatabase(context).tagDao().insertTagsAndRetrieve(tags)
                             .associateBy { it.name }
 
-                    onProgress("Importing entries from ${index.title}")
+                    onProgress("Importing entries from ${index.title}", null)
                     val termEntries =
                         zipMap.filter { (key, _) -> key.startsWith("term_bank_") && key.endsWith(".json") }
                             .map { (_, termBank) ->
@@ -186,11 +186,11 @@ class DictionaryManager {
                         }
                     }.flatten()
 
-                    onProgress("Inserting into database")
+                    onProgress("Inserting into database", null)
                     AppDatabase.buildDatabase(context).dictEntryDao()
                         .insertEntriesWithTags(dbEntries)
 
-                    onProgress("Done")
+                    onProgress("Done", Dictionary(dictId, index.title))
                 }
             }.onFailure { exception ->
                 throw exception
@@ -239,10 +239,12 @@ class DictionaryManager {
         }
     }
 
-    suspend fun deleteDictionary(context: Context, dictionary: Dictionary, onDone: () -> Unit) {
+    suspend fun deleteDictionary(context: Context, dictionary: Dictionary, onProgress: (String, Long?) -> Unit) {
         withContext(Dispatchers.IO) {
             kotlin.runCatching {
+                onProgress("Deleting", null)
                 AppDatabase.buildDatabase(context).dictionaryDao().deleteDictionary(dictionary)
+                onProgress("Done", dictionary.dictId)
             }
         }
     }

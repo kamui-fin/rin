@@ -1,9 +1,6 @@
 package com.kamui.rin.db.dao
 
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
+import androidx.room.*
 import com.kamui.rin.db.model.Dictionary
 
 @Dao
@@ -13,6 +10,9 @@ interface DictionaryDao {
 
     @Delete
     fun deleteDictionary(dictionary: Dictionary)
+
+    @Update
+    fun updateDictionary(dictionary: Dictionary)
 
     @Query("SELECT * FROM Dictionary")
     fun getAllDictionaries(): List<Dictionary>

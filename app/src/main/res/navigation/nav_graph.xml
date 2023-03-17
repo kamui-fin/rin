@@ -54,6 +54,7 @@
         tools:layout="@layout/fragment_saved_words"></fragment>
     <fragment
         android:id="@+id/manage_dict_settings_fragment"
-        android:name="com.kamui.rin.ui.fragment.ManageDictSettingsFragment"
-        android:label="Manage Dictionaries" />
+        android:name="com.kamui.rin.ui.fragment.ManageDictsFragment"
+        android:label="Manage Dictionaries"
+        tools:layout="@layout/fragment_manage_dicts" />
 </navigation>

@@ -9,15 +9,15 @@
             app:fragment="com.kamui.rin.ui.fragment.ManageDictSettingsFragment"
             app:iconSpaceReserved="false"
             android:key="manageDicts"
-            android:title="Manage Dictionaries" />
+            android:title="Manage dictionaries" />
         <Preference
             app:iconSpaceReserved="false"
             android:key="importFreq"
-            android:title="Import Frequency List" />
+            android:title="Import frequency list" />
         <Preference
             app:iconSpaceReserved="false"
             android:key="importPitch"
-            android:title="Import Pitch Accent Dictionary" />
+            android:title="Import pitch accent dictionary" />
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -27,7 +27,7 @@
             app:defaultValue="true"
             app:iconSpaceReserved="false"
             app:key="shouldDeconjugate"
-            app:title="Deconjugate Words" />
+            app:title="Deconjugate words" />
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -37,7 +37,7 @@
             app:defaultValue="false"
             app:iconSpaceReserved="false"
             app:key="darkTheme"
-            app:title="Dark Theme" />
+            app:title="Dark theme" />
     </PreferenceCategory>
 
 
@@ -49,7 +49,7 @@
             app:iconSpaceReserved="false"
             app:key="savedWordsPath"
             app:summary="Not set"
-            app:title="Words File" />
+            app:title="Words file" />
     </PreferenceCategory>
 
 </PreferenceScreen>

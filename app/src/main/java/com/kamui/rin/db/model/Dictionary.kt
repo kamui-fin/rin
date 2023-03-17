@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
 data class Dictionary(
     @PrimaryKey(autoGenerate = true) var dictId: Long = 0,
     @ColumnInfo(name = "name", typeAffinity = ColumnInfo.TEXT) var name: String,
-    @ColumnInfo(name = "order", typeAffinity = ColumnInfo.INTEGER) val order: Int = 0,
+    @ColumnInfo(name = "order", typeAffinity = ColumnInfo.INTEGER) var order: Int = 0,
 ) : Comparable<Dictionary> {
 
     override operator fun compareTo(other: Dictionary): Int {
