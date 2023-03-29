@@ -3,11 +3,15 @@
     <color name="colorBackground">#121212</color>
     <color name="colorSurface">#050505</color>
 
-    <color name="colorPrimary">@color/colorAccent</color>
     <color name="colorAccent">#74CBF2</color>
+    <color name="colorPrimary">@color/colorAccent</color>
+    <color name="colorFloatingAction">#4598BD</color>
 
     <color name="colorFrontCard">@color/colorSurface</color>
 
     <color name="colorIcon">#ababab</color>
+    <color name="colorIconNeutral">#ababab</color>
     <color name="white">#fff</color>
+
+    <color name="textSharp">#fff</color>
 </resources>

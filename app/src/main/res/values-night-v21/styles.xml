@@ -1,17 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <style name="AppTheme" parent="Theme.MaterialComponents.NoActionBar">
         <item name="android:colorBackground">@color/colorBackground</item>
         <item name="colorSurface">@color/colorSurface</item>
-
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorAccent">@color/colorAccent</item>
-
         <item name="android:windowActivityTransitions">true</item>
+        <item name="android:popupMenuStyle">@style/popupMenu</item>
+    </style>
+
+    <style name="popupMenu" parent="@android:style/Widget.PopupMenu">
+        <item name="android:popupBackground">#222</item>
+    </style>
+
+    <style name="cursorColor" parent="Widget.AppCompat.AutoCompleteTextView">
+        <item name="android:textCursorDrawable">@drawable/cursor_dark</item>
     </style>
 
     <style name="AppTheme.Toolbar" parent="Theme.AppCompat">
         <item name="colorPrimary">#222222</item>
         <item name="colorPrimaryDark">#1B1B1B</item>
+        <item name="autoCompleteTextViewStyle">@style/cursorColor</item>
     </style>
 </resources>

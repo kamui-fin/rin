@@ -2,14 +2,53 @@ package com.kamui.rin.dict
 
 import android.content.Context
 import android.net.Uri
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.kamui.rin.db.AppDatabase
 import com.kamui.rin.db.model.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
 import java.io.FileNotFoundException
 import java.io.InputStream
+import java.lang.Thread.State
 import java.util.zip.ZipInputStream
+
+enum class DataStatus {
+    SUCCESS,
+    ERROR,
+    LOADING,
+    COMPLETE
+}
+
+// use inside LiveData
+data class StateData<T>(
+    val status: DataStatus,
+    val data: T? = null,
+    val progressData: String? = null,
+    val error: Throwable? = null
+)
+
+class StateLiveData<T>(private val minimalLiveData: MutableLiveData<StateData<Unit>>? = null) : MutableLiveData<StateData<T>>() {
+    fun postLoading(progress: String) {
+        postValue(StateData(DataStatus.LOADING, progressData = progress))
+    }
+
+    fun postError(throwable: Throwable) {
+        postValue(StateData(DataStatus.ERROR, error = throwable))
+    }
+
+    fun postSuccess(data: T) {
+        postValue(StateData(DataStatus.SUCCESS, data = data))
+    }
+
+    fun postComplete() {
+        postValue(StateData(DataStatus.COMPLETE))
+    }
+
+    override fun postValue(stateData: StateData<T>?) {
+        super.postValue(stateData)
+        minimalLiveData?.postValue(stateData?.copy(data = null) as StateData<Unit>)
+    }
+}
 
 fun mapFilenameToBytes(input: InputStream): Map<String, ByteArray> {
     return ZipInputStream(input).use { stream ->
@@ -22,151 +61,134 @@ fun mapFilenameToBytes(input: InputStream): Map<String, ByteArray> {
     }
 }
 
-
 class DictionaryManager(val context: Context) {
-    suspend fun deleteDictionary(
+    fun deleteDictionary(
         dictionary: Dictionary,
-        onProgress: (String, Long?) -> Unit
+        stateLiveData: StateLiveData<Long>
     ) {
-        withContext(Dispatchers.IO) {
-            kotlin.runCatching {
-                onProgress("Deleting", null)
-                AppDatabase.buildDatabase(context).dictionaryDao().deleteDictionary(dictionary)
-                onProgress("Done", dictionary.dictId)
-            }.onFailure { exception ->
-                throw exception
-            }
-        }
+        stateLiveData.postLoading("Deleting")
+        AppDatabase.buildDatabase(context).dictionaryDao().deleteDictionary(dictionary)
+        stateLiveData.postSuccess(dictionary.dictId)
     }
 
-    suspend fun importYomichanDictionary(
+    fun importYomichanDictionary(
         uri: Uri,
-        onProgress: (status: String, finalData: Dictionary?) -> Unit
+        stateLiveData: StateLiveData<Dictionary>
     ) {
-        withContext(Dispatchers.IO) {
-            kotlin.runCatching {
-                context.contentResolver.openInputStream(uri).use { input ->
-                    onProgress("Scanning dictionary files", null)
-                    if (input == null) throw FileNotFoundException("could not open dictionary")
+        context.contentResolver.openInputStream(uri).use { input ->
+            stateLiveData.postLoading("Scanning dictionary files")
+            if (input == null) {
+                return stateLiveData.postError(FileNotFoundException("could not open dictionary"))
+            }
 
-                    val zipMap = mapFilenameToBytes(input)
-                    if (!zipMap.containsKey("index.json")) throw FileNotFoundException("index.json could not be found")
-                    val index =
-                        format.decodeFromString<YomichanMeta>(zipMap["index.json"]!!.decodeToString())
-                    onProgress("Creating dictionary ${index.title}", null)
-                    val dictId = AppDatabase.buildDatabase(context).dictionaryDao()
-                        .insertDictionary(Dictionary(name = index.title))
+            val zipMap = mapFilenameToBytes(input)
+            if (!zipMap.containsKey("index.json")) {
+                return stateLiveData.postError(FileNotFoundException("index.json could not be found"))
+            }
+            val index =
+                format.decodeFromString<YomichanMeta>(zipMap["index.json"]!!.decodeToString())
+            stateLiveData.postLoading("Creating dictionary ${index.title}")
+            val dictId = AppDatabase.buildDatabase(context).dictionaryDao()
+                .insertDictionary(Dictionary(name = index.title))
 
-                    onProgress("Importing tags from ${index.title}", null)
-                    val tags =
-                        zipMap.filter { (key, _) -> key.startsWith("tag_bank") && key.endsWith(".json") }
-                            .map { (_, value) ->
-                                decodeTags(value.decodeToString(), dictId)
-                            }.flatten()
-                    val tagMap =
-                        AppDatabase.buildDatabase(context).tagDao().insertTagsAndRetrieve(tags)
-                            .associateBy { it.name }
-
-                    onProgress("Importing entries from ${index.title}", null)
-                    val termEntries =
-                        zipMap.filter { (key, _) -> key.startsWith("term_bank_") && key.endsWith(".json") }
-                            .map { (_, termBank) ->
-                                decodeDictionaryEntries(termBank.decodeToString())
-                            }
-                            .flatten()
-
-                    val dbEntries = termEntries.map { entry ->
-                        entry.meanings.map { meaning ->
-                            meaning.replace("\n", "\n\n").trim { it <= ' ' }
-                        }.map { meaning ->
-                            Pair(DictEntry(
-                                kanji = entry.expression,
-                                meaning = meaning,
-                                reading = entry.reading,
-                                dictionaryId = dictId,
-                            ), entry.termTags.mapNotNull { tagMap[it] })
-                        }
+            stateLiveData.postLoading("Importing tags from ${index.title}")
+            val tags =
+                zipMap.filter { (key, _) -> key.startsWith("tag_bank") && key.endsWith(".json") }
+                    .map { (_, value) ->
+                        decodeTags(value.decodeToString(), dictId)
                     }.flatten()
+            val tagMap =
+                AppDatabase.buildDatabase(context).tagDao().insertTagsAndRetrieve(tags)
+                    .associateBy { it.name }
 
-                    onProgress("Inserting into database", null)
-                    AppDatabase.buildDatabase(context).dictEntryDao()
-                        .insertEntriesWithTags(dbEntries)
+            stateLiveData.postLoading("Importing entries from ${index.title}")
+            val termEntries =
+                zipMap.filter { (key, _) -> key.startsWith("term_bank_") && key.endsWith(".json") }
+                    .map { (_, termBank) ->
+                        decodeDictionaryEntries(termBank.decodeToString())
+                    }
+                    .flatten()
 
-                    onProgress("Done", Dictionary(dictId, index.title))
+            val dbEntries = termEntries.map { entry ->
+                entry.meanings.map { meaning ->
+                    meaning.replace("\n", "\n\n").trim { it <= ' ' }
+                }.map { meaning ->
+                    Pair(DictEntry(
+                        kanji = entry.expression,
+                        meaning = meaning,
+                        reading = entry.reading,
+                        dictionaryId = dictId,
+                    ), entry.termTags.mapNotNull { tagMap[it] })
                 }
-            }.onFailure { exception ->
-                throw exception
-            }
+            }.flatten()
+
+            stateLiveData.postLoading("Inserting into database")
+            AppDatabase.buildDatabase(context).dictEntryDao()
+                .insertEntriesWithTags(dbEntries)
+
+            stateLiveData.postSuccess(Dictionary(dictId, index.title))
         }
     }
 
-    suspend fun importFrequencyList(
+    fun importFrequencyList(
         uri: Uri,
-        onProgress: (status: String) -> Unit
+        stateLiveData: StateLiveData<Unit>
     ) {
-        withContext(Dispatchers.IO) {
-            kotlin.runCatching {
-                context.contentResolver.openInputStream(uri).use { input ->
-                    if (input == null) throw FileNotFoundException("could not open frequency list")
-                    onProgress("Scanning frequency list files")
-                    val zipMap = mapFilenameToBytes(input)
-                    onProgress("Importing frequency data")
-                    val frequencyList = zipMap.filter { (key, _) ->
-                        key.startsWith("term_meta_bank_") && key.endsWith(
-                            ".json"
+        context.contentResolver.openInputStream(uri).use { input ->
+            if (input == null) {
+                return stateLiveData.postError(FileNotFoundException("could not open frequency list"))
+            }
+            stateLiveData.postLoading("Scanning frequency list files")
+            val zipMap = mapFilenameToBytes(input)
+            stateLiveData.postLoading("Importing frequency data")
+            val frequencyList = zipMap.filter { (key, _) ->
+                key.startsWith("term_meta_bank_") && key.endsWith(
+                    ".json"
+                )
+            }
+                .map { (_, termBank) -> decodeFrequencyEntries(termBank.decodeToString()) }
+                .flatten()
+            stateLiveData.postLoading("Inserting into database")
+            val dao = AppDatabase.buildDatabase(context).frequencyDao()
+            dao.clear()
+            dao.insertFrequencies(frequencyList)
+            stateLiveData.postComplete()
+        }
+    }
+
+    fun importPitchAccent(
+        uri: Uri,
+        stateLiveData: StateLiveData<Unit>
+    ) {
+        context.contentResolver.openInputStream(uri).use { input ->
+            stateLiveData.postLoading("Scanning pitch accent files")
+            if (input == null) {
+                return stateLiveData.postError(FileNotFoundException("could not open pitch accent dictionary"))
+            }
+
+            val zipMap = mapFilenameToBytes(input)
+            stateLiveData.postLoading("Importing pitch accent data")
+            val pitchEntries =
+                zipMap.filter { (key, _) -> key.startsWith("term_bank_") && key.endsWith(".json") }
+                    .map { (_, termBank) -> decodeDictionaryEntries(termBank.decodeToString()) }
+                    .flatten()
+                    .map { entry ->
+                        PitchAccent(
+                            kanji = entry.expression,
+                            pitch = entry.meanings.joinToString("\n") {
+                                it.trim { it <= ' ' }
+                            }
                         )
                     }
-                        .map { (_, termBank) -> decodeFrequencyEntries(termBank.decodeToString()) }
-                        .flatten()
-                    onProgress("Inserting into database")
-                    val dao = AppDatabase.buildDatabase(context).frequencyDao()
-                    dao.clear()
-                    dao.insertFrequencies(frequencyList)
-                    onProgress("Done")
-                }
-            }.onFailure { exception ->
-                throw exception
-            }
-        }
-    }
 
-    suspend fun importPitchAccent(
-        uri: Uri,
-        onProgress: (status: String) -> Unit
-    ) {
-        withContext(Dispatchers.IO) {
-            kotlin.runCatching {
-                context.contentResolver.openInputStream(uri).use { input ->
-                    onProgress("Scanning pitch accent files")
-                    if (input == null) throw FileNotFoundException("could not open pitch accent dictionary")
-
-                    val zipMap = mapFilenameToBytes(input)
-                    onProgress("Importing pitch accent data")
-                    val pitchEntries =
-                        zipMap.filter { (key, _) -> key.startsWith("term_bank_") && key.endsWith(".json") }
-                            .map { (_, termBank) -> decodeDictionaryEntries(termBank.decodeToString()) }
-                            .flatten()
-                            .map { entry ->
-                                PitchAccent(
-                                    kanji = entry.expression,
-                                    pitch = entry.meanings.joinToString("\n") {
-                                        it.trim { it <= ' ' }
-                                    }
-                                )
-                            }
-
-                    if (pitchEntries.isEmpty()) {
-                        onProgress("Error: Invalid dictionary format. Rin currently only supports the old pitch accent dictionary format.")
-                    } else {
-                        onProgress("Inserting into database")
-                        val dao = AppDatabase.buildDatabase(context).pitchAccentDao()
-                        dao.clear()
-                        dao.insertPitchAccents(pitchEntries)
-                        onProgress("Done")
-                    }
-                }
-            }.onFailure { exception ->
-                throw exception
+            if (pitchEntries.isEmpty()) {
+                stateLiveData.postError(Exception("Error: Invalid dictionary format. Rin currently only supports the old pitch accent dictionary format."))
+            } else {
+                stateLiveData.postLoading("Inserting into database")
+                val dao = AppDatabase.buildDatabase(context).pitchAccentDao()
+                dao.clear()
+                dao.insertPitchAccents(pitchEntries)
+                stateLiveData.postComplete()
             }
         }
     }

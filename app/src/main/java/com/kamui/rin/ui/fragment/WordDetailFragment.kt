@@ -85,11 +85,6 @@ class WordDetailFragment : Fragment() {
     private val binding get() = _binding!!
     private val args: WordDetailFragmentArgs by navArgs()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -150,19 +145,6 @@ class WordDetailFragment : Fragment() {
         return binding.root
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.word_detail_action_bar, menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.action_close) {
-            activity?.finishAffinity()
-        } else {
-            return super.onOptionsItemSelected(item)
-        }
-        return true
-    }
-
     private fun configureChip(tag: Tag) {
         val chip = Chip(context)
         chip.text = tag.name
@@ -179,7 +161,6 @@ class WordDetailFragment : Fragment() {
     }
 
     private fun formatFrequency(frequency: Long?): String? {
-        println("FREQUENCY: $frequency")
         return frequency?.let {
             val formatter = DecimalFormat("#,###")
             return "Freq: ${formatter.format(frequency)}"

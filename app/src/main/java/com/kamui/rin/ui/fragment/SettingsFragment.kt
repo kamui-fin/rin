@@ -20,7 +20,9 @@ import androidx.preference.PreferenceManager
 import androidx.preference.SwitchPreference
 import com.kamui.rin.R
 import com.kamui.rin.Settings
+import com.kamui.rin.dict.DataStatus
 import com.kamui.rin.dict.DictionaryManager
+import com.kamui.rin.dict.StateLiveData
 import com.kamui.rin.ui.setupTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,37 +31,18 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-data class SettingsState(
-    val importStatus: String? = null,
-)
-
 class SettingsViewModel(private val context: Context) : ViewModel() {
-    private val _uiState = MutableStateFlow(SettingsState())
-    val uiState: StateFlow<SettingsState> = _uiState.asStateFlow()
-
+    val importUpdates: StateLiveData<Unit> = StateLiveData()
+    private val manager = DictionaryManager(context)
     fun importFrequencyList(uri: Uri) {
         viewModelScope.launch(Dispatchers.IO) {
-            val manager = DictionaryManager()
-            manager.importFrequencyList(uri, context) {
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        importStatus = it
-                    )
-                }
-            }
+            manager.importFrequencyList(uri, importUpdates)
         }
     }
 
     fun importPitchAccents(uri: Uri) {
         viewModelScope.launch(Dispatchers.IO) {
-            val manager = DictionaryManager()
-            manager.importPitchAccent(uri, context) {
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        importStatus = it
-                    )
-                }
-            }
+            manager.importPitchAccent(uri, importUpdates)
         }
     }
 }
@@ -74,50 +57,36 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private lateinit var settings: Settings
     private var dialog: AlertDialog? = null
 
+    private lateinit var pickFreq: ActivityResultLauncher<Intent>
+    private lateinit var pickPitch: ActivityResultLauncher<Intent>
+    private lateinit var pickSavedWords: ActivityResultLauncher<Intent>
+
     private val viewModel: SettingsViewModel by viewModels {
         SettingsViewModelFactory(requireContext())
     }
 
-    private val chooseFrequencyListActivityResultLauncher: ActivityResultLauncher<Intent> =
-        registerForActivityResult(
+    private fun pickFile(callback: (Uri) -> Unit): ActivityResultLauncher<Intent> {
+        return registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) {
             if (it.resultCode == AppCompatActivity.RESULT_OK) {
-                val uri = it.data?.dataString
+                val uri = Uri.parse(it.data?.dataString)
                 if (uri != null) {
-                    viewModel.importFrequencyList(Uri.parse(uri))
+                    callback(uri)
                 }
             }
         }
-
-    private val choosePitchAccentsActivityResultLauncher: ActivityResultLauncher<Intent> =
-        registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult()
-        ) {
-            if (it.resultCode == AppCompatActivity.RESULT_OK) {
-                val uri = it.data?.dataString
-                if (uri != null) {
-                    viewModel.importPitchAccents(Uri.parse(uri))
-                }
-            }
-        }
-
-    private val savedWordsActivityResultLauncher: ActivityResultLauncher<Intent> =
-        registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult()
-        ) {
-            if (it.resultCode == AppCompatActivity.RESULT_OK) {
-                val uri = it.data?.dataString
-                if (uri != null) {
-                    settings.setSavedWordsPath(uri)
-                    updateSavedWordsPathLabel()
-                }
-            }
-        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         settings = Settings(PreferenceManager.getDefaultSharedPreferences(requireContext()))
+        pickFreq = pickFile { viewModel.importFrequencyList(it) }
+        pickPitch = pickFile { viewModel.importPitchAccents(it) }
+        pickSavedWords = pickFile {
+            settings.setSavedWordsPath(it.path!!)
+            updateSavedWordsPathLabel()
+        }
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -128,23 +97,23 @@ class SettingsFragment : PreferenceFragmentCompat() {
             true
         }
 
-        findPreference<Preference>("savedWordsPath")?.setOnPreferenceClickListener {
-            chooseSavedWordsFile()
-            true
-        }
-
         findPreference<Preference>("manageDicts")?.setOnPreferenceClickListener {
             Navigation.findNavController(requireView()).navigate(R.id.manage_dict_settings_fragment)
             true
         }
 
         findPreference<Preference>("importFreq")?.setOnPreferenceClickListener {
-            chooseFrequencyListActivityResultLauncher.launch(chooseYomichanFile())
+            pickFreq.launch(chooseYomichanFile())
             true
         }
 
         findPreference<Preference>("importPitch")?.setOnPreferenceClickListener {
-            choosePitchAccentsActivityResultLauncher.launch(chooseYomichanFile())
+            pickPitch.launch(chooseYomichanFile())
+            true
+        }
+
+        findPreference<Preference>("savedWordsPath")?.setOnPreferenceClickListener {
+            pickSavedWords.launch(chooseSavedWordsFile())
             true
         }
 
@@ -155,23 +124,34 @@ class SettingsFragment : PreferenceFragmentCompat() {
         super.onViewCreated(view, savedInstanceState)
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.uiState.collect {
-                    if (it.importStatus != null) {
-                        if (dialog == null) {
-                            dialog = AlertDialog.Builder(requireContext()).setCancelable(false)
-                                .setView(R.layout.layout_loading_dialog).create()
+                viewModel.importUpdates.observe(requireActivity(), Observer { progress ->
+                    when (progress.status) {
+                        DataStatus.LOADING -> {
+                            if (dialog == null || !dialog!!.isShowing) {
+                                dialog = AlertDialog.Builder(requireContext()).setCancelable(false)
+                                    .setView(R.layout.layout_loading_dialog).create()
+                            }
                             dialog!!.show()
-                        } else if (it.importStatus == "Done") {
-                            dialog!!.hide()
-                        } else if  (it.importStatus.startsWith("Error:")) {
-                            dialog!!.hide()
-                            AlertDialog.Builder(requireContext()).setTitle("Import error").setMessage(it.importStatus).setPositiveButton("Ok", object : DialogInterface.OnClickListener {
-                                override fun onClick(dialog: DialogInterface?, which: Int) { }
-                            }).show()
+                            dialog!!.findViewById<TextView>(R.id.statusText)?.text =
+                                progress.progressData
                         }
-                        dialog!!.findViewById<TextView>(R.id.statusText)?.text = it.importStatus
+                        DataStatus.SUCCESS, DataStatus.COMPLETE -> {
+                            dialog!!.hide()
+                        }
+                        DataStatus.ERROR -> {
+                            dialog!!.hide()
+                            AlertDialog.Builder(requireContext())
+                                .setMessage(progress.error!!.message)
+                                .setCancelable(false)
+                                .setPositiveButton(
+                                    "OK"
+                                ) { dialog, _ ->
+                                    dialog.dismiss()
+                                }.setTitle("Error")
+                                .create().show()
+                        }
                     }
-                }
+                })
             }
         }
     }
@@ -184,13 +164,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
-    private fun chooseSavedWordsFile() {
-        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
+    private fun chooseSavedWordsFile(): Intent {
+        return Intent(Intent.ACTION_CREATE_DOCUMENT)
             .addCategory(Intent.CATEGORY_OPENABLE)
             .setType("text/plain")
             .putExtra(Intent.EXTRA_TITLE, "words.txt")
             .setFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-        savedWordsActivityResultLauncher.launch(intent)
     }
 
     private fun chooseYomichanFile(): Intent {

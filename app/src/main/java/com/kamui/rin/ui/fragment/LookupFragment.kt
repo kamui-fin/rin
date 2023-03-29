@@ -9,6 +9,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
+import androidx.media.session.MediaButtonReceiver.handleIntent
 import androidx.navigation.fragment.navArgs
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -39,6 +40,21 @@ data class LookupState(
 class LookupViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(LookupState())
     val uiState: StateFlow<LookupState> = _uiState.asStateFlow()
+
+    fun hideHome() {
+        _uiState.update { curr ->
+            curr.copy(showStartPrompt = false, noResultsFound = false)
+        }
+    }
+
+
+    fun displayHome() {
+        if (!uiState.value.noResultsFound) {
+            _uiState.update { curr ->
+                curr.copy(showStartPrompt = true)
+            }
+        }
+    }
 
     fun lookupWord(query: String, helper: Lookup) {
         _uiState.update { state ->
@@ -115,16 +131,27 @@ class LookupFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.search_action_bar, menu)
-
         val searchAction = menu.findItem(R.id.action_search)
+        searchAction.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
+            override fun onMenuItemActionExpand(item: MenuItem): Boolean {
+                state.hideHome()
+                return true
+            }
+            override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
+                state.displayHome()
+                return true
+            }
+        })
         val searchView = searchAction.actionView as SearchView
-
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 state.lookupWord(query, helper)
                 return false
             }
-            override fun onQueryTextChange(s: String): Boolean { return false }
+
+            override fun onQueryTextChange(s: String): Boolean {
+                return false
+            }
         })
 
         // query intent

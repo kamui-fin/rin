@@ -9,6 +9,18 @@ class Settings(private val sharedPreferences: SharedPreferences) {
             .map { it.toLong() }
     }
 
+    fun disabledDictSet(): Set<String> {
+        return sharedPreferences.getStringSet("disabledDicts", setOf())!!
+    }
+
+    fun updateDisabledDicts(newSet: Set<String>) {
+        sharedPreferences.edit().putStringSet("disabledDicts", newSet).apply()
+    }
+
+    fun isDictActive(id: Long): Boolean {
+        return !sharedPreferences.getStringSet("disabledDicts", setOf())!!.contains(id.toString())
+    }
+
     fun shouldDeconjugate(): Boolean {
         return sharedPreferences.getBoolean("shouldDeconjugate", true)
     }

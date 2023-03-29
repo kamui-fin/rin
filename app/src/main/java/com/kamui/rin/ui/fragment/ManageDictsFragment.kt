@@ -4,53 +4,57 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.PopupMenu
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
-import androidx.preference.*
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.kamui.rin.R
+import com.kamui.rin.Settings
 import com.kamui.rin.databinding.DictionaryBinding
 import com.kamui.rin.databinding.FragmentManageDictsBinding
-import com.kamui.rin.dict.DictionaryManager
 import com.kamui.rin.db.AppDatabase
 import com.kamui.rin.db.model.Dictionary
+import com.kamui.rin.dict.DataStatus
+import com.kamui.rin.dict.DictionaryManager
+import com.kamui.rin.dict.StateData
+import com.kamui.rin.dict.StateLiveData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 data class ManageDictSettingsState(
-    val importStatus: String? = null,
     val dictionaries: List<Dictionary> = listOf()
 )
 
 class ManageDictSettingsViewModel(private val context: Context) : ViewModel() {
     private val _uiState = MutableStateFlow(ManageDictSettingsState())
     val uiState: StateFlow<ManageDictSettingsState> = _uiState.asStateFlow()
+    private val dictDao = AppDatabase.buildDatabase(context).dictionaryDao()
+
+    private val manager = DictionaryManager(context)
+    var importUpdates: MutableLiveData<StateData<Unit>> = MutableLiveData()
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            val dicts =
-                AppDatabase.buildDatabase(context).dictionaryDao().getAllDictionaries()
             _uiState.update { currentState ->
                 currentState.copy(
-                    dictionaries = dicts.sortedDescending()
+                    dictionaries = dictDao.getAllDictionaries().sortedDescending()
                 )
             }
         }
@@ -58,25 +62,47 @@ class ManageDictSettingsViewModel(private val context: Context) : ViewModel() {
 
     fun delete(dict: Dictionary) {
         viewModelScope.launch(Dispatchers.IO) {
-            val manager = DictionaryManager(context)
-            manager.deleteDictionary(dict) { status, data ->
-                _uiState.update { currentState ->
-                    val newDictionaries =
-                        if (data != null) currentState.dictionaries.filter { it.dictId != data }
-                        else currentState.dictionaries
-                    currentState.copy(
-                        importStatus = status,
-                        dictionaries = newDictionaries
-                    )
+            val updates = StateLiveData<Long>(importUpdates)
+            withContext(Dispatchers.Main) {
+                updates.observeForever { state ->
+                    if (state.status == DataStatus.SUCCESS) {
+                        _uiState.update { currentState ->
+                            val newDictionaries =
+                                if (state.data != null) currentState.dictionaries.filter { it.dictId != state.data }
+                                else currentState.dictionaries
+                            currentState.copy(
+                                dictionaries = newDictionaries
+                            )
+                        }
+                    }
                 }
             }
+            manager.deleteDictionary(dict, updates)
+        }
+    }
+
+    fun import(uri: Uri) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val updates = StateLiveData<Dictionary>(importUpdates)
+            withContext(Dispatchers.Main) {
+                updates.observeForever { state ->
+                    if (state.status == DataStatus.SUCCESS) {
+                        _uiState.update { currentState ->
+                            currentState.copy(
+                                dictionaries = currentState.dictionaries + listOfNotNull(state.data)
+                            )
+                        }
+                    }
+                }
+            }
+            manager.importYomichanDictionary(uri, updates)
         }
     }
 
     fun setOrder(dict: Dictionary, order: Int) {
         val newDictionary = dict.copy(order = order)
         viewModelScope.launch(Dispatchers.IO) {
-            AppDatabase.buildDatabase(context).dictionaryDao().updateDictionary(newDictionary)
+            dictDao.updateDictionary(newDictionary)
             _uiState.update { currentState ->
                 currentState.copy(
                     dictionaries = currentState.dictionaries.map {
@@ -84,20 +110,6 @@ class ManageDictSettingsViewModel(private val context: Context) : ViewModel() {
                         else it
                     }.sortedDescending()
                 )
-            }
-        }
-    }
-
-    fun import(uri: Uri) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val manager = DictionaryManager(context)
-            manager.importYomichanDictionary(uri) { status, data ->
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        importStatus = status,
-                        dictionaries = currentState.dictionaries + listOfNotNull(data)
-                    )
-                }
             }
         }
     }
@@ -110,10 +122,10 @@ class ManageDictSettingsViewModelFactory(private val context: Context) : ViewMod
     }
 }
 
-class ManageDictsFragment : Fragment() {
+class ManageDictsFragment : androidx.fragment.app.Fragment() {
     private var _binding: FragmentManageDictsBinding? = null
     private val binding get() = _binding!!
-    private var dialog: AlertDialog? = null
+    private var dialog: android.app.AlertDialog? = null
 
     private val viewModel: ManageDictSettingsViewModel by viewModels {
         ManageDictSettingsViewModelFactory(requireContext())
@@ -137,21 +149,40 @@ class ManageDictsFragment : Fragment() {
     ): View {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.uiState.collect {
-
-                    if (it.importStatus != null) {
-                        if (dialog == null || !dialog!!.isShowing) {
-                            dialog = AlertDialog.Builder(requireContext()).setCancelable(false)
-                                .setView(R.layout.layout_loading_dialog).create()
-                            dialog!!.show()
-                        } else if (it.importStatus == "Done") {
-                            dialog!!.hide()
+                viewModel.importUpdates.observe(requireActivity(), Observer { progress ->
+                    when (progress.status) {
+                        DataStatus.LOADING -> {
+                            if (dialog == null || !dialog!!.isShowing) {
+                                dialog = android.app.AlertDialog.Builder(requireContext())
+                                    .setCancelable(false)
+                                    .setView(R.layout.layout_loading_dialog).create()
+                            }
+                            dialog?.show()
+                            dialog!!.findViewById<ProgressBar>(R.id.progressBar2)!!.isIndeterminate = true
+                            dialog?.findViewById<TextView>(R.id.statusText)?.text =
+                                progress.progressData
                         }
-                        dialog!!.findViewById<TextView>(R.id.statusText)?.text = it.importStatus
+                        DataStatus.SUCCESS, DataStatus.COMPLETE -> {
+                            dialog?.hide()
+                        }
+                        DataStatus.ERROR -> {
+                            dialog?.hide()
+                            android.app.AlertDialog.Builder(requireContext())
+                                .setMessage(
+                                    progress.error?.message ?: "An unexpected error has occured."
+                                )
+                                .setCancelable(false)
+                                .setPositiveButton(
+                                    "OK"
+                                ) { dialog, _ ->
+                                    dialog.dismiss()
+                                }.setTitle("Error")
+                                .create().show()
+                        }
                     }
-
+                })
+                viewModel.uiState.collect {
                     binding.dictRecyclerList.adapter = Adapter()
-
                 }
             }
         }
@@ -193,24 +224,7 @@ class ManageDictsFragment : Fragment() {
             return viewModel.uiState.value.dictionaries.size
         }
 
-        override fun onBindViewHolder(holder: ManageDictsFragment.ViewHolder, position: Int) {
-            val settings = PreferenceManager.getDefaultSharedPreferences(requireContext())
-            val dict = viewModel.uiState.value.dictionaries[position]
-            val idString = dict.dictId.toString()
-            holder.binding.dictionaryName.text = dict.name
-            holder.binding.toggleActive.isChecked =
-                !settings.getStringSet("disabledDicts", setOf())!!.contains(idString)
-            holder.binding.toggleActive.setOnCheckedChangeListener { _, isChecked ->
-                val origSet = settings.getStringSet("disabledDicts", setOf())!!
-                val newSet = mutableSetOf<String>()
-                newSet.addAll(origSet)
-                if (isChecked) {
-                    newSet.remove(idString)
-                } else {
-                    newSet.add(idString)
-                }
-                settings.edit().putStringSet("disabledDicts", newSet).apply()
-            }
+        private fun createPopupMenu(holder: ViewHolder, dict: Dictionary): PopupMenu {
             val popup = PopupMenu(requireContext(), holder.binding.moreActionsButton)
             popup.setOnMenuItemClickListener { item ->
                 when (item.itemId) {
@@ -218,14 +232,12 @@ class ManageDictsFragment : Fragment() {
                         viewModel.delete(dict)
                     }
                     R.id.setOrder -> {
-                        AlertDialog.Builder(requireContext()).apply {
+                        android.app.AlertDialog.Builder(requireContext()).apply {
+                            val view = layoutInflater.inflate(R.layout.dict_priority_dialog, null)
+                            setView(view)
                             setTitle("Dictionary Priority")
-
-                            val input = EditText(requireContext())
-                            input.inputType = InputType.TYPE_CLASS_NUMBER
+                            val input = view.findViewById<EditText>(R.id.dictOrder)
                             input.setText(dict.order.toString())
-                            setView(input)
-
                             setPositiveButton("OK") { _, _ ->
                                 val order = input.text.toString().toInt()
                                 viewModel.setOrder(dict, order)
@@ -236,11 +248,37 @@ class ManageDictsFragment : Fragment() {
                 }
                 false
             }
+            return popup
+        }
+
+        override fun onBindViewHolder(holder: ManageDictsFragment.ViewHolder, position: Int) {
+            val settings = Settings(PreferenceManager.getDefaultSharedPreferences(requireContext()))
+            val dict = viewModel.uiState.value.dictionaries[position]
+            holder.binding.dictionaryName.text = dict.name
+            holder.binding.order.text = dict.order.toString()
+            holder.binding.toggleActive.isChecked = settings.isDictActive(dict.dictId)
+
+            holder.binding.toggleActive.setOnCheckedChangeListener { _, isChecked ->
+                val idString = dict.dictId.toString()
+                val origSet = settings.disabledDictSet()
+                val newSet = mutableSetOf<String>()
+                newSet.addAll(origSet)
+                if (isChecked) {
+                    newSet.remove(idString)
+                } else {
+                    newSet.add(idString)
+                }
+                settings.updateDisabledDicts(newSet)
+            }
+
+            val popup = createPopupMenu(holder, dict)
+
             val inflater = popup.menuInflater
             inflater.inflate(R.menu.dictionary_manage_actions, popup.menu)
             holder.binding.moreActionsButton.setOnClickListener {
                 popup.show()
             }
+
         }
     }
 }
