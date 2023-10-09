@@ -18,11 +18,17 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager
 import androidx.preference.SwitchPreference
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
+import androidx.work.WorkRequest
+import androidx.work.workDataOf
 import com.kamui.rin.R
 import com.kamui.rin.Settings
-import com.kamui.rin.dict.DataStatus
-import com.kamui.rin.dict.DictionaryManager
-import com.kamui.rin.dict.StateLiveData
+import com.kamui.rin.db.model.Dictionary
+import com.kamui.rin.dict.worker.ImportDictionaryWorker
+import com.kamui.rin.dict.worker.ImportFrequencyWorker
+import com.kamui.rin.dict.worker.ImportPitchWorker
 import com.kamui.rin.ui.setupTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,18 +38,24 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SettingsViewModel(private val context: Context) : ViewModel() {
-    val importUpdates: StateLiveData<Unit> = StateLiveData()
-    private val manager = DictionaryManager(context)
-    fun importFrequencyList(uri: Uri) {
-        viewModelScope.launch(Dispatchers.IO) {
-            manager.importFrequencyList(uri, importUpdates)
-        }
+    fun importFrequencyList(uri: Uri, lifecycleOwner: LifecycleOwner) {
+        val importWork: WorkRequest =
+            OneTimeWorkRequestBuilder<ImportFrequencyWorker>().setInputData(
+                workDataOf(
+                    "URI" to uri.toString()
+                )
+            ).build()
+        WorkManager.getInstance(context).enqueue(importWork)
     }
 
-    fun importPitchAccents(uri: Uri) {
-        viewModelScope.launch(Dispatchers.IO) {
-            manager.importPitchAccent(uri, importUpdates)
-        }
+    fun importPitchAccents(uri: Uri, lifecycleOwner: LifecycleOwner) {
+        val importWork: WorkRequest =
+            OneTimeWorkRequestBuilder<ImportPitchWorker>().setInputData(
+                workDataOf(
+                    "URI" to uri.toString()
+                )
+            ).build()
+        WorkManager.getInstance(context).enqueue(importWork)
     }
 }
 
@@ -81,8 +93,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         settings = Settings(PreferenceManager.getDefaultSharedPreferences(requireContext()))
-        pickFreq = pickFile { viewModel.importFrequencyList(it) }
-        pickPitch = pickFile { viewModel.importPitchAccents(it) }
+        pickFreq = pickFile { viewModel.importFrequencyList(it, viewLifecycleOwner) }
+        pickPitch = pickFile { viewModel.importPitchAccents(it, viewLifecycleOwner) }
         pickSavedWords = pickFile {
             settings.setSavedWordsPath(it.path!!)
             updateSavedWordsPathLabel()
@@ -118,42 +130,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
 
         updateSavedWordsPathLabel()
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.importUpdates.observe(requireActivity(), Observer { progress ->
-                    when (progress.status) {
-                        DataStatus.LOADING -> {
-                            if (dialog == null || !dialog!!.isShowing) {
-                                dialog = AlertDialog.Builder(requireContext()).setCancelable(false)
-                                    .setView(R.layout.layout_loading_dialog).create()
-                            }
-                            dialog!!.show()
-                            dialog!!.findViewById<TextView>(R.id.statusText)?.text =
-                                progress.progressData
-                        }
-                        DataStatus.SUCCESS, DataStatus.COMPLETE -> {
-                            dialog!!.hide()
-                        }
-                        DataStatus.ERROR -> {
-                            dialog!!.hide()
-                            AlertDialog.Builder(requireContext())
-                                .setMessage(progress.error!!.message)
-                                .setCancelable(false)
-                                .setPositiveButton(
-                                    "OK"
-                                ) { dialog, _ ->
-                                    dialog.dismiss()
-                                }.setTitle("Error")
-                                .create().show()
-                        }
-                    }
-                })
-            }
-        }
     }
 
     private fun updateSavedWordsPathLabel() {

@@ -9,34 +9,42 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.PopupMenu
-import android.widget.ProgressBar
-import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.*
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.viewModelScope
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
+import androidx.work.WorkRequest
+import androidx.work.workDataOf
 import com.kamui.rin.R
 import com.kamui.rin.Settings
 import com.kamui.rin.databinding.DictionaryBinding
 import com.kamui.rin.databinding.FragmentManageDictsBinding
 import com.kamui.rin.db.AppDatabase
 import com.kamui.rin.db.model.Dictionary
-import com.kamui.rin.dict.DataStatus
-import com.kamui.rin.dict.DictionaryManager
-import com.kamui.rin.dict.StateData
-import com.kamui.rin.dict.StateLiveData
+import com.kamui.rin.dict.worker.DeleteDictionaryWorker
+import com.kamui.rin.dict.worker.ImportDictionaryWorker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 data class ManageDictSettingsState(
     val dictionaries: List<Dictionary> = listOf()
@@ -46,9 +54,6 @@ class ManageDictSettingsViewModel(private val context: Context) : ViewModel() {
     private val _uiState = MutableStateFlow(ManageDictSettingsState())
     val uiState: StateFlow<ManageDictSettingsState> = _uiState.asStateFlow()
     private val dictDao = AppDatabase.buildDatabase(context).dictionaryDao()
-
-    private val manager = DictionaryManager(context)
-    var importUpdates: MutableLiveData<StateData<Unit>> = MutableLiveData()
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -60,16 +65,22 @@ class ManageDictSettingsViewModel(private val context: Context) : ViewModel() {
         }
     }
 
-    fun delete(dict: Dictionary) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val updates = StateLiveData<Long>(importUpdates)
-            withContext(Dispatchers.Main) {
-                updates.observeForever { state ->
-                    if (state.status == DataStatus.SUCCESS) {
+    fun delete(dict: Dictionary, lifecycleOwner: LifecycleOwner) {
+        val deleteWork: WorkRequest =
+            OneTimeWorkRequestBuilder<DeleteDictionaryWorker>().setInputData(
+                workDataOf(
+                    "DICT_ID" to dict.dictId
+                )
+            ).build()
+        WorkManager.getInstance(context).enqueue(deleteWork)
+
+        WorkManager.getInstance(context).getWorkInfoByIdLiveData(deleteWork.id)
+            .observe(lifecycleOwner) { result: WorkInfo ->
+                if (result.state == WorkInfo.State.SUCCEEDED) {
+                    viewModelScope.launch(Dispatchers.IO) {
                         _uiState.update { currentState ->
                             val newDictionaries =
-                                if (state.data != null) currentState.dictionaries.filter { it.dictId != state.data }
-                                else currentState.dictionaries
+                                currentState.dictionaries.filter { it.dictId != dict.dictId }
                             currentState.copy(
                                 dictionaries = newDictionaries
                             )
@@ -77,26 +88,37 @@ class ManageDictSettingsViewModel(private val context: Context) : ViewModel() {
                     }
                 }
             }
-            manager.deleteDictionary(dict, updates)
-        }
     }
 
-    fun import(uri: Uri) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val updates = StateLiveData<Dictionary>(importUpdates)
-            withContext(Dispatchers.Main) {
-                updates.observeForever { state ->
-                    if (state.status == DataStatus.SUCCESS) {
-                        _uiState.update { currentState ->
-                            currentState.copy(
-                                dictionaries = currentState.dictionaries + listOfNotNull(state.data)
-                            )
+    fun import(uri: Uri, lifecycleOwner: LifecycleOwner) {
+        val importWork: WorkRequest =
+            OneTimeWorkRequestBuilder<ImportDictionaryWorker>().setInputData(
+                workDataOf(
+                    "URI" to uri.toString()
+                )
+            ).build()
+        WorkManager.getInstance(context).enqueue(importWork)
+
+        WorkManager.getInstance(context).getWorkInfoByIdLiveData(importWork.id)
+            .observe(lifecycleOwner, Observer { result: WorkInfo ->
+                if (result.state == WorkInfo.State.SUCCEEDED) {
+                    val data = result.outputData
+                    val dictId = data.getLong("DICT_ID", -1)
+                    val dictTitle = data.getString("DICT_TITLE") ?: "Untitled Dictionary"
+                    if (dictId.toInt() != -1) {
+                        val dict = Dictionary(dictId, dictTitle)
+                        viewModelScope.launch(Dispatchers.IO) {
+                            _uiState.update { currentState ->
+                                currentState.copy(
+                                    dictionaries = currentState.dictionaries + listOfNotNull(
+                                        dict
+                                    )
+                                )
+                            }
                         }
                     }
                 }
-            }
-            manager.importYomichanDictionary(uri, updates)
-        }
+            })
     }
 
     fun setOrder(dict: Dictionary, order: Int) {
@@ -125,7 +147,6 @@ class ManageDictSettingsViewModelFactory(private val context: Context) : ViewMod
 class ManageDictsFragment : androidx.fragment.app.Fragment() {
     private var _binding: FragmentManageDictsBinding? = null
     private val binding get() = _binding!!
-    private var dialog: android.app.AlertDialog? = null
 
     private val viewModel: ManageDictSettingsViewModel by viewModels {
         ManageDictSettingsViewModelFactory(requireContext())
@@ -138,49 +159,17 @@ class ManageDictsFragment : androidx.fragment.app.Fragment() {
             if (it.resultCode == AppCompatActivity.RESULT_OK) {
                 val uri = it.data?.dataString
                 if (uri != null) {
-                    viewModel.import(Uri.parse(uri))
+                    Toast.makeText(activity, "Starting dictionary import", Toast.LENGTH_LONG).show()
+                    viewModel.import(Uri.parse(uri), viewLifecycleOwner)
                 }
             }
         }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.importUpdates.observe(requireActivity(), Observer { progress ->
-                    when (progress.status) {
-                        DataStatus.LOADING -> {
-                            if (dialog == null || !dialog!!.isShowing) {
-                                dialog = android.app.AlertDialog.Builder(requireContext())
-                                    .setCancelable(false)
-                                    .setView(R.layout.layout_loading_dialog).create()
-                            }
-                            dialog?.show()
-                            dialog!!.findViewById<ProgressBar>(R.id.progressBar2)!!.isIndeterminate = true
-                            dialog?.findViewById<TextView>(R.id.statusText)?.text =
-                                progress.progressData
-                        }
-                        DataStatus.SUCCESS, DataStatus.COMPLETE -> {
-                            dialog?.hide()
-                        }
-                        DataStatus.ERROR -> {
-                            dialog?.hide()
-                            android.app.AlertDialog.Builder(requireContext())
-                                .setMessage(
-                                    progress.error?.message ?: "An unexpected error has occured."
-                                )
-                                .setCancelable(false)
-                                .setPositiveButton(
-                                    "OK"
-                                ) { dialog, _ ->
-                                    dialog.dismiss()
-                                }.setTitle("Error")
-                                .create().show()
-                        }
-                    }
-                })
                 viewModel.uiState.collect {
                     binding.dictRecyclerList.adapter = Adapter()
                 }
@@ -190,8 +179,7 @@ class ManageDictsFragment : androidx.fragment.app.Fragment() {
         _binding = FragmentManageDictsBinding.inflate(inflater, container, false)
         binding.dictRecyclerList.addItemDecoration(
             DividerItemDecoration(
-                context,
-                DividerItemDecoration.VERTICAL
+                context, DividerItemDecoration.VERTICAL
             )
         )
         binding.dictRecyclerList.layoutManager = LinearLayoutManager(context)
@@ -200,20 +188,17 @@ class ManageDictsFragment : androidx.fragment.app.Fragment() {
     }
 
     private fun addDictionary() {
-        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
-            .addCategory(Intent.CATEGORY_OPENABLE)
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).addCategory(Intent.CATEGORY_OPENABLE)
             .setType("application/zip")
             .setFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
         addDictionaryActivityResultLauncher.launch(intent)
     }
 
-    inner class ViewHolder(val binding: DictionaryBinding) :
-        RecyclerView.ViewHolder(binding.root)
+    inner class ViewHolder(val binding: DictionaryBinding) : RecyclerView.ViewHolder(binding.root)
 
     inner class Adapter : RecyclerView.Adapter<ManageDictsFragment.ViewHolder>() {
         override fun onCreateViewHolder(
-            parent: ViewGroup,
-            viewType: Int
+            parent: ViewGroup, viewType: Int
         ): ManageDictsFragment.ViewHolder {
             val binding =
                 DictionaryBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -229,8 +214,10 @@ class ManageDictsFragment : androidx.fragment.app.Fragment() {
             popup.setOnMenuItemClickListener { item ->
                 when (item.itemId) {
                     R.id.delete -> {
-                        viewModel.delete(dict)
+                        viewModel.delete(dict, viewLifecycleOwner)
+                        Toast.makeText(activity, "Deleting ${dict.name}", Toast.LENGTH_LONG).show()
                     }
+
                     R.id.setOrder -> {
                         android.app.AlertDialog.Builder(requireContext()).apply {
                             val view = layoutInflater.inflate(R.layout.dict_priority_dialog, null)

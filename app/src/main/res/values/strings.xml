@@ -6,4 +6,8 @@
     <string name="start_by_looking_up_a_word">Start by looking up a word</string>
     <string name="not_found">Not found! Try refining your search.</string>
     <string name="close">Close</string>
+    <string name="notification_channel_id">RIN_NOTIFICATION_CHANNEL</string>
+    <string name="cancel_work">Cancel</string>
+    <string name="notification_title">Dictionary Manager</string>
+    <string name="channel_description">Background Activity</string>
 </resources>

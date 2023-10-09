@@ -8,8 +8,8 @@ interface DictionaryDao {
     @Insert
     fun insertDictionary(dictionary: Dictionary): Long
 
-    @Delete
-    fun deleteDictionary(dictionary: Dictionary)
+    @Query("DELETE FROM Dictionary WHERE dictId = :dictId")
+    fun deleteDictionary(dictId: Long)
 
     @Update
     fun updateDictionary(dictionary: Dictionary)

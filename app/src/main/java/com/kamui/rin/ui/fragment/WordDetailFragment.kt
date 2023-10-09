@@ -111,7 +111,9 @@ class WordDetailFragment : Fragment() {
                         binding.pitchText.text = it.pitch
                         binding.freqChip.text = formatFrequency(it.frequency)
 
-                        tags.forEach { tag -> configureChip(tag) }
+                        if (binding.chipLayout.childCount == 0) {
+                            tags.forEach { tag -> configureChip(tag) }
+                        }
 
                         if (tags.isEmpty()) { binding.chipLayout.visibility = View.GONE }
                         if (it.pitch == null) { binding.pitchCard.visibility = View.GONE }
