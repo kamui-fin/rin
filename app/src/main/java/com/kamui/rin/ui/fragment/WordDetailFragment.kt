@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import android.view.*
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -74,7 +75,8 @@ class WordDetailViewModel(private val database: AppDatabase, entryId: Long) : Vi
     }
 }
 
-class WordDetailViewModelFactory(private val database: AppDatabase, private val wordId: Long): ViewModelProvider.Factory {
+class WordDetailViewModelFactory(private val database: AppDatabase, private val wordId: Long) :
+    ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return WordDetailViewModel(database, wordId) as T
     }
@@ -99,10 +101,13 @@ class WordDetailFragment : Fragment() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect {
                     if (it.entry != null) {
+                        binding.loadingProgress.visibility = View.GONE
+                        binding.cardsHolder.visibility = View.VISIBLE
                         // set title bar to word
                         val entry = it.entry
                         val tags = it.tags
-                        (requireActivity() as AppCompatActivity).supportActionBar?.title = entry.kanji
+                        (requireActivity() as AppCompatActivity).supportActionBar?.title =
+                            entry.kanji
 
                         // fill in UI elements
                         binding.secondaryTextCard.text = entry.reading
@@ -115,15 +120,27 @@ class WordDetailFragment : Fragment() {
                             tags.forEach { tag -> configureChip(tag) }
                         }
 
-                        if (tags.isEmpty()) { binding.chipLayout.visibility = View.GONE }
-                        if (it.pitch == null) { binding.pitchCard.visibility = View.GONE }
-                        if (it.frequency == null) { binding.freqChip.visibility = View.GONE }
+                        if (tags.isEmpty()) {
+                            binding.chipLayout.visibility = View.GONE
+                        }
+                        if (it.pitch == null) {
+                            binding.pitchCard.visibility = View.GONE
+                        }
+                        if (it.frequency == null) {
+                            binding.freqChip.visibility = View.GONE
+                        }
 
                         binding.copyButton.setOnClickListener {
-                            val clipboard = activity?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                            val clip: ClipData = ClipData.newPlainText("${entry.kanji} definition", entry.meaning)
+                            val clipboard =
+                                activity?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                            val clip: ClipData =
+                                ClipData.newPlainText("${entry.kanji} definition", entry.meaning)
                             clipboard.setPrimaryClip(clip)
-                            Toast.makeText(context, "Copied definition to clipboard", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                context,
+                                "Copied definition to clipboard",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
 
                         binding.saveWordButton.setOnClickListener { _ ->
