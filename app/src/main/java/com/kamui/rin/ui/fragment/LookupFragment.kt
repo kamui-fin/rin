@@ -2,23 +2,30 @@ package com.kamui.rin.ui.fragment
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.*
-import androidx.media.session.MediaButtonReceiver.handleIntent
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.navArgs
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.kamui.rin.adapter.DictEntryAdapter
 import com.kamui.rin.R
+import com.kamui.rin.Settings
+import com.kamui.rin.adapter.DictEntryAdapter
 import com.kamui.rin.databinding.FragmentLookupBinding
 import com.kamui.rin.db.model.DictEntry
-import com.kamui.rin.Settings
-import com.kamui.rin.db.dao.DictionaryDao
 import com.kamui.rin.db.model.Dictionary
 import com.kamui.rin.dict.Lookup
 import kotlinx.coroutines.Dispatchers
@@ -137,6 +144,7 @@ class LookupFragment : Fragment() {
                 state.hideHome()
                 return true
             }
+
             override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
                 state.displayHome()
                 return true

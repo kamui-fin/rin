@@ -1,13 +1,11 @@
 package com.kamui.rin.dict
 
 import android.content.Context
+import com.kamui.rin.Settings
 import com.kamui.rin.db.AppDatabase
 import com.kamui.rin.db.dao.DictEntryDao
 import com.kamui.rin.db.model.DictEntry
-import com.kamui.rin.Settings
 import com.kamui.rin.db.model.Dictionary
-import java.util.*
-import kotlin.collections.ArrayList
 
 class Lookup(
     context: Context,

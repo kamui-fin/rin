@@ -2,7 +2,12 @@ package com.kamui.rin.dict
 
 import com.kamui.rin.db.model.Frequency
 import com.kamui.rin.db.model.Tag
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.intOrNull
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.long
 
 val format = Json { ignoreUnknownKeys = true }
 

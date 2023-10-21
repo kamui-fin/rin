@@ -12,7 +12,10 @@ import com.kamui.rin.db.model.DictEntry
 import com.kamui.rin.db.model.Dictionary
 import com.kamui.rin.ui.fragment.LookupFragmentDirections
 
-class DictEntryAdapter(private val context: Context, private val entries: List<Pair<DictEntry, Dictionary>>) :
+class DictEntryAdapter(
+    private val context: Context,
+    private val entries: List<Pair<DictEntry, Dictionary>>
+) :
     RecyclerView.Adapter<DictEntryAdapter.ViewHolder>() {
     private var lastPosition = -1
 

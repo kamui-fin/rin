@@ -15,26 +15,32 @@ interface DictEntryDao {
     ): DictEntry
 
     @Transaction
-    @Query("SELECT * FROM DictEntry " +
-           "JOIN Dictionary ON Dictionary.dictId = DictEntry.dictionaryId " +
-           "WHERE kanji = :query AND Dictionary.dictId NOT IN (:disabled)")
+    @Query(
+        "SELECT * FROM DictEntry " +
+                "JOIN Dictionary ON Dictionary.dictId = DictEntry.dictionaryId " +
+                "WHERE kanji = :query AND Dictionary.dictId NOT IN (:disabled)"
+    )
     fun searchEntryByKanji(
         query: String,
         disabled: List<Long?>
     ): Map<DictEntry, Dictionary>
 
     @Transaction
-    @Query("SELECT * FROM DictEntry " +
-           "JOIN Dictionary ON Dictionary.dictId = DictEntry.dictionaryId " +
-           "WHERE reading = :query AND Dictionary.dictId NOT IN (:disabled)")
+    @Query(
+        "SELECT * FROM DictEntry " +
+                "JOIN Dictionary ON Dictionary.dictId = DictEntry.dictionaryId " +
+                "WHERE reading = :query AND Dictionary.dictId NOT IN (:disabled)"
+    )
     fun searchEntryByReading(
         query: String,
         disabled: List<Long>
     ): Map<DictEntry, Dictionary>
 
-    @Query("SELECT Tag.* from DictEntryTagCrossRef " +
-           "JOIN Tag ON Tag.tagId = DictEntryTagCrossRef.tagId " +
-           "WHERE DictEntryTagCrossRef.entryId = :entryId")
+    @Query(
+        "SELECT Tag.* from DictEntryTagCrossRef " +
+                "JOIN Tag ON Tag.tagId = DictEntryTagCrossRef.tagId " +
+                "WHERE DictEntryTagCrossRef.entryId = :entryId"
+    )
     fun getTagsForEntry(entryId: Long): List<Tag>
 
     @Insert

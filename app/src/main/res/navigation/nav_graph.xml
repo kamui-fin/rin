@@ -7,7 +7,7 @@
     <fragment
         android:id="@+id/settings_fragment"
         android:name="com.kamui.rin.ui.fragment.SettingsFragment"
-        android:label="Settings" >
+        android:label="Settings">
         <action
             android:id="@+id/action_settings_fragment_to_manageDictSettingsFragment"
             app:destination="@id/manage_dict_settings_fragment" />
@@ -16,9 +16,7 @@
     <navigation
         android:id="@+id/lookup"
         app:startDestination="@id/lookup_fragment">
-        <argument
-            android:name="query"
-            />
+        <argument android:name="query" />
         <fragment
             android:id="@+id/lookup_fragment"
             android:name="com.kamui.rin.ui.fragment.LookupFragment"

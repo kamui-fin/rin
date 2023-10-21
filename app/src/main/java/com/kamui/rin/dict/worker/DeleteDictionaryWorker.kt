@@ -2,12 +2,12 @@ package com.kamui.rin.dict.worker
 
 import android.content.Context
 import androidx.work.WorkerParameters
-import androidx.work.workDataOf
 import com.kamui.rin.db.AppDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class DeleteDictionaryWorker(context: Context, parameters: WorkerParameters) : BaseDictionaryWorker(context, parameters) {
+class DeleteDictionaryWorker(context: Context, parameters: WorkerParameters) :
+    BaseDictionaryWorker(context, parameters) {
     override suspend fun doWork(): Result {
         return withContext(Dispatchers.IO) {
             return@withContext try {
@@ -28,5 +28,6 @@ class DeleteDictionaryWorker(context: Context, parameters: WorkerParameters) : B
         AppDatabase.buildDatabase(applicationContext).dictionaryDao().deleteDictionary(dictId)
     }
 
-    override fun getNotificationId(): Int { return 0; }
+    override fun getNotificationId(): Int {
+        return 0; }
 }

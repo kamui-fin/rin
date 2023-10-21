@@ -1,12 +1,27 @@
 package com.kamui.rin.db
 
 import android.content.Context
-import androidx.room.*
+import androidx.room.AutoMigration
+import androidx.room.Database
+import androidx.room.DeleteColumn
+import androidx.room.Room
+import androidx.room.RoomDatabase
 import androidx.room.migration.AutoMigrationSpec
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.kamui.rin.db.dao.*
-import com.kamui.rin.db.model.*
+import com.kamui.rin.db.dao.DictEntryDao
+import com.kamui.rin.db.dao.DictionaryDao
+import com.kamui.rin.db.dao.FrequencyDao
+import com.kamui.rin.db.dao.PitchAccentDao
+import com.kamui.rin.db.dao.SavedWordDao
+import com.kamui.rin.db.dao.TagDao
+import com.kamui.rin.db.model.DictEntry
+import com.kamui.rin.db.model.DictEntryTagCrossRef
+import com.kamui.rin.db.model.Dictionary
+import com.kamui.rin.db.model.Frequency
+import com.kamui.rin.db.model.PitchAccent
+import com.kamui.rin.db.model.SavedWord
+import com.kamui.rin.db.model.Tag
 
 @DeleteColumn(tableName = "DictEntry", columnName = "pitchAccent")
 @DeleteColumn(tableName = "DictEntry", columnName = "freq")

@@ -2,9 +2,9 @@ package com.kamui.rin.dict
 
 fun toHiragana(c: Char): Char {
     if (isFullWidthKatakana(c)) {
-        return (c.toInt() - 0x60).toChar()
+        return (c.code - 0x60).toChar()
     } else if (isHalfWidthKatakana(c)) {
-        return (c.toInt() - 0xcf25).toChar()
+        return (c.code - 0xcf25).toChar()
     }
     return c
 }
